@@ -10,10 +10,11 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const multer = require('multer');
-const { Op, Sequelize } = require('sequelize');
+const { Op, Sequelize } = require('sequelize'); // Mantém Sequelize e Op para o dbProxy, se usar fallback
 
-// --- 1. IMPORTAÇÃO DO DB PROXY ---
-const db = require('./dbProxy');
+// --- 1. IMPORTAÇÃO DO DB PROXY E SUPABASE CONNECTOR ---
+const db = require('./dbProxy'); // Seu dbProxy atual que usa Supabase ou Sequelize
+const { testSupabaseConnection, initError: supabaseInitError } = require('./supabaseConnector'); // Importa o novo conector
 
 // --- 2. UTILITÁRIOS ---
 const slugify = require('./utils/slugify');
@@ -81,7 +82,7 @@ app.get('/', async (req, res) => {
         res.render('index', { page_name: 'index', titulo: 'Início', animes: animesRecentes, topAnimes: animesPopulares });
     } catch (err) {
         console.error("Erro na página inicial:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar animes.' });
     }
 });
 
@@ -101,6 +102,8 @@ app.get('/animes', async (req, res) => {
         let whereClause = {};
         if (search) whereClause.titulo = { [Op.iLike]: `%${search}%` };
         else if (letter) whereClause.titulo = { [Op.iLike]: `${letter}%` };
+        // Atenção: A lógica de gênero aqui pode precisar de ajuste se 'generos' for um TEXT ou JSONB no Supabase
+        // O proxy no dbProxy.js precisaria converter isso para a sintaxe Supabase adequada.
         if (genre) whereClause.generos = { [Op.iLike]: `%"${genre}"%` };
 
         let orderClause = [['createdAt', 'DESC']];
@@ -114,7 +117,14 @@ app.get('/animes', async (req, res) => {
         const { count, rows: animes } = await db.Anime.findAndCountAll({ where: whereClause, order: orderClause, limit, offset });
 
         const allAnimesForGenres = await db.Anime.findAll({ attributes: ['generos'] });
-        const genreSet = new Set(allAnimesForGenres.flatMap(a => { try { return JSON.parse(a.generos) } catch { return [] } }));
+        const genreSet = new Set(allAnimesForGenres.flatMap(a => {
+            try {
+                // Tenta fazer o parse apenas se a.generos não for null/undefined e for uma string
+                return typeof a.generos === 'string' && a.generos.startsWith('[') && a.generos.endsWith(']') ? JSON.parse(a.generos) : [];
+            } catch {
+                return [];
+            }
+        }));
         const uniqueGenres = [...genreSet].sort();
 
         res.render('todos-animes', {
@@ -131,7 +141,7 @@ app.get('/animes', async (req, res) => {
         });
     } catch (error) {
         console.error("ERRO AO CARREGAR ANIMES:", error);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Não foi possível carregar o catálogo de animes.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: error.message || 'Não foi possível carregar o catálogo de animes.' });
     }
 });
 
@@ -144,7 +154,7 @@ app.get('/noticias', async (req, res) => {
         ]);
         res.render('noticias', { page_name: 'noticias', titulo: 'Notícias', destaque, recentes });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Falha ao carregar notícias.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar notícias.' });
     }
 });
 
@@ -154,7 +164,7 @@ app.get('/noticias/:slug', async (req, res) => {
         if (!post) return res.status(404).render('404', { layout: false, titulo: 'Notícia não encontrada' });
         res.render('detalhe-post', { page_name: 'detalhe-post', titulo: post.titulo, post });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Falha ao carregar a notícia.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar a notícia.' });
     }
 });
 
@@ -168,7 +178,7 @@ app.get('/anime/:slug', proteger, async (req, res) => {
         await db.Anime.increment('views', { where: { slug: anime.slug } });
         res.render('detalhe-anime', { page_name: 'anime-detail', titulo: anime.titulo, anime });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar detalhes do anime.' });
     }
 });
 
@@ -194,7 +204,7 @@ app.get('/assistir/:slug/:epId', proteger, async (req, res) => {
             titulo: `Assistindo: ${anime.titulo} - Ep. ${episodioAtual.numero}`
         });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar o player.' });
     }
 });
 
@@ -214,7 +224,7 @@ app.get('/perfil', proteger, async (req, res) => {
         });
     } catch (err) {
         console.error("Erro ao carregar perfil:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar perfil.' });
     }
 });
 
@@ -253,7 +263,7 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
         });
     } catch (err) {
         console.error("Erro ao carregar dashboard:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar dashboard.' });
     }
 });
 
@@ -340,16 +350,50 @@ app.use((err, req, res, next) => {
 
 // ====================================================================================
 // --- INICIALIZAÇÃO DO SERVIDOR ---
+// O servidor só será iniciado APÓS a verificação da conexão Supabase.
 // ====================================================================================
-db.sequelize.sync({ alter: true })
-    .then(() => {
-        console.log('✅ Banco de dados sincronizado e pronto.');
-        app.listen(PORT, () => {
-            console.log(`🚀 Servidor DenyAnimeHub no ar em: http://localhost:${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', err);
-        process.exit(1);
-    });
+(async () => {
+    console.log('\n--- Iniciando DenyAnimeHub ---');
 
+    let isSupabaseConnected = false;
+    // Verifica se houve erros de inicialização das variáveis de ambiente para Supabase
+    if (supabaseInitError) {
+        console.error('⚠️ Supabase não pode ser conectado devido a erros de configuração inicial. Iniciando Express com funcionalidades de banco de dados limitadas/quebradas.');
+    } else {
+        isSupabaseConnected = await testSupabaseConnection(); // Testa a conexão Supabase
+    }
+
+    // Se o dbProxy está configurado para usar Sequelize como fallback e
+    // o Supabase falhou OU as variáveis de ambiente do Supabase não foram configuradas.
+    // É importante entender que 'dbProxy.useSupabase' controla qual camada está ativa.
+    // Se useSupabase for 'true' e Supabase falhou, mesmo o Sequelize não será chamado pelo proxy.
+    // Se useSupabase for 'false', ele tentará o Sequelize.
+    if (!isSupabaseConnected && !db.useSupabase) { // Assegura que o Sequelize seja usado apenas se Supabase falhou e o proxy permite fallback
+        console.log('🔄 Tentando sincronizar o banco de dados via Sequelize como fallback...');
+        try {
+            await db.sequelize.authenticate(); // Testa a conexão Sequelize
+            await db.sequelize.sync({ alter: true }); // Sincroniza o Sequelize
+            console.log('✅ Banco de dados Sequelize sincronizado e pronto (modo fallback).');
+            // Como fallback, consideramos que o BD está "pronto" via Sequelize.
+            isSupabaseConnected = true; // Define como true para iniciar o servidor
+        } catch (sequelizeErr) {
+            console.error('❌ FALHA CRÍTICA AO SINCRONIZAR O BANCO DE DADOS VIA SEQUELIZE:', sequelizeErr.message);
+            console.error('   O aplicativo não poderá acessar o banco de dados. Verifique a configuração do PostgreSQL.');
+            // Se Sequelize também falha, o app irá iniciar, mas o DB estará inacessível
+            isSupabaseConnected = false;
+        }
+    } else if (isSupabaseConnected) {
+        console.log('🎉 Supabase pronto! Banco de dados principal está ativo.');
+        // Não é necessário sincronizar Sequelize se Supabase está ativo.
+    }
+
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor DenyAnimeHub no ar em: http://localhost:${PORT}`);
+        if (!isSupabaseConnected) {
+            console.warn('⚠️ AVISO: O aplicativo foi iniciado, mas o acesso ao banco de dados pode estar comprometido. Verifique os logs acima.');
+        } else {
+            console.log('✨ O aplicativo está totalmente operacional com acesso ao banco de dados.');
+        }
+    });
+})();

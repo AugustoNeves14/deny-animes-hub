@@ -9,23 +9,13 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
 const env = process.env.NODE_ENV || 'development';
-// Supondo que você tem um arquivo config.json com as credenciais do Supabase (PostgreSQL)
 const config = require(path.join(__dirname, 'config', 'config.json'))[env];
 
 const sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     dialect: 'postgres',
-    // === ALTERAÇÃO AQUI: Desativar SSL ===
     dialectOptions: {
-        // Se o seu servidor PostgreSQL não suporta SSL ou não o exige,
-        // remova a propriedade `ssl` ou defina `ssl: false`.
-        // Para a maioria dos ambientes de desenvolvimento local, `ssl` não é necessário.
-        // Se você está realmente usando Supabase, é muito provável que `require: true` e `rejectUnauthorized: false`
-        // seja o correto. O fato de você receber este erro pode indicar que
-        // você está se conectando a um banco de dados PostgreSQL LOCAL e não ao Supabase,
-        // ou sua URL de conexão do Supabase está apontando para um endpoint não SSL.
-        // Vou assumir que é um ambiente LOCAL por conta do erro.
-        ssl: false // Remova ou defina como false se o servidor não suportar SSL
+        ssl: false // Ajuste conforme seu ambiente
     },
     logging: console.log
 });
@@ -139,13 +129,14 @@ const resetBanco = async () => {
         Comment.belongsTo(Anime, { foreignKey: 'animeId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
         Episodio.belongsTo(Anime, { foreignKey: 'animeId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
         Historico.belongsTo(Anime, { foreignKey: 'animeId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+        Historico.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE' }); // CORREÇÃO AQUI
         Rating.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
         Rating.belongsTo(Anime, { foreignKey: 'animeId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 
         console.log('🗑️ Apagando e recriando todas as tabelas (force: true)...');
         await sequelize.sync({ force: true });
-        console.log('✅ Todas as tabelas criadas e prontas para uso.');
 
+        console.log('✅ Todas as tabelas criadas e prontas para uso.');
         console.log('🎉 Banco de dados resetado e sincronizado com sucesso!');
 
     } catch (error) {
