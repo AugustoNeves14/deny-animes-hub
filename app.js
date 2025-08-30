@@ -1,35 +1,34 @@
 // ====================================================================================
 //
-//      app.js - DenyAnimeHub (Versão Definitiva, Robusta e Full 100%)
+//      DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta)
 //
 // ====================================================================================
 
+// --- 1. IMPORTAÇÕES E CONFIGURAÇÃO INICIAL ---
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const multer = require('multer');
-const { Op, Sequelize } = require('sequelize'); // Mantém Sequelize e Op para o dbProxy, se usar fallback
+const { Sequelize, Op } = require('sequelize'); // ÚNICA importação de 'Op'
 
-// --- 1. IMPORTAÇÃO DO DB PROXY E SUPABASE CONNECTOR ---
-const db = require('./dbProxy'); // Seu dbProxy atual que usa Supabase ou Sequelize
-const { testSupabaseConnection, initError: supabaseInitError } = require('./supabaseConnector'); // Importa o novo conector
-
-// --- 2. UTILITÁRIOS ---
+// --- 2. IMPORTAÇÕES DE MÓDULOS DA APLICAÇÃO ---
+const db = require('./models');
 const slugify = require('./utils/slugify');
 
-// --- 3. MIDDLEWARES ---
+// Middlewares
 const { proteger, admin, protegerOpcional } = require('./middleware/authMiddleware');
 const {
     processForm,
     uploadAvatar,
+    uploadCapa, // Mantido para compatibilidade, se necessário
     uploadCapaPerfil,
     uploadCapaAnime,
     uploadVideoEpisodio
 } = require('./middleware/uploadMiddleware');
 
-// --- 4. CONTROLLERS ---
+// Controllers
 const authController = require('./controllers/authController');
 const postApiController = require('./controllers/postController');
 const userApiController = require('./controllers/userController');
@@ -39,30 +38,29 @@ const downloadController = require('./controllers/downloadController');
 const interactionController = require('./controllers/interactionController');
 const securityController = require('./controllers/securityController');
 
-// --- 5. ROTAS ---
+// Rotas
 const authRoutes = require('./routes/authRoutes');
 
-// ====================================================================================
-// --- INICIALIZAÇÃO EXPRESS ---
+// --- 3. INICIALIZAÇÃO E CONFIGURAÇÃO DO EXPRESS ---
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// --- CONFIGURAÇÃO EJS ---
+// Configuração do View Engine (EJS)
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('layout', 'layouts/main');
 
-// --- MIDDLEWARES ESSENCIAIS ---
+// Middlewares essenciais do Express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// --- ARQUIVOS ESTÁTICOS ---
+// Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// --- MIDDLEWARE GLOBAL ---
+// --- 4. MIDDLEWARE GLOBAL DA APLICAÇÃO ---
 app.use(protegerOpcional);
 app.use((req, res, next) => {
     res.locals.user = req.user ? req.user.get({ plain: true }) : null;
@@ -71,8 +69,10 @@ app.use((req, res, next) => {
 });
 
 // ====================================================================================
-// --- ROTAS PÚBLICAS & USUÁRIO ---
+// --- 5. ROTAS DE VISUALIZAÇÃO (FRONT-END & ADMIN) ---
 // ====================================================================================
+
+// --- Rotas Públicas e do Usuário ---
 app.get('/', async (req, res) => {
     try {
         const [animesRecentes, animesPopulares] = await Promise.all([
@@ -82,31 +82,63 @@ app.get('/', async (req, res) => {
         res.render('index', { page_name: 'index', titulo: 'Início', animes: animesRecentes, topAnimes: animesPopulares });
     } catch (err) {
         console.error("Erro na página inicial:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar animes.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
     }
 });
 
+// ==================================================================================================
+//      ROTA '/animes' COMPLETA E ROBUSTA - V10.0 (COM CARROSSÉIS E FILTROS FUNCIONAIS)
+// ==================================================================================================
+
 app.get('/animes', async (req, res) => {
     try {
+        // [1] PARÂMETROS DE FILTRO E PAGINAÇÃO
+        // Pegamos todos os possíveis parâmetros da URL.
         const page = parseInt(req.query.page) || 1;
         const { search, genre, order, letter } = req.query;
-        const limit = 24;
+        const limit = 24; // Itens por página
         const offset = (page - 1) * limit;
 
+        // [2] QUERIES PARA OS CARROSSÉIS (EXECUTADAS EM PARALELO PARA EFICIÊNCIA)
+        // Estes dados são independentes dos filtros principais e sempre aparecem no topo.
         const [topAnimes, recentAnimes, topDownloads] = await Promise.all([
-            db.Anime.findAll({ order: [['views', 'DESC']], limit: 12 }),
-            db.Anime.findAll({ order: [['createdAt', 'DESC']], limit: 12 }),
-            db.Anime.findAll({ order: [['views', 'DESC']], limit: 12 }) // top downloads
+            db.Anime.findAll({ 
+                order: [['views', 'DESC']], 
+                limit: 12 
+            }),
+            db.Anime.findAll({ 
+                order: [['createdAt', 'DESC']], 
+                limit: 12 
+            }),
+            // ATENÇÃO: Supondo que você tenha uma coluna 'downloads'. 
+            // Se não tiver, troque 'downloads' por uma coluna existente como 'views' ou 'id'.
+            db.Anime.findAll({ 
+                order: [['views', 'DESC']], // Usando 'views' como exemplo para "downloads". Mude se necessário.
+                limit: 12 
+            })
         ]);
 
+        // [3] LÓGICA DE FILTRAGEM PARA O CATÁLOGO PRINCIPAL
+        // Construímos a cláusula 'where' baseada nos filtros ativos.
         let whereClause = {};
-        if (search) whereClause.titulo = { [Op.iLike]: `%${search}%` };
-        else if (letter) whereClause.titulo = { [Op.iLike]: `${letter}%` };
-        // Atenção: A lógica de gênero aqui pode precisar de ajuste se 'generos' for um TEXT ou JSONB no Supabase
-        // O proxy no dbProxy.js precisaria converter isso para a sintaxe Supabase adequada.
-        if (genre) whereClause.generos = { [Op.iLike]: `%"${genre}"%` };
 
-        let orderClause = [['createdAt', 'DESC']];
+        if (search) {
+            // Se houver uma busca, ela tem prioridade sobre o filtro de letra.
+            whereClause.titulo = { [Op.iLike]: `%${search}%` };
+        } else if (letter) {
+            // Se não houver busca, mas houver uma letra, filtramos por ela.
+            whereClause.titulo = { [Op.iLike]: `${letter}%` };
+        }
+
+        if (genre) {
+            // Adiciona o filtro de gênero (funciona em conjunto com os outros).
+            // Esta busca funciona para campos de texto que armazenam JSON.
+            whereClause.generos = { [Op.iLike]: `%"${genre}"%` };
+        }
+
+        // [4] LÓGICA DE ORDENAÇÃO
+        // Define a ordem padrão e a altera se um parâmetro de ordem for fornecido.
+        let orderClause = [['createdAt', 'DESC']]; // Padrão: mais recentes
         if (order) {
             const [field, direction] = order.split('_');
             if (['titulo', 'views', 'createdAt'].includes(field) && ['asc', 'desc'].includes(direction)) {
@@ -114,117 +146,131 @@ app.get('/animes', async (req, res) => {
             }
         }
 
-        const { count, rows: animes } = await db.Anime.findAndCountAll({ where: whereClause, order: orderClause, limit, offset });
+        // [5] QUERY PRINCIPAL NO BANCO DE DADOS
+        // Busca os animes para a página atual, contando o total para a paginação.
+        const { count, rows: animes } = await db.Anime.findAndCountAll({
+            where: whereClause,
+            order: orderClause,
+            limit,
+            offset,
+        });
 
+        // [6] BUSCA DE TODOS OS GÊNEROS ÚNICOS PARA O DROPDOWN DE FILTRO
+        // Esta lógica é eficiente pois só busca uma coluna e processa em memória.
         const allAnimesForGenres = await db.Anime.findAll({ attributes: ['generos'] });
         const genreSet = new Set(allAnimesForGenres.flatMap(a => {
-            try {
-                // Tenta fazer o parse apenas se a.generos não for null/undefined e for uma string
-                return typeof a.generos === 'string' && a.generos.startsWith('[') && a.generos.endsWith(']') ? JSON.parse(a.generos) : [];
-            } catch {
-                return [];
-            }
+            try { return JSON.parse(a.generos) } catch { return [] }
         }));
         const uniqueGenres = [...genreSet].sort();
 
+        // [7] RENDERIZAÇÃO DA PÁGINA COM TODOS OS DADOS NECESSÁRIOS
+        // Enviamos tudo que o template 'todos-animes.ejs' precisa para funcionar.
         res.render('todos-animes', {
+            // Dados para o título e meta tags
             titulo: 'Todos os Animes',
-            animes,
+
+            // Dados para o catálogo principal e paginação
+            animes: animes,
             totalAnimes: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
-            uniqueGenres,
-            query: req.query,
-            topAnimes,
-            recentAnimes,
-            topDownloads
+            
+            // Dados para os filtros
+            uniqueGenres: uniqueGenres, // Essencial para o <select> de gêneros
+            query: req.query, // Passa todos os parâmetros atuais para o EJS
+
+            // [NOVO E ESSENCIAL] Dados para os carrosséis
+            topAnimes: topAnimes,
+            recentAnimes: recentAnimes,
+            topDownloads: topDownloads
         });
+
     } catch (error) {
-        console.error("ERRO AO CARREGAR ANIMES:", error);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: error.message || 'Não foi possível carregar o catálogo de animes.' });
+        // Tratamento de erro robusto
+        console.error("ERRO FATAL AO CARREGAR A PÁGINA DE ANIMES:", error);
+        res.status(500).render('500', { 
+            layout: false, 
+            titulo: 'Erro no Servidor', 
+            error: 'Não foi possível carregar o catálogo de animes. Por favor, tente novamente mais tarde.'
+        });
     }
 });
 
-// --- NOTÍCIAS ---
 app.get('/noticias', async (req, res) => {
     try {
         const [destaque, recentes] = await Promise.all([
-            db.Post.findOne({ where: { emDestaque: true }, order: [['createdAt', 'DESC']] }),
-            db.Post.findAll({ where: { emDestaque: [false, null] }, order: [['createdAt', 'DESC']], limit: 10 })
+            db.Post.findOne({ where: { emDestaque: true }, include: 'autor', order: [['createdAt', 'DESC']] }),
+            db.Post.findAll({ where: { emDestaque: [false, null] }, order: [['createdAt', 'DESC']], limit: 10, include: 'autor' })
         ]);
         res.render('noticias', { page_name: 'noticias', titulo: 'Notícias', destaque, recentes });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar notícias.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Falha ao carregar notícias.' });
     }
 });
 
 app.get('/noticias/:slug', async (req, res) => {
     try {
-        const post = await db.Post.findOne({ where: { slug: req.params.slug } });
+        const post = await db.Post.findOne({ where: { slug: req.params.slug }, include: 'autor' });
         if (!post) return res.status(404).render('404', { layout: false, titulo: 'Notícia não encontrada' });
+        await post.increment('views');
         res.render('detalhe-post', { page_name: 'detalhe-post', titulo: post.titulo, post });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar a notícia.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Falha ao carregar a notícia.' });
     }
 });
 
-// --- DETALHE ANIME ---
 app.get('/anime/:slug', proteger, async (req, res) => {
     try {
         const anime = await db.Anime.findOne({
-            where: { slug: req.params.slug }
+            where: { slug: req.params.slug },
+            include: [{ model: db.Episodio, as: 'episodios', order: [['temporada', 'ASC'],['numero', 'ASC']] }]
         });
         if (!anime) return res.status(404).render('404', { layout: false, titulo: 'Anime não encontrado' });
-        await db.Anime.increment('views', { where: { slug: anime.slug } });
-        res.render('detalhe-anime', { page_name: 'anime-detail', titulo: anime.titulo, anime });
+        await anime.increment('views');
+        res.render('detalhe-anime', { page_name: 'anime-detail', titulo: anime.titulo, anime: anime.get({ plain: true }), db });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar detalhes do anime.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
     }
 });
 
-// --- PLAYER ---
 app.get('/assistir/:slug/:epId', proteger, async (req, res) => {
     try {
         const { slug, epId } = req.params;
-        const anime = await db.Anime.findOne({ where: { slug } });
+        const anime = await db.Anime.findOne({
+            where: { slug },
+            include: [{ model: db.Episodio, as: 'episodios' }]
+        });
         if (!anime) return res.status(404).render('404', { layout: false, titulo: 'Anime não encontrado' });
-
-        const episodios = await db.Episodio.findAll({ where: { animeId: anime.id } });
-        const episodioAtual = episodios.find(ep => ep.id.toString() === epId);
+        const episodioAtual = (anime.episodios || []).find(ep => ep.id.toString() === epId);
         if (!episodioAtual) return res.status(404).render('404', { layout: false, titulo: 'Episódio não encontrado' });
 
-        const sugestoes = await db.Anime.findAll({ limit: 4 }); // Sugestões aleatórias
+        const todosEpisodiosOrdenados = (anime.episodios || []).sort((a, b) => a.temporada - b.temporada || a.numero - b.numero);
+        const sugestoes = await db.Anime.findAll({ where: { id: { [Op.ne]: anime.id } }, order: Sequelize.literal('RANDOM()'), limit: 4 });
+
         res.render('assistir', {
-            layout: 'layouts/main',
-            page_name: 'player',
-            initialAnime: anime,
-            initialEpisode: episodioAtual,
-            todosEpisodios: episodios,
-            sugestoes,
+            layout: 'layouts/main', page_name: 'player',
+            initialAnime: anime.get({ plain: true }),
+            initialEpisode: episodioAtual.get({ plain: true }),
+            todosEpisodios: todosEpisodiosOrdenados.map(ep => ep.get({ plain: true })),
+            sugestoes: sugestoes.map(s => s.get({ plain: true })),
             titulo: `Assistindo: ${anime.titulo} - Ep. ${episodioAtual.numero}`
         });
     } catch (err) {
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar o player.' });
+        console.error("ERRO CRÍTICO NA PÁGINA DO PLAYER:", err);
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
     }
 });
 
-// --- PERFIL ---
 app.get('/perfil', proteger, async (req, res) => {
     try {
         const historico = await db.Historico.findAll({
-            where: { userId: req.user.id },
-            limit: 10,
-            order: [['updatedAt', 'DESC']],
+            where: { userId: req.user.id }, limit: 10, order: [['updatedAt', 'DESC']],
+            include: [{ model: db.Anime, as: 'anime' }, { model: db.Episodio, as: 'episodio' }]
         });
-        res.render('perfil', {
-            page_name: 'perfil',
-            titulo: 'Meu Perfil',
-            user: req.user.get({ plain: true }),
-            historico
-        });
-    } catch (err) {
-        console.error("Erro ao carregar perfil:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar perfil.' });
+        res.render('perfil', { page_name: 'perfil', titulo: 'Meu Perfil', user: req.user.get({ plain: true }), historico: historico.map(h => h.get({ plain: true })) });
+    } catch (error) {
+        console.error("Erro ao carregar a página de perfil:", error);
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error });
     }
 });
 
@@ -239,161 +285,150 @@ app.get('/login', (req, res) => {
 
 app.get('/download/proxy', proteger, downloadController.proxyDownload);
 
-// --- ADMIN DASHBOARD ---
+// --- Rota do Painel de Admin ---
 app.get('/admin/dashboard', proteger, admin, async (req, res) => {
     try {
         const sevenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 7));
-
         const [totalAnimes, totalPosts, totalUsers, newUsersData, newAnimesData] = await Promise.all([
-            db.Anime.findAll().then(d => d.length),
-            db.Post.findAll().then(d => d.length),
-            db.User.findAll().then(d => d.length),
-            db.User.findAll({ where: { createdAt: { [Op.gte]: sevenDaysAgo } } }),
-            db.Anime.findAll({ where: { createdAt: { [Op.gte]: sevenDaysAgo } } })
+            db.Anime.count(),
+            db.Post.count(),
+            db.User.count(),
+            db.User.findAll({
+                where: { createdAt: { [Op.gte]: sevenDaysAgo } },
+                attributes: [[db.sequelize.fn('date', db.sequelize.col('createdAt')), 'date'], [db.sequelize.fn('count', '*'), 'count']],
+                group: ['date'], order: [['date', 'ASC']]
+            }),
+            db.Anime.findAll({
+                where: { createdAt: { [Op.gte]: sevenDaysAgo } },
+                attributes: [[db.sequelize.fn('date', db.sequelize.col('createdAt')), 'date'], [db.sequelize.fn('count', '*'), 'count']],
+                group: ['date'], order: [['date', 'ASC']]
+            })
         ]);
-
-        res.render('admin/dashboard', {
-            layout: false,
-            title: 'Painel de Administração',
-            totalAnimes,
-            totalPosts,
-            totalUsers,
+        res.render('admin/dashboard', { 
+            layout: false, title: 'Painel de Administração', 
+            totalAnimes, totalPosts, totalUsers,
             newUsersData: JSON.stringify(newUsersData),
             newAnimesData: JSON.stringify(newAnimesData)
         });
     } catch (err) {
         console.error("Erro ao carregar dashboard:", err);
-        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err.message || 'Falha ao carregar dashboard.' });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
     }
 });
 
+
 // ====================================================================================
-// --- ROTAS DE API ---
+// --- 6. ROTAS DE API (usadas pelo Painel de Admin e outras interações) ---
 // ====================================================================================
+
 app.use('/auth', authRoutes);
 
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
-// Middleware para proteger rotas com chave de API
+// --- Rotas Públicas da API ---
 const protegerComChaveApi = (req, res, next) => {
     const chaveApi = req.headers['x-api-key'];
     if (chaveApi && chaveApi === process.env.AUTOMATION_API_KEY) next();
     else res.status(401).json({ success: false, error: 'Acesso não autorizado. Chave de API inválida.' });
 };
-
-// --- Rotas API ---
 apiRouter.post('/automacao/postar-anime-completo', protegerComChaveApi, animeApiController.createAnime);
 apiRouter.post('/security/log-event', protegerOpcional, securityController.logSecurityEvent);
 
-// Usuário autenticado
+// --- Rotas Protegidas para Usuários Autenticados ---
 apiRouter.use(proteger);
 apiRouter.put('/user/profile', userApiController.updateUserProfile);
 apiRouter.post('/user/profile/avatar', uploadAvatar, userApiController.updateUserAvatar);
 apiRouter.post('/user/profile/capa', uploadCapaPerfil, userApiController.updateUserCapa);
+// apiRouter.post('/history/update', interactionController.updateHistory); // Descomente quando a função for implementada
 apiRouter.get('/comments/:animeId', interactionController.getComments);
 apiRouter.post('/comments', interactionController.postComment);
 apiRouter.post('/ratings', interactionController.postRating);
 
-// Admin
+// --- Rotas Protegidas para Administradores ---
 apiRouter.use(admin);
+
+// Uploads
 apiRouter.post('/upload/capa', uploadCapaAnime, (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, error: 'Nenhum arquivo recebido.' });
     res.json({ success: true, filePath: `/uploads/capas/${req.file.filename}` });
 });
 apiRouter.post('/episodios/upload', uploadVideoEpisodio, episodioApiController.createEpisodioComUpload);
 
-// CRUD completo
+// CRUD Animes
 apiRouter.get('/animes', animeApiController.getAllAnimes);
 apiRouter.get('/animes/:slug', animeApiController.getAnimeBySlug);
 apiRouter.post('/animes', processForm, animeApiController.createAnime);
 apiRouter.put('/animes/:slug', processForm, animeApiController.updateAnime);
 apiRouter.delete('/animes/:slug', animeApiController.deleteAnime);
 
+// CRUD Episódios
 apiRouter.post('/episodios', processForm, episodioApiController.createEpisodioViaLink);
 apiRouter.delete('/episodios/:id', episodioApiController.deleteEpisodio);
 
+// CRUD Posts (Notícias)
 apiRouter.get('/posts', postApiController.getAllPosts);
-apiRouter.get('/posts/:id', postApiController.getPostById);
+apiRouter.get('/posts/:id', postApiController.getPostById); // Rota para buscar por ID
 apiRouter.post('/posts', processForm, postApiController.createPost);
 apiRouter.put('/posts/:id', processForm, postApiController.updatePost);
 apiRouter.delete('/posts/:id', postApiController.deletePost);
 
+// CRUD Usuários
 apiRouter.get('/users', userApiController.getAllUsers);
 apiRouter.get('/users/:id', userApiController.getSingleUser);
 apiRouter.put('/users/:id', userApiController.updateUserByAdmin);
 apiRouter.delete('/users/:id', userApiController.deleteUserByAdmin);
 
+// CRUD Comentários (Admin)
 apiRouter.get('/comments-admin', interactionController.getAllCommentsForAdmin);
 apiRouter.get('/comments/:id', interactionController.getSingleComment);
 apiRouter.put('/comments-admin/:id', interactionController.updateComment);
 apiRouter.delete('/comments-admin/:id', interactionController.deleteComment);
 
+
 // ====================================================================================
-// --- TRATAMENTO DE ERROS E INICIALIZAÇÃO ---
+// --- 7. TRATAMENTO DE ERROS E INICIALIZAÇÃO ---
 // ====================================================================================
 
-// 404
-app.use((req, res) => {
+// Middleware para rotas não encontradas (404)
+app.use((req, res, next) => {
     res.status(404).render('404', { layout: false, titulo: 'Página Não Encontrada' });
 });
 
-// 500
+// Middleware para tratamento de erros genéricos (500)
 app.use((err, req, res, next) => {
     console.error("ERRO FATAL:", err.stack);
-    if (err instanceof multer.MulterError) return res.status(400).json({ success: false, error: `Erro de upload: ${err.message}` });
-    if (err.code === 'INVALID_FILE_TYPE') return res.status(400).json({ success: false, error: err.message });
-    if (res.headersSent) return next(err);
-    if (req.originalUrl.startsWith('/api/')) return res.status(500).json({ success: false, error: 'Ocorreu um problema inesperado no servidor.' });
+
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ success: false, error: `Erro de upload: ${err.message}.` });
+    }
+    if (err.code === 'INVALID_FILE_TYPE') {
+        return res.status(400).json({ success: false, error: err.message });
+    }
+
+    // Se a resposta já foi enviada, delega para o próximo handler de erro do Express
+    if (res.headersSent) {
+        return next(err);
+    }
+    
+    // Para requisições de API, envia um erro JSON
+    if (req.originalUrl.startsWith('/api/')) {
+        return res.status(500).json({ success: false, error: 'Ocorreu um problema inesperado no servidor.' });
+    }
+
+    // Para requisições normais, renderiza a página de erro
     res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Ocorreu um problema inesperado.' });
 });
 
-// ====================================================================================
-// --- INICIALIZAÇÃO DO SERVIDOR ---
-// O servidor só será iniciado APÓS a verificação da conexão Supabase.
-// ====================================================================================
-(async () => {
-    console.log('\n--- Iniciando DenyAnimeHub ---');
-
-    let isSupabaseConnected = false;
-    // Verifica se houve erros de inicialização das variáveis de ambiente para Supabase
-    if (supabaseInitError) {
-        console.error('⚠️ Supabase não pode ser conectado devido a erros de configuração inicial. Iniciando Express com funcionalidades de banco de dados limitadas/quebradas.');
-    } else {
-        isSupabaseConnected = await testSupabaseConnection(); // Testa a conexão Supabase
-    }
-
-    // Se o dbProxy está configurado para usar Sequelize como fallback e
-    // o Supabase falhou OU as variáveis de ambiente do Supabase não foram configuradas.
-    // É importante entender que 'dbProxy.useSupabase' controla qual camada está ativa.
-    // Se useSupabase for 'true' e Supabase falhou, mesmo o Sequelize não será chamado pelo proxy.
-    // Se useSupabase for 'false', ele tentará o Sequelize.
-    if (!isSupabaseConnected && !db.useSupabase) { // Assegura que o Sequelize seja usado apenas se Supabase falhou e o proxy permite fallback
-        console.log('🔄 Tentando sincronizar o banco de dados via Sequelize como fallback...');
-        try {
-            await db.sequelize.authenticate(); // Testa a conexão Sequelize
-            await db.sequelize.sync({ alter: true }); // Sincroniza o Sequelize
-            console.log('✅ Banco de dados Sequelize sincronizado e pronto (modo fallback).');
-            // Como fallback, consideramos que o BD está "pronto" via Sequelize.
-            isSupabaseConnected = true; // Define como true para iniciar o servidor
-        } catch (sequelizeErr) {
-            console.error('❌ FALHA CRÍTICA AO SINCRONIZAR O BANCO DE DADOS VIA SEQUELIZE:', sequelizeErr.message);
-            console.error('   O aplicativo não poderá acessar o banco de dados. Verifique a configuração do PostgreSQL.');
-            // Se Sequelize também falha, o app irá iniciar, mas o DB estará inacessível
-            isSupabaseConnected = false;
-        }
-    } else if (isSupabaseConnected) {
-        console.log('🎉 Supabase pronto! Banco de dados principal está ativo.');
-        // Não é necessário sincronizar Sequelize se Supabase está ativo.
-    }
-
-
-    app.listen(PORT, () => {
-        console.log(`🚀 Servidor DenyAnimeHub no ar em: http://localhost:${PORT}`);
-        if (!isSupabaseConnected) {
-            console.warn('⚠️ AVISO: O aplicativo foi iniciado, mas o acesso ao banco de dados pode estar comprometido. Verifique os logs acima.');
-        } else {
-            console.log('✨ O aplicativo está totalmente operacional com acesso ao banco de dados.');
-        }
+// --- Inicialização do Servidor ---
+db.sequelize.sync({ alter: true })
+    .then(() => {
+        console.log('✅ Banco de dados sincronizado e pronto.');
+        app.listen(PORT, () => {
+            console.log(`🚀 Servidor Akatsuki no ar em: http://localhost:${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', err);
+        process.exit(1);
     });
-})();
