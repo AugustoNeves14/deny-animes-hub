@@ -14,7 +14,8 @@ const multer = require('multer');
 const { Sequelize, Op } = require('sequelize'); // ÚNICA importação de 'Op'
 
 // --- 2. IMPORTAÇÕES DE MÓDULOS DA APLICAÇÃO ---
-const db = require('./models');
+const db = require('./dbProxy');
+
 const slugify = require('./utils/slugify');
 
 // Middlewares
