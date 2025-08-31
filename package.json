@@ -11,8 +11,7 @@
     "admin:create": "node manage-admin.js --create",
     "admin:promote": "node manage-admin.js --promote",
     "db:setup": "node setup.js",
-    "prod:setup": "node setup-prod.js",
-    "migrate:supabase": "node migrate-supabase.js"
+    "prod:setup": "node setup-prod.js"
   },
   "keywords": [
     "anime",
