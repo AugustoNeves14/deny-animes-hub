@@ -1,5 +1,3 @@
-// models/index.js
-
 'use strict';
 
 const fs = require('fs');
@@ -8,34 +6,33 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const config = require(__dirname + '/../config/config.js')[env]; // garante que usa o config correto
 const db = {};
 
+// Inicializa a conexão Sequelize usando URL ou credenciais separadas
 let sequelize;
-if (config.use_env_variable) {
-  // Se use_env_variable estiver definido (produção), pega a URL do .env
-  const dbUrlWithPassword = process.env[config.use_env_variable].replace('[YOUR_SUPABASE_DB_PASSWORD]', process.env.SUPABASE_DB_PASSWORD);
-  sequelize = new Sequelize(dbUrlWithPassword, {
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    },
-    logging: false, // Desabilita logging para produção
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
+if (config.url) {
+  sequelize = new Sequelize(config.url, {
+    dialect: config.dialect || 'postgres',
+    logging: config.logging || false,
+    dialectOptions: config.dialectOptions || {},
   });
 } else {
-  // Para desenvolvimento (sem use_env_variable), usa os parâmetros do config.json
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    {
+      dialect: config.dialect || 'postgres',
+      host: config.host || 'localhost',
+      port: config.port || 5432,
+      logging: config.logging || false,
+      dialectOptions: config.dialectOptions || {},
+    }
+  );
 }
 
+// Carrega todos os modelos automaticamente
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -47,16 +44,18 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 
+// Configura associações entre modelos, se existirem
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
+// Exporta a instância Sequelize e os modelos
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
