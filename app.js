@@ -420,15 +420,35 @@ app.use((err, req, res, next) => {
     res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Ocorreu um problema inesperado.' });
 });
 
-// --- Inicialização do Servidor ---
-db.sequelize.sync({ alter: true })
-    .then(() => {
-        console.log('✅ Banco de dados sincronizado e pronto.');
-        app.listen(PORT, () => {
-            console.log(`🚀 Servidor Akatsuki no ar em: http://localhost:${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', err);
-        process.exit(1);
+// --- Inicialização do Servidor (espera DB estar pronto) ---
+const tryStartServer = async (attempt = 1) => {
+  const maxAttempts = 6;
+  const delayMs = Math.min(30000, 2000 * attempt); // backoff exponencial até 30s
+
+  try {
+    // testa a conexão
+    await db.sequelize.authenticate();
+    console.log('✅ Conexão com o banco verificada.');
+
+    // sincroniza (opcional alter: true — tenha cuidado em produção)
+    await db.sequelize.sync({ alter: true });
+    console.log('✅ Banco de dados sincronizado e pronto.');
+
+    // sobe o servidor
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor DenyAnimeHub no ar em: http://0.0.0.0:${PORT} (NODE_ENV=${process.env.NODE_ENV})`);
     });
+  } catch (err) {
+    console.error(`❌ Tentativa ${attempt} — Falha ao conectar/sincronizar banco:`, err.message || err);
+    if (attempt < maxAttempts) {
+      console.log(`⏳ Aguardando ${delayMs/1000}s antes de tentar novamente...`);
+      setTimeout(() => tryStartServer(attempt + 1), delayMs);
+    } else {
+      console.error('❌ Número máximo de tentativas atingido. Saindo.');
+      process.exit(1);
+    }
+  }
+};
+
+// inicia tentativas
+tryStartServer();

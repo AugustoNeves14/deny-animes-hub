@@ -14,10 +14,11 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "denyanimeshub_user",
-    "password": "NIVbnBSFkoqrT5jp6FxZWORVO1VS4c2I",
-    "database": "denyanimeshub",
-    "host": "dpg-d1l6k2ndiees73f9g4n0-a.oregon-postgres.render.com",
+    "username": "postgres",
+    "password": "denyneves123@@@",
+    "database": "postgres",
+    "host": "izwuglmezgkkbtpdvkct.supabase.co",
+    "port": 5432,
     "dialect": "postgres",
     "dialectOptions": {
       "ssl": {
