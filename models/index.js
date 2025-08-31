@@ -3,18 +3,16 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env]; // garante que usa o config correto
+const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
-// Inicializa a conexão Sequelize usando URL ou credenciais separadas
+// Inicializa o Sequelize com URL ou com detalhes individuais
 let sequelize;
 if (config.url) {
   sequelize = new Sequelize(config.url, {
-    dialect: config.dialect || 'postgres',
-    logging: config.logging || false,
+    ...config,
     dialectOptions: config.dialectOptions || {},
   });
 } else {
@@ -23,39 +21,37 @@ if (config.url) {
     config.username,
     config.password,
     {
-      dialect: config.dialect || 'postgres',
-      host: config.host || 'localhost',
-      port: config.port || 5432,
-      logging: config.logging || false,
+      ...config,
       dialectOptions: config.dialectOptions || {},
     }
   );
 }
 
-// Carrega todos os modelos automaticamente
-fs
-  .readdirSync(__dirname)
+// Carrega todos os modelos da pasta atual
+fs.readdirSync(__dirname)
   .filter(file => {
     return (
       file.indexOf('.') !== 0 &&
       file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
+      file.slice(-3) === '.js'
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    const model = require(path.join(__dirname, file))(
+      sequelize,
+      Sequelize.DataTypes
+    );
     db[model.name] = model;
   });
 
-// Configura associações entre modelos, se existirem
+// Associa modelos, se houver associações
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// Exporta a instância Sequelize e os modelos
+// Exporta sequelize e Sequelize para uso externo
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
