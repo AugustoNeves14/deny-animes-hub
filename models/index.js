@@ -1,3 +1,5 @@
+// models/index.js
+
 'use strict';
 
 const fs = require('fs');
@@ -11,43 +13,50 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  // Se 'use_env_variable' estiver definido na configuração (como fizemos para 'production'),
-  // o Sequelize tentará usar a URL de conexão completa daquela variável de ambiente.
-  // O segundo argumento 'config' é para opções adicionais como dialectOptions.
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  // Se use_env_variable estiver definido (produção), pega a URL do .env
+  const dbUrlWithPassword = process.env[config.use_env_variable].replace('[YOUR_SUPABASE_DB_PASSWORD]', process.env.SUPABASE_DB_PASSWORD);
+  sequelize = new Sequelize(dbUrlWithPassword, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false, // Desabilita logging para produção
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  });
 } else {
-  // Caso contrário, usa as configurações tradicionais de database, username, password, host.
+  // Para desenvolvimento (sem use_env_variable), usa os parâmetros do config.json
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 fs
   .readdirSync(__dirname)
   .filter(file => {
-    // Filtra para incluir apenas arquivos .js que não sejam o próprio index.js
-    // e que não sejam arquivos de teste.
     return (
-      file.indexOf('.') !== 0 && // Não é um arquivo oculto
-      file !== basename &&      // Não é o próprio index.js
-      file.slice(-3) === '.js' && // É um arquivo JavaScript
-      file.indexOf('.test.js') === -1 // Não é um arquivo de teste
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
     );
   })
   .forEach(file => {
-    // Para cada arquivo de modelo encontrado, importa e adiciona ao objeto db.
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
     db[model.name] = model;
   });
 
 Object.keys(db).forEach(modelName => {
-  // Itera sobre todos os modelos e chama o método 'associate' se ele existir.
-  // Isso é essencial para configurar as associações entre os modelos (hasMany, belongsTo, etc.).
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// Adiciona as instâncias de Sequelize e o próprio construtor Sequelize ao objeto db,
-// facilitando o acesso em outras partes da aplicação (ex: db.sequelize, db.Sequelize).
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

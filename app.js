@@ -410,6 +410,8 @@ app.use((err, req, res, next) => {
 });
 
 // --- Inicialização do Servidor ---
+// Recomendo usar 'alter: true' em produção com cautela, pois pode modificar o esquema sem apagar dados.
+// Para um reset total, use o script `resetDatabase.js`.
 db.sequelize.sync({ alter: true })
     .then(() => {
         console.log('✅ Banco de dados sincronizado e pronto.');
