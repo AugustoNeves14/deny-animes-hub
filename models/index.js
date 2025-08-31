@@ -9,30 +9,8 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-// Cria instância Sequelize priorizando DATABASE_URL (Render / Supabase pooler)
 let sequelize;
-
-if (process.env.DATABASE_URL) {
-  // usa DATABASE_URL diretamente (p.ex. pooler IPv4 do Supabase)
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    logging: false,
-    pool: {
-      max: 20,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
-    dialectOptions: {
-      // Supabase exige SSL; rejectUnauthorized false evita problemas com certificados self-signed em alguns hosts
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  });
-} else if (config.use_env_variable) {
+if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);

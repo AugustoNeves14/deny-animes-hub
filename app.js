@@ -1,11 +1,9 @@
 // ====================================================================================
-//
-//      DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta)
-//
-// ====================================================================================
+// // DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta)
+// // ====================================================================================
 
 // --- 1. IMPORTAÇÕES E CONFIGURAÇÃO INICIAL ---
-require('dotenv').config();
+require('dotenv').config(); // Garante que as variáveis de ambiente do .env sejam carregadas
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -19,14 +17,8 @@ const slugify = require('./utils/slugify');
 
 // Middlewares
 const { proteger, admin, protegerOpcional } = require('./middleware/authMiddleware');
-const {
-    processForm,
-    uploadAvatar,
-    uploadCapa, // Mantido para compatibilidade, se necessário
-    uploadCapaPerfil,
-    uploadCapaAnime,
-    uploadVideoEpisodio
-} = require('./middleware/uploadMiddleware');
+const { processForm, uploadAvatar, uploadCapa, // Mantido para compatibilidade, se necessário
+    uploadCapaPerfil, uploadCapaAnime, uploadVideoEpisodio } = require('./middleware/uploadMiddleware');
 
 // Controllers
 const authController = require('./controllers/authController');
@@ -43,7 +35,7 @@ const authRoutes = require('./routes/authRoutes');
 
 // --- 3. INICIALIZAÇÃO E CONFIGURAÇÃO DO EXPRESS ---
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Usa a porta do ambiente ou 3000
 
 // Configuração do View Engine (EJS)
 app.use(expressLayouts);
@@ -87,9 +79,8 @@ app.get('/', async (req, res) => {
 });
 
 // ==================================================================================================
-//      ROTA '/animes' COMPLETA E ROBUSTA - V10.0 (COM CARROSSÉIS E FILTROS FUNCIONAIS)
+// ROTA '/animes' COMPLETA E ROBUSTA - V10.0 (COM CARROSSÉIS E FILTROS FUNCIONAIS)
 // ==================================================================================================
-
 app.get('/animes', async (req, res) => {
     try {
         // [1] PARÂMETROS DE FILTRO E PAGINAÇÃO
@@ -102,26 +93,17 @@ app.get('/animes', async (req, res) => {
         // [2] QUERIES PARA OS CARROSSÉIS (EXECUTADAS EM PARALELO PARA EFICIÊNCIA)
         // Estes dados são independentes dos filtros principais e sempre aparecem no topo.
         const [topAnimes, recentAnimes, topDownloads] = await Promise.all([
-            db.Anime.findAll({ 
-                order: [['views', 'DESC']], 
-                limit: 12 
-            }),
-            db.Anime.findAll({ 
-                order: [['createdAt', 'DESC']], 
-                limit: 12 
-            }),
-            // ATENÇÃO: Supondo que você tenha uma coluna 'downloads'. 
+            db.Anime.findAll({ order: [['views', 'DESC']], limit: 12 }),
+            db.Anime.findAll({ order: [['createdAt', 'DESC']], limit: 12 }),
+            // ATENÇÃO: Supondo que você tenha uma coluna 'downloads'.
             // Se não tiver, troque 'downloads' por uma coluna existente como 'views' ou 'id'.
-            db.Anime.findAll({ 
-                order: [['views', 'DESC']], // Usando 'views' como exemplo para "downloads". Mude se necessário.
-                limit: 12 
-            })
+            db.Anime.findAll({ order: [['views', 'DESC']], // Usando 'views' como exemplo para "downloads". Mude se necessário.
+                limit: 12 })
         ]);
 
         // [3] LÓGICA DE FILTRAGEM PARA O CATÁLOGO PRINCIPAL
         // Construímos a cláusula 'where' baseada nos filtros ativos.
         let whereClause = {};
-
         if (search) {
             // Se houver uma busca, ela tem prioridade sobre o filtro de letra.
             whereClause.titulo = { [Op.iLike]: `%${search}%` };
@@ -129,7 +111,6 @@ app.get('/animes', async (req, res) => {
             // Se não houver busca, mas houver uma letra, filtramos por ela.
             whereClause.titulo = { [Op.iLike]: `${letter}%` };
         }
-
         if (genre) {
             // Adiciona o filtro de gênero (funciona em conjunto com os outros).
             // Esta busca funciona para campos de texto que armazenam JSON.
@@ -159,7 +140,11 @@ app.get('/animes', async (req, res) => {
         // Esta lógica é eficiente pois só busca uma coluna e processa em memória.
         const allAnimesForGenres = await db.Anime.findAll({ attributes: ['generos'] });
         const genreSet = new Set(allAnimesForGenres.flatMap(a => {
-            try { return JSON.parse(a.generos) } catch { return [] }
+            try {
+                return JSON.parse(a.generos)
+            } catch {
+                return []
+            }
         }));
         const uniqueGenres = [...genreSet].sort();
 
@@ -168,31 +153,23 @@ app.get('/animes', async (req, res) => {
         res.render('todos-animes', {
             // Dados para o título e meta tags
             titulo: 'Todos os Animes',
-
             // Dados para o catálogo principal e paginação
             animes: animes,
             totalAnimes: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
-            
             // Dados para os filtros
             uniqueGenres: uniqueGenres, // Essencial para o <select> de gêneros
             query: req.query, // Passa todos os parâmetros atuais para o EJS
-
             // [NOVO E ESSENCIAL] Dados para os carrosséis
             topAnimes: topAnimes,
             recentAnimes: recentAnimes,
             topDownloads: topDownloads
         });
-
     } catch (error) {
         // Tratamento de erro robusto
         console.error("ERRO FATAL AO CARREGAR A PÁGINA DE ANIMES:", error);
-        res.status(500).render('500', { 
-            layout: false, 
-            titulo: 'Erro no Servidor', 
-            error: 'Não foi possível carregar o catálogo de animes. Por favor, tente novamente mais tarde.'
-        });
+        res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Não foi possível carregar o catálogo de animes. Por favor, tente novamente mais tarde.' });
     }
 });
 
@@ -245,10 +222,16 @@ app.get('/assistir/:slug/:epId', proteger, async (req, res) => {
         if (!episodioAtual) return res.status(404).render('404', { layout: false, titulo: 'Episódio não encontrado' });
 
         const todosEpisodiosOrdenados = (anime.episodios || []).sort((a, b) => a.temporada - b.temporada || a.numero - b.numero);
-        const sugestoes = await db.Anime.findAll({ where: { id: { [Op.ne]: anime.id } }, order: Sequelize.literal('RANDOM()'), limit: 4 });
+
+        const sugestoes = await db.Anime.findAll({
+            where: { id: { [Op.ne]: anime.id } },
+            order: Sequelize.literal('RANDOM()'),
+            limit: 4
+        });
 
         res.render('assistir', {
-            layout: 'layouts/main', page_name: 'player',
+            layout: 'layouts/main',
+            page_name: 'player',
             initialAnime: anime.get({ plain: true }),
             initialEpisode: episodioAtual.get({ plain: true }),
             todosEpisodios: todosEpisodiosOrdenados.map(ep => ep.get({ plain: true })),
@@ -264,7 +247,9 @@ app.get('/assistir/:slug/:epId', proteger, async (req, res) => {
 app.get('/perfil', proteger, async (req, res) => {
     try {
         const historico = await db.Historico.findAll({
-            where: { userId: req.user.id }, limit: 10, order: [['updatedAt', 'DESC']],
+            where: { userId: req.user.id },
+            limit: 10,
+            order: [['updatedAt', 'DESC']],
             include: [{ model: db.Anime, as: 'anime' }, { model: db.Episodio, as: 'episodio' }]
         });
         res.render('perfil', { page_name: 'perfil', titulo: 'Meu Perfil', user: req.user.get({ plain: true }), historico: historico.map(h => h.get({ plain: true })) });
@@ -285,6 +270,7 @@ app.get('/login', (req, res) => {
 
 app.get('/download/proxy', proteger, downloadController.proxyDownload);
 
+
 // --- Rota do Painel de Admin ---
 app.get('/admin/dashboard', proteger, admin, async (req, res) => {
     try {
@@ -296,17 +282,23 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
             db.User.findAll({
                 where: { createdAt: { [Op.gte]: sevenDaysAgo } },
                 attributes: [[db.sequelize.fn('date', db.sequelize.col('createdAt')), 'date'], [db.sequelize.fn('count', '*'), 'count']],
-                group: ['date'], order: [['date', 'ASC']]
+                group: ['date'],
+                order: [['date', 'ASC']]
             }),
             db.Anime.findAll({
                 where: { createdAt: { [Op.gte]: sevenDaysAgo } },
                 attributes: [[db.sequelize.fn('date', db.sequelize.col('createdAt')), 'date'], [db.sequelize.fn('count', '*'), 'count']],
-                group: ['date'], order: [['date', 'ASC']]
+                group: ['date'],
+                order: [['date', 'ASC']]
             })
         ]);
-        res.render('admin/dashboard', { 
-            layout: false, title: 'Painel de Administração', 
-            totalAnimes, totalPosts, totalUsers,
+
+        res.render('admin/dashboard', {
+            layout: false,
+            title: 'Painel de Administração',
+            totalAnimes,
+            totalPosts,
+            totalUsers,
             newUsersData: JSON.stringify(newUsersData),
             newAnimesData: JSON.stringify(newAnimesData)
         });
@@ -316,11 +308,9 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
     }
 });
 
-
 // ====================================================================================
 // --- 6. ROTAS DE API (usadas pelo Painel de Admin e outras interações) ---
 // ====================================================================================
-
 app.use('/auth', authRoutes);
 
 const apiRouter = express.Router();
@@ -385,7 +375,6 @@ apiRouter.get('/comments/:id', interactionController.getSingleComment);
 apiRouter.put('/comments-admin/:id', interactionController.updateComment);
 apiRouter.delete('/comments-admin/:id', interactionController.deleteComment);
 
-
 // ====================================================================================
 // --- 7. TRATAMENTO DE ERROS E INICIALIZAÇÃO ---
 // ====================================================================================
@@ -410,7 +399,7 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
-    
+
     // Para requisições de API, envia um erro JSON
     if (req.originalUrl.startsWith('/api/')) {
         return res.status(500).json({ success: false, error: 'Ocorreu um problema inesperado no servidor.' });
@@ -420,35 +409,15 @@ app.use((err, req, res, next) => {
     res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Ocorreu um problema inesperado.' });
 });
 
-// --- Inicialização do Servidor (espera DB estar pronto) ---
-const tryStartServer = async (attempt = 1) => {
-  const maxAttempts = 6;
-  const delayMs = Math.min(30000, 2000 * attempt); // backoff exponencial até 30s
-
-  try {
-    // testa a conexão
-    await db.sequelize.authenticate();
-    console.log('✅ Conexão com o banco verificada.');
-
-    // sincroniza (opcional alter: true — tenha cuidado em produção)
-    await db.sequelize.sync({ alter: true });
-    console.log('✅ Banco de dados sincronizado e pronto.');
-
-    // sobe o servidor
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor DenyAnimeHub no ar em: http://0.0.0.0:${PORT} (NODE_ENV=${process.env.NODE_ENV})`);
+// --- Inicialização do Servidor ---
+db.sequelize.sync({ alter: true })
+    .then(() => {
+        console.log('✅ Banco de dados sincronizado e pronto.');
+        app.listen(PORT, () => {
+            console.log(`🚀 Servidor Akatsuki no ar em: http://localhost:${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', err);
+        process.exit(1);
     });
-  } catch (err) {
-    console.error(`❌ Tentativa ${attempt} — Falha ao conectar/sincronizar banco:`, err.message || err);
-    if (attempt < maxAttempts) {
-      console.log(`⏳ Aguardando ${delayMs/1000}s antes de tentar novamente...`);
-      setTimeout(() => tryStartServer(attempt + 1), delayMs);
-    } else {
-      console.error('❌ Número máximo de tentativas atingido. Saindo.');
-      process.exit(1);
-    }
-  }
-};
-
-// inicia tentativas
-tryStartServer();

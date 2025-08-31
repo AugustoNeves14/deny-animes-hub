@@ -14,11 +14,7 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "postgres",
-    "password": "denyneves123@@@",
-    "database": "postgres",
-    "host": "izwuglmezgkkbtpdvkct.supabase.co",
-    "port": 5432,
+    "use_env_variable": "DATABASE_URL",
     "dialect": "postgres",
     "dialectOptions": {
       "ssl": {
