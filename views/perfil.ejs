@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- ================================================================================================== -->
+    <!--                            CONFIGURAÇÕES GERAIS E DEPENDÊNCIAS DO DOCUMENTO                        -->
+    <!-- ================================================================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de <%= user.nome %> - DenyAnimeHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* ================================================================================================== */
+    /*      ESTILIZAÇÃO CSS COMPLETA COM ARQUITETURA DE TEMAS CORRIGIDA - NÍVEL KAGE                       */
+    /*      - Todas as cores, fundos e bordas são controlados por variáveis para uma                      */
+    /*        alternância de tema perfeita e global.                                                      */
+    /* ================================================================================================== */
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*           DEFINIÇÃO DAS VARIÁVEIS GLOBAIS DE DESIGN (PALETAS DE CORES)                             */
+    /* -------------------------------------------------------------------------------------------------- */
+    :root {
+        /* ----- TEMA CLARO (Padrão) ----- */
+        --theme-bg-primary: #f4f7f9;                /* Fundo principal bem claro */
+        --theme-bg-primary-rgb: 244, 247, 249;
+        --theme-bg-secondary: #ffffff;              /* Fundo de widgets e cards (branco) */
+        --theme-bg-tertiary: #e9eef2;               /* Fundo sutilmente mais escuro para hover/barras */
+        --theme-text-primary: #1c1c1c;              /* Texto principal (preto) */
+        --theme-text-secondary: #555555;            /* Texto secundário (cinza escuro) */
+        --theme-accent-primary: #007bff;            /* Cor de destaque principal (azul) */
+        --theme-accent-primary-rgb: 0, 123, 255;
+        --theme-accent-glow: #0056b3;               /* Brilho do destaque */
+        --theme-border-color: #d1d8e0;              /* Cor da borda padrão */
+        --theme-border-accent: rgba(var(--theme-accent-primary-rgb), 0.4);
+        --shadow-glow: 0 0 20px rgba(var(--theme-accent-primary-rgb), 0.5);
+
+        /* ----- Configurações Universais ----- */
+        --font-primary: 'Poppins', sans-serif;
+        --container-width: 1320px;
+        --transition-speed: 0.3s;
+        --border-radius: 12px;
+    }
+
+    /* ----- TEMA ESCURO (AKATSUKI) ----- */
+    body.dark-theme {
+        --theme-bg-primary: #0A0A0A;                /* Manto da Akatsuki (preto) */
+        --theme-bg-primary-rgb: 10, 10, 10;
+        --theme-bg-secondary: #141414;              /* Interior do manto (cinza muito escuro) */
+        --theme-bg-tertiary: #222222;               /* Detalhes internos */
+        --theme-text-primary: #f5f5f5;              /* Texto principal (branco) */
+        --theme-text-secondary: #b3b3b3;            /* Texto secundário (cinza claro) */
+        --theme-accent-primary: #D32F2F;            /* Nuvem da Akatsuki (vermelho) */
+        --theme-accent-primary-rgb: 211, 47, 47;
+        --theme-accent-glow: #E53935;               /* Brilho da nuvem */
+        --theme-border-color: rgba(255, 255, 255, 0.1); /* Bordas sutis */
+        --theme-border-accent: rgba(var(--theme-accent-primary-rgb), 0.5);
+        --shadow-glow: 0 0 25px rgba(var(--theme-accent-primary-rgb), 0.6);
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                                     ESTILOS GLOBAIS E DE RESET                                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-primary);
+        background-color: var(--theme-bg-primary);
+        color: var(--theme-text-primary);
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדה/wAARCAAgACADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AL/AFQAAA//Z');
+        overflow-x: hidden;
+        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTRUTURA DA PÁGINA: CABEÇALHO E CONTEÚDO PRINCIPAL                        */
+    /* -------------------------------------------------------------------------------------------------- */
+    .profile-header {
+        height: 400px; position: relative; background-size: cover;
+        background-position: center; background-attachment: fixed;
+    }
+
+    .profile-header::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to top, var(--theme-bg-primary) 10%, rgba(var(--theme-bg-primary-rgb), 0.8) 50%, transparent 100%);
+        backdrop-filter: blur(2px);
+    }
+    
+    .profile-header-actions {
+        position: absolute; top: 1.5rem; right: 1.5rem;
+        z-index: 4; display: flex; gap: 1rem;
+    }
+
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.8rem; padding: 0.8rem 1.8rem; border-radius: 50px;
+        text-decoration: none; cursor: pointer; font-weight: 600;
+        transition: all var(--transition-speed) ease-in-out; border: 2px solid transparent;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+    
+    .btn--primary {
+        background: var(--theme-accent-primary); color: #fff;
+        box-shadow: 0 4px 15px rgba(var(--theme-accent-primary-rgb), 0.3);
+    }
+    .btn--primary:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+    
+    .btn--secondary {
+        background-color: rgba(var(--theme-bg-secondary-rgb, 255, 255, 255), 0.5);
+        backdrop-filter: blur(10px);
+        color: var(--theme-text-primary); 
+        border-color: var(--theme-border-color);
+    }
+    .btn--secondary:hover { 
+        border-color: var(--theme-accent-primary); 
+        color: var(--theme-accent-primary);
+        background-color: rgba(var(--theme-accent-primary-rgb), 0.1); 
+    }
+
+    /* Botão de troca de tema (exemplo, caso exista) */
+    .theme-toggle-btn {
+        width: 44px; height: 44px; border-radius: 50%;
+        padding: 0; font-size: 1.2rem;
+    }
+
+    .profile-content-wrapper {
+        max-width: var(--container-width); margin: -150px auto 0 auto;
+        padding: 0 2rem 3rem 2rem; position: relative; z-index: 3;
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         INFORMAÇÕES DO USUÁRIO: AVATAR, NOME E WIDGETS                             */
+    /* -------------------------------------------------------------------------------------------------- */
+    .profile-user-card { text-align: center; margin-bottom: 3rem; }
+    
+    .profile-avatar-container {
+        width: 180px; height: 180px; border-radius: 50%;
+        margin: 0 auto 1.5rem auto; padding: 6px;
+        background: linear-gradient(45deg, var(--theme-accent-glow), var(--theme-accent-primary));
+        animation: pulse-border 4s infinite ease-in-out;
+    }
+    @keyframes pulse-border {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--theme-accent-primary-rgb), 0.7); }
+        50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(var(--theme-accent-primary-rgb), 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--theme-accent-primary-rgb), 0); }
+    }
+    
+    .profile-avatar {
+        width: 100%; height: 100%; border-radius: 50%;
+        object-fit: cover; 
+        border: 4px solid var(--theme-bg-primary);
+    }
+    
+    .profile-user-info h1 { font-size: 2.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--theme-text-primary); }
+    
+    .profile-role {
+        display: inline-block; padding: 6px 18px; border-radius: 50px;
+        font-size: 0.9rem; font-weight: 600; 
+        background-color: rgba(var(--theme-accent-primary-rgb), 0.1);
+        color: var(--theme-accent-primary);
+        border: 1px solid var(--theme-accent-primary);
+        margin-bottom: 1rem; text-transform: capitalize;
+    }
+    
+    .profile-join-date { font-size: 0.9rem; color: var(--theme-text-secondary); }
+
+    .profile-grid-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+    @media (min-width: 1024px) { .profile-grid-layout { grid-template-columns: 350px 1fr; } }
+
+    .profile-widget {
+        background-color: var(--theme-bg-secondary); padding: 1.8rem 2.2rem;
+        border-radius: var(--border-radius); border: 1px solid var(--theme-border-color);
+        transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    }
+    
+    .profile-widget-header {
+        margin: 0 0 1.5rem 0; padding-bottom: 1rem; font-size: 1.4rem;
+        font-weight: 600; display: flex; align-items: center;
+        border-bottom: 1px solid var(--theme-border-color);
+        color: var(--theme-text-primary);
+        transition: border-color var(--transition-speed) ease;
+    }
+    
+    .profile-widget-header i { margin-right: 1rem; color: var(--theme-accent-primary); font-size: 1.2rem; }
+    
+    .profile-bio { color: var(--theme-text-secondary); font-size: 1rem; line-height: 1.7; }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         CARROSSEL "CONTINUAR ASSISTINDO" COM DESIGN APRIMORADO                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    #continue-watching-container {
+        display: flex; overflow-x: auto; overflow-y: hidden;
+        gap: 20px; padding: 5px; margin: 0 -5px;
+        scrollbar-color: var(--theme-accent-primary) var(--theme-bg-tertiary); scrollbar-width: thin;
+    }
+    
+    #continue-watching-container::-webkit-scrollbar { height: 10px; }
+    #continue-watching-container::-webkit-scrollbar-track { background: var(--theme-bg-tertiary); border-radius: 10px; }
+    #continue-watching-container::-webkit-scrollbar-thumb { background-color: var(--theme-accent-primary); border-radius: 10px; border: 2px solid var(--theme-bg-tertiary); }
+    
+    .episode-item {
+        flex: 0 0 280px; border-radius: var(--border-radius); overflow: hidden;
+        background-color: var(--theme-bg-tertiary); border: 1px solid var(--theme-border-color);
+        transition: all var(--transition-speed) ease; position: relative;
+    }
+    
+    .episode-item:hover { transform: translateY(-8px); box-shadow: var(--shadow-glow); border-color: var(--theme-border-accent); }
+    
+    .episode-link { display: block; text-decoration: none; }
+    
+    .episode-thumbnail-wrapper { position: relative; width: 100%; height: 158px; }
+    
+    .episode-thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    .episode-play-icon {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+        font-size: 2.5rem; color: #fff; background-color: rgba(var(--theme-accent-primary-rgb), 0.75);
+        backdrop-filter: blur(5px); border-radius: 50%; width: 60px; height: 60px;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: all var(--transition-speed) ease;
+    }
+    
+    .episode-item:hover .episode-play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    
+    .episode-info { padding: 1rem; }
+    
+    .episode-anime-name, .episode-number { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .episode-anime-name { font-weight: 600; color: var(--theme-text-primary); font-size: 1rem; margin-bottom: 4px; }
+    
+    .episode-number { font-size: 0.85rem; color: var(--theme-text-secondary); }
+    
+    .progress-bar { height: 5px; background-color: rgba(var(--theme-text-primary-rgb, 28, 28, 28), 0.1); margin-top: 10px; border-radius: 5px; overflow:hidden; }
+    
+    .progress-bar-inner { height: 100%; background: var(--theme-accent-primary); border-radius: 5px; width: 0%; transition: width 0.5s ease; }
+
+    .history-placeholder {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 1rem; width: 100%; min-height: 240px; color: var(--theme-text-secondary);
+        border: 2px dashed var(--theme-border-color); border-radius: var(--border-radius);
+    }
+    
+    .history-placeholder.loading .fa-spinner { display: inline-block; animation: spin 1s linear infinite; font-size: 2rem; }
+    
+    .history-placeholder.loading span { display: block; }
+    
+    .history-placeholder .fa-spinner { display: none; }
+    
+    .history-placeholder .fa-film { font-size: 2.5rem; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body class="dark-theme"> <!-- Pode iniciar com "dark-theme" ou sem a classe para o tema claro -->
+
+<!-- ====================================================================================== -->
+<!--                  ESTRUTURA HTML COMPLETA E FINAL DA PÁGINA (SEM OMISSÕES)              -->
+<!-- ====================================================================================== -->
+
+<div class="profile-page-container">
+    <!-- Adicione um botão para alternar o tema em algum lugar do seu layout, como no header principal -->
+    <!-- Exemplo: <button id="theme-toggle" class="btn"><i class="fas fa-moon"></i></button> -->
+    
+    <header class="profile-header" style="background-image: url('<%= user.capaPerfil || '/images/default-cover.png' %>');">
+        <div class="profile-header-actions">
+            <a href="/perfil/editar" class="btn btn--secondary"><i class="fas fa-pencil-alt"></i> Editar</a>
+            <% if(user.role === 'admin') { %>
+                <a href="/admin/dashboard" class="btn btn--primary"><i class="fas fa-user-shield"></i> Painel</a>
+            <% } %>
+        </div>
+    </header>
+
+    <div class="profile-content-wrapper">
+        <section class="profile-user-card">
+            <div class="profile-avatar-container">
+                <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="Avatar de <%= user.nome %>" class="profile-avatar">
+            </div>
+            <div class="profile-user-info">
+                <h1><%= user.nome %></h1>
+                <span class="profile-role"><%= user.role %></span>
+                <p class="profile-join-date">Membro desde <%= new Date(user.createdAt).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long' }) %></p>
+            </div>
+        </section>
+
+        <div class="profile-grid-layout">
+            <aside class="profile-sidebar">
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-address-card"></i> Sobre Mim</h3>
+                    <p class="profile-bio">
+                        <% if (user.bio && user.bio.trim() !== '') { %>
+                            <%- user.bio.replace(/\n/g, '<br>') %>
+                        <% } else { %>
+                            Este membro da Akatsuki ainda não compartilhou sua história.
+                        <% } %>
+                    </p>
+                </div>
+            </aside>
+
+            <main class="profile-main-content">
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-history"></i> Continuar Assistindo</h3>
+                    <div id="history-container-wrapper">
+                        <div id="history-placeholder" class="history-placeholder loading">
+                            <i class="fas fa-spinner"></i>
+                            <span>Buscando suas missões...</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================================== -->
+<!--                  SCRIPT JAVASCRIPT COMPLETO E FUNCIONAL (COM CORREÇÃO DE TEMA)         -->
+<!-- ====================================================================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --------------------------------------------------------------------------
+    // MÓDULO 1: LÓGICA DO HISTÓRICO DE VISUALIZAÇÃO
+    // --------------------------------------------------------------------------
+    const watchHistoryModule = {
+        async fetch() {
+            // Simulação de delay de rede para visualização do loading
+            await new Promise(resolve => setTimeout(resolve, 1500)); 
+            
+            // Simulação de dados que seriam retornados de sua API
+            // Substitua esta parte pela sua chamada de API real (ex: fetch('/api/user/history'))
+            return [
+            ];
+            // Para simular um histórico vazio, retorne: return [];
+        },
+        createItemHTML(item) {
+            return `
+                <div class="episode-item">
+                    <a href="/assistir/${item.animeSlug}/${item.epId}" class="episode-link" title="${item.animeTitle} - Episódio ${item.epNumber}">
+                        <div class="episode-thumbnail-wrapper">
+                            <img src="${item.thumbnail}" alt="Thumbnail de ${item.animeTitle}" class="episode-thumbnail" loading="lazy">
+                            <div class="episode-play-icon"><i class="fas fa-play"></i></div>
+                        </div>
+                        <div class="episode-info">
+                            <span class="episode-anime-name">${item.animeTitle}</span>
+                            <span class="episode-number">Episódio ${item.epNumber}</span>
+                            <div class="progress-bar">
+                                <div class="progress-bar-inner" style="width: ${item.progress}%;"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        },
+        render(historyData) {
+            const wrapper = document.getElementById('history-container-wrapper');
+            const placeholder = document.getElementById('history-placeholder');
+
+            if (!historyData || historyData.length === 0) {
+                placeholder.classList.remove('loading');
+                placeholder.innerHTML = '<div><i class="fas fa-film"></i><p>Você ainda não assistiu nada.</p></div>';
+                return;
+            }
+
+            const carouselContainer = document.createElement('div');
+            carouselContainer.id = 'continue-watching-container';
+            carouselContainer.innerHTML = historyData.map(this.createItemHTML).join('');
+            
+            // Substitui o placeholder pelo carrossel
+            wrapper.innerHTML = '';
+            wrapper.appendChild(carouselContainer);
+        },
+        init() {
+            this.fetch()
+                .then(historyData => this.render(historyData))
+                .catch(error => {
+                    console.error('Falha ao buscar histórico:', error);
+                    const placeholder = document.getElementById('history-placeholder');
+                    placeholder.classList.remove('loading');
+                    placeholder.innerHTML = '<div><i class="fas fa-exclamation-triangle"></i><p>Falha ao carregar o histórico.</p></div>';
+                });
+        }
+    };
+    
+    // --------------------------------------------------------------------------
+    // MÓDULO 2: LÓGICA DE ALTERNÂNCIA DE TEMA
+    // --------------------------------------------------------------------------
+    const themeModule = {
+        // O ideal é que este botão exista fora deste template, no layout principal
+        toggleButton: document.getElementById('theme-toggle'), 
+        
+        applyInitialTheme() {
+            // Define o tema escuro como padrão se nada for salvo
+            const savedTheme = localStorage.getItem('theme') || 'dark'; 
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        },
+        
+        toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDarkTheme = document.body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+        },
+
+        init() {
+            // Aplica o tema salvo assim que a página carrega
+            this.applyInitialTheme();
+            
+            // Adiciona o listener apenas se o botão de toggle existir na página
+            if (this.toggleButton) {
+                this.toggleButton.addEventListener('click', () => this.toggleTheme());
+            }
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // INICIALIZAÇÃO GERAL DOS MÓDULOS
+    // --------------------------------------------------------------------------
+    watchHistoryModule.init();
+    themeModule.init();
+
+});
+</script>
+
+</body>
+</html>

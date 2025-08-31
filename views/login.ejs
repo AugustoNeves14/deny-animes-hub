@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.titulo || 'Login' %> | DenyAnimeHub</title>
+    
+    <!-- FONTE POPPINS - CONFORME SOLICITADO -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" href="/images/1.ico" type="image/ico">
+    
+    <style>
+        /* ================================================================================================== */
+        /*      ESTILIZAÇÃO CSS MODERNA, LIMPA E SOFISTICADA - FOCO EM UI/UX                                  */
+        /* ================================================================================================== */
+        :root {
+            /* TEMA ESCURO (PADRÃO) */
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-secondary-rgb: 30, 30, 30;
+            --bg-input: #2a2a2a;
+            --text-primary: #EAEAEA;
+            --text-secondary: #A0A0A0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-primary: #D32F2F; /* Vermelho mais sóbrio e elegante */
+            --accent-primary-rgb: 211, 47, 47;
+            --accent-primary-hover: #E53935;
+            --success: #10B981;
+            --error: #EF5350;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        body.light-theme {
+            /* TEMA CLARO */
+            --bg-primary: #F4F6F8;
+            --bg-secondary: #FFFFFF;
+            --bg-secondary-rgb: 255, 255, 255;
+            --bg-input: #F0F2F5;
+            --text-primary: #1a202c;
+            --text-secondary: #5A6474;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --accent-primary: #C62828;
+            --accent-primary-rgb: 198, 40, 40;
+            --accent-primary-hover: #D32F2F;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* FUNDO SUTIL COM PADRÃO DE RUÍDO PARA UMA TEXTURA PREMIUM */
+        body.login-page {
+            font-family: var(--font-family);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--bg-primary);
+            background-image: 
+                linear-gradient(rgba(18, 18, 18, 0) 0%, var(--bg-primary) 90%),
+                radial-gradient(ellipse at top, transparent, var(--bg-primary)),
+                url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-opacity="0.02"%3E%3Crect fill="%23FFFFFF" width="100" height="100"/%3E%3C/g%3E%3C/svg%3E');
+            padding: 1.5rem;
+            transition: background-color 0.4s ease;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .theme-toggle-container {
+            position: absolute;
+            top: -55px;
+            right: 0;
+        }
+        .theme-toggle-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle-btn:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+        .theme-toggle-btn .fa-sun { display: none; }
+        .light-theme .theme-toggle-btn .fa-sun { display: block; }
+        .light-theme .theme-toggle-btn .fa-moon { display: none; }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(var(--bg-secondary-rgb), 0.85);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 35px var(--shadow-color);
+            position: absolute;
+            width: 100%;
+            top: 0; left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.98);
+            transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+        }
+        .auth-form.active-form {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            position: relative;
+        }
+        
+        .auth-form__header { margin-bottom: 2.5rem; text-align: center; }
+        .auth-form__header h2 { color: var(--text-primary); font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .auth-form__header p { color: var(--text-secondary); font-size: 1rem; }
+        
+        .auth-form__group { margin-bottom: 1.5rem; position: relative; }
+        .auth-form__group .input-icon { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); color: var(--text-secondary); transition: color 0.3s ease; }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            transition: all 0.3s ease;
+        }
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.2);
+        }
+        .auth-form input:focus + .input-icon { color: var(--accent-primary); }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; cursor: pointer; font-weight: 600; transition: all 0.3s ease; border: none; }
+        .btn--primary {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            background: var(--accent-primary);
+            color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.2);
+        }
+        .btn--primary:hover:not(:disabled) {
+            background: var(--accent-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.3);
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        
+        .auth-form__footer { margin-top: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-secondary); }
+        .auth-form__footer p { margin-bottom: 0.75rem; }
+        .auth-form__footer a { font-weight: 500; color: var(--accent-primary); cursor: pointer; text-decoration: none; }
+        .auth-form__footer a:hover { text-decoration: underline; }
+        
+        .home-link { display: block; text-align: center; margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.8; color: var(--text-secondary); text-decoration: none; }
+        .home-link:hover { text-decoration: underline; }
+        
+        .auth-alert { display: none; padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; text-align: center; font-weight: 500; font-size: 0.95rem; animation: fadeIn 0.3s ease; border: 1px solid transparent; }
+        .auth-alert.error { background-color: rgba(var(--error), 0.15); color: var(--error); border-color: rgba(var(--error), 0.3); }
+        .auth-alert.success { background-color: rgba(var(--success), 0.15); color: var(--success); border-color: rgba(var(--success), 0.3); }
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="auth-container">
+        <div class="theme-toggle-container">
+            <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+        <div id="auth-alert" class="auth-alert"></div>
+
+        <form class="auth-form active-form" id="login-form">
+            <div class="auth-form__header"><h2>Bem-vindo de Volta</h2><p>Acesse sua conta para continuar.</p></div>
+            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="login-email" name="email" required placeholder="seu@email.com"></div>
+            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="login-password" name="senha" required placeholder="Sua senha"></div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Entrar <i class="fas fa-arrow-right"></i></button></div>
+            <div class="auth-form__footer">
+                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a>.</p>
+                <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
+                <a href="/" class="home-link">Voltar ao Início</a>
+            </div>
+        </form>
+
+        <form class="auth-form" id="register-form">
+            <div class="auth-form__header"><h2>Crie sua Conta</h2><p>Junte-se à comunidade DenyAnimeHub.</p></div>
+            <div class="auth-form__group"><i class="fas fa-user input-icon"></i><input type="text" id="register-username" name="nome" required placeholder="Seu nome de usuário"></div>
+            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="register-email" name="email" required placeholder="Um e-mail válido"></div>
+            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="register-password" name="senha" minlength="6" required placeholder="Crie uma senha (mín. 6 caracteres)"></div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Registrar <i class="fas fa-user-plus"></i></button></div>
+            <div class="auth-form__footer"><p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
+        </form>
+
+        <form class="auth-form" id="forgot-password-form">
+            <div class="auth-form__header"><h2>Recuperar Senha</h2><p>Insira seu e-mail para receber o código.</p></div>
+            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="forgot-email" name="email" required placeholder="seu@email.com"></div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Enviar Código <i class="fas fa-paper-plane"></i></button></div>
+            <div class="auth-form__footer"><p>Lembrou a senha? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
+        </form>
+
+        <form class="auth-form" id="reset-password-form">
+            <div class="auth-form__header"><h2>Redefinir Senha</h2><p>Insira o código e sua nova senha.</p></div>
+            <input type="hidden" id="reset-email" name="email">
+            <div class="auth-form__group"><i class="fas fa-hashtag input-icon"></i><input type="text" id="reset-code" name="token" required placeholder="Código de Redefinição"></div>
+            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="reset-password" name="novaSenha" minlength="6" required placeholder="Sua nova senha"></div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Salvar Nova Senha <i class="fas fa-save"></i></button></div>
+            <div class="auth-form__footer"><p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Tente novamente</a>.</p></div>
+        </form>
+    </div>
+
+    <script>
+    // O JAVASCRIPT PERMANECE O MESMO, POIS A LÓGICA É SÓLIDA E INDEPENDENTE DO DESIGN.
+    document.addEventListener('DOMContentLoaded', () => {
+        const forms = { login: document.getElementById('login-form'), register: document.getElementById('register-form'), forgotPassword: document.getElementById('forgot-password-form'), resetPassword: document.getElementById('reset-password-form'), };
+        const authAlert = document.getElementById('auth-alert');
+        const formSwitchLinks = document.querySelectorAll('.form-switch-link');
+        const themeToggleButton = document.getElementById('theme-toggle');
+
+        const showAlert = (message, type = 'error') => { authAlert.textContent = message; authAlert.className = `auth-alert ${type}`; authAlert.style.display = 'block'; };
+        const switchForm = (targetId) => { document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active-form')); const targetForm = document.getElementById(targetId); if (targetForm) { targetForm.classList.add('active-form'); } authAlert.style.display = 'none'; };
+
+        formSwitchLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); switchForm(e.target.dataset.target); }); });
+
+        const handleFormSubmit = async (form, endpoint, options = {}) => {
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalButtonHTML = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            authAlert.style.display = 'none';
+            const formData = new FormData(form);
+            const body = Object.fromEntries(formData.entries());
+            try {
+                const response = await fetch(`/auth${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), });
+                const data = await response.json();
+                if (!response.ok || !data.success) { throw new Error(data.error || 'Ocorreu um erro desconhecido.'); }
+                if (options.onSuccess) { options.onSuccess(data, body); }
+            } catch (error) { showAlert(error.message, 'error'); } 
+            finally { submitButton.disabled = false; submitButton.innerHTML = originalButtonHTML; }
+        };
+
+        if (forms.login) { forms.login.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.login, '/login', { onSuccess: (data) => { showAlert('Login bem-sucedido! Redirecionando...', 'success'); window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/'; } }); }); }
+        if (forms.register) { forms.register.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.register, '/registrar', { onSuccess: (data, body) => { showAlert(data.message, 'success'); setTimeout(() => { switchForm('login-form'); if(forms.login) { forms.login.querySelector('#login-email').value = body.email; } }, 2000); } }); }); }
+        if (forms.forgotPassword) { forms.forgotPassword.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.forgotPassword, '/forgot-password', { onSuccess: (data, body) => { showAlert(data.message, 'success'); document.getElementById('reset-email').value = body.email; switchForm('reset-password-form'); } }); }); }
+        if (forms.resetPassword) { forms.resetPassword.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.resetPassword, '/reset-password', { onSuccess: (data) => { showAlert(data.message, 'success'); setTimeout(() => { switchForm('login-form'); }, 2000); } }); }); }
+        
+        const params = new URLSearchParams(window.location.search);
+        const sucessoUrl = params.get('sucesso');
+        const erroUrl = params.get('erro');
+        if (sucessoUrl) showAlert(decodeURIComponent(sucessoUrl), 'success');
+        if (erroUrl) showAlert(decodeURIComponent(erroUrl), 'error');
+
+        // Lógica de Tema
+        const applyTheme = (theme) => {
+            document.body.className = `login-page ${theme}-theme`;
+            localStorage.setItem('theme', theme);
+        };
+        themeToggleButton.addEventListener('click', () => {
+            const newTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+
+        // Aplica o tema salvo ou o padrão 'dark'
+        applyTheme(localStorage.getItem('theme') || 'dark');
+    });
+    </script>
+</body>
+</html>

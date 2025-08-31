@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- ================================================================================================== -->
+    <!--                            CONFIGURAÇÕES GERAIS E DEPENDÊNCIAS DO DOCUMENTO                        -->
+    <!-- ================================================================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> - DenyAnimeHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* ================================================================================================== */
+    /*      ESTILIZAÇÃO CSS COMPLETA - NÍVEL JUTSU DE RECONSTRUÇÃO (SEM NENHUMA OMISSÃO)                  */
+    /* ================================================================================================== */
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*           DEFINIÇÃO DAS VARIÁVEIS GLOBAIS DE DESIGN (PALETAS CORRIGIDAS)                           */
+    /* -------------------------------------------------------------------------------------------------- */
+    :root {
+        /* ----- TEMA CLARO (Padrão) ----- */
+        --theme-bg-primary: #f4f7f9;
+        --theme-bg-primary-rgb: 244, 247, 249;
+        --theme-bg-secondary: #ffffff;
+        --theme-bg-tertiary: #e9eef2;
+        --theme-text-primary: #1c1c1c;
+        --theme-text-primary-rgb: 28, 28, 28;
+        --theme-text-secondary: #555555;
+        --theme-accent-primary: #007bff; /* Azul padrão para tema claro */
+        --theme-accent-primary-rgb: 0, 123, 255;
+        --theme-accent-glow: rgba(0, 123, 255, 0.4);
+        --theme-border-color: #d1d8e0;
+        --theme-success: #2E7D32;
+        --theme-success-border: #4CAF50;
+        --theme-error: #C62828;
+        --theme-error-border: #F44336;
+        --shadow-color-rgb: 100, 116, 139;
+
+        /* ----- Variáveis de Layout Universais ----- */
+        --font-primary: 'Poppins', sans-serif;
+        --container-width: 1200px;
+        --transition-speed: 0.3s;
+        --border-radius: 10px;
+        --border-radius-lg: 16px;
+    }
+
+    /* ----- TEMA ESCURO (AKATSUKI) ----- */
+    body.dark-theme {
+        --theme-bg-primary: #0A0A0A;
+        --theme-bg-primary-rgb: 10, 10, 10;
+        --theme-bg-secondary: #151515;
+        --theme-bg-tertiary: #242424;
+        --theme-text-primary: #f9f9f9;
+        --theme-text-primary-rgb: 249, 249, 249;
+        --theme-text-secondary: #a0a0a0;
+        --theme-accent-primary: #D32F2F; /* Vermelho Akatsuki */
+        --theme-accent-primary-rgb: 211, 47, 47;
+        --theme-accent-glow: rgba(229, 57, 53, 0.5);
+        --theme-border-color: #3a3a3a;
+        --shadow-color-rgb: 0, 0, 0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-primary);
+        background-color: var(--theme-bg-primary);
+        color: var(--theme-text-primary);
+        padding: 2rem 1rem;
+        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    .edit-profile-panel {
+        max-width: var(--container-width);
+        margin: 2rem auto;
+        background-color: var(--theme-bg-secondary);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--theme-border-color);
+        box-shadow: 0 10px 50px rgba(var(--shadow-color-rgb), 0.2);
+        overflow: hidden;
+        transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    }
+
+    .panel-grid { display: grid; grid-template-columns: 1fr; }
+    @media (min-width: 992px) { .panel-grid { grid-template-columns: 350px 1fr; } }
+    
+    .profile-header { position: relative; background-color: var(--theme-bg-tertiary); }
+    .cover-image-wrapper { width: 100%; height: 200px; position: relative; }
+    .cover-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-wrapper {
+        width: 150px; height: 150px; border-radius: 50%;
+        border: 5px solid var(--theme-bg-secondary);
+        position: absolute; bottom: -75px; left: 50%;
+        transform: translateX(-50%); overflow: hidden;
+        box-shadow: 0 5px 20px rgba(var(--shadow-color-rgb), 0.3);
+        transition: border-color var(--transition-speed) ease;
+    }
+    .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .upload-buttons { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.75rem; z-index: 5; }
+
+    .btn-upload {
+        background-color: rgba(var(--theme-bg-primary-rgb), 0.6);
+        color: var(--theme-text-primary);
+        border: 1px solid rgba(var(--theme-text-primary-rgb), 0.3);
+        border-radius: 50%; width: 40px; height: 40px;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all var(--transition-speed) ease;
+        backdrop-filter: blur(5px);
+    }
+    .btn-upload:hover { background-color: var(--theme-accent-primary); color: #fff; transform: scale(1.1); border-color: transparent; }
+    .btn-upload .loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+    .btn-upload.is-loading .btn-text { display: none; }
+    .btn-upload.is-loading .loading-spinner { display: block; }
+    
+    .form-content { padding: 1rem; }
+    .profile-info { padding-top: 100px; text-align: center; margin-bottom: 2rem; }
+    .profile-info h1 { font-size: 1.8rem; font-weight: 700; color: var(--theme-text-primary); }
+    .profile-info p { font-size: 1rem; color: var(--theme-text-secondary); }
+    @media (min-width: 992px) { .form-content { padding: 2.5rem; } .profile-info { padding-top: 0; text-align: left; } }
+    
+    .form-group { margin-bottom: 2rem; position: relative; }
+    .form-label { display: block; margin-bottom: 0.75rem; font-weight: 600; color: var(--theme-text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+    .form-control { width: 100%; padding: 1rem; background-color: var(--theme-bg-tertiary); border: 2px solid var(--theme-border-color); border-radius: var(--border-radius); color: var(--theme-text-primary); font-size: 1rem; font-family: var(--font-primary); transition: all var(--transition-speed) ease; }
+    .form-control:focus { outline: none; border-color: var(--theme-accent-primary); box-shadow: 0 0 0 4px var(--theme-accent-glow); }
+    .form-control::placeholder { color: var(--theme-text-secondary); opacity: 0.6; }
+    textarea.form-control { resize: vertical; min-height: 140px; }
+
+    .notifications-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    #receberNotificacoes { width: 1.25rem; height: 1.25rem; accent-color: var(--theme-accent-primary); }
+    #receberNotificacoes:disabled { opacity: 0.5; cursor: not-allowed; }
+    .notifications-group label { margin-bottom: 0; text-transform: none; letter-spacing: normal; font-size: 1rem; color: var(--theme-text-primary); cursor: pointer; }
+
+    .actions-cell { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; border-top: 1px solid var(--theme-border-color); padding-top: 2rem; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.8rem 1.8rem; border-radius: 50px; text-decoration: none; cursor: pointer; font-weight: 700; transition: all var(--transition-speed) ease; border: 2px solid transparent; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+    .btn--primary { background: var(--theme-accent-primary); color: #fff; box-shadow: 0 4px 15px rgba(var(--theme-accent-primary-rgb), 0.4); }
+    .btn--primary:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px var(--theme-accent-glow); }
+    .btn--secondary { background-color: transparent; color: var(--theme-text-secondary); border-color: var(--theme-border-color); }
+    .btn--secondary:hover { color: var(--theme-text-primary); border-color: var(--theme-accent-primary); }
+    .btn.is-loading { cursor: not-allowed; position: relative; }
+    .btn.is-loading > * { opacity: 0; }
+    .btn.is-loading .loading-spinner { display: inline-block; opacity: 1; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    #notification-bar {
+        position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%);
+        padding: 1rem 2rem; border-radius: var(--border-radius); color: #fff;
+        font-weight: 600; z-index: 10000; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        box-shadow: 0 5px 20px rgba(0,0,0, 0.4); border-left: 5px solid;
+    }
+    #notification-bar.show { bottom: 3rem; }
+    #notification-bar.success { background-color: var(--theme-success); border-color: var(--theme-success-border); }
+    #notification-bar.error { background-color: var(--theme-error); border-color: var(--theme-error-border); }
+</style>
+</head>
+<body class="dark-theme"> <!-- Inicia no modo escuro Akatsuki. Remova a classe para iniciar no modo claro. -->
+
+<!-- ====================================================================================== -->
+<!--                  ESTRUTURA HTML COMPLETA E FINAL DA PÁGINA (SEM OMISSÕES)              -->
+<!-- ====================================================================================== -->
+
+<div class="edit-profile-panel">
+    <div class="panel-grid">
+        
+        <header class="profile-header">
+            <div class="cover-image-wrapper">
+                <img src="<%= user.capaPerfil || '/images/default-cover.png' %>" id="capa-preview" alt="Capa do perfil de <%= user.nome %>">
+            </div>
+            <div class="avatar-wrapper">
+                <img src="<%= user.avatar || '/images/default-avatar.png' %>" id="avatar-preview" alt="Avatar de <%= user.nome %>">
+            </div>
+            <div class="upload-buttons">
+                <button type="button" id="capa-btn" class="btn-upload" title="Alterar Capa" onclick="document.getElementById('capa-input').click();">
+                    <span class="btn-text"><i class="fas fa-image"></i></span>
+                    <div class="loading-spinner"></div>
+                </button>
+                <input type="file" id="capa-input" name="capa" accept="image/png, image/jpeg, image/gif" style="display: none;">
+                <button type="button" id="avatar-btn" class="btn-upload" title="Alterar Avatar" onclick="document.getElementById('avatar-input').click();">
+                    <span class="btn-text"><i class="fas fa-camera"></i></span>
+                    <div class="loading-spinner"></div>
+                </button>
+                <input type="file" id="avatar-input" name="avatar" accept="image/png, image/jpeg, image/gif" style="display: none;">
+            </div>
+        </header>
+
+        <main class="form-content">
+            <div class="profile-info">
+                <h1><%= user.nome %></h1>
+                <p><%= user.email %></p>
+            </div>
+            
+            <form id="profile-info-form" novalidate>
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome de Usuário</label>
+                    <input type="text" id="nome" name="nome" class="form-control" value="<%= user.nome %>" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea id="bio" name="bio" class="form-control" rows="5" placeholder="Fale um pouco sobre você..."><%= user.bio || '' %></textarea>
+                </div>
+                
+                <div class="notifications-group">
+                    <input type="checkbox" id="receberNotificacoes" name="receberNotificacoes" <%= user.receberNotificacoes ? 'checked' : '' %>>
+                    <label for="receberNotificacoes">Receber notificações de novos episódios por e-mail.</label>
+                </div>
+                
+                <div class="actions-cell">
+                    <a href="/perfil" class="btn btn--secondary">Voltar ao Perfil</a>
+                    <button type="submit" class="btn btn--primary" id="save-button">
+                        <span class="btn-text"><i class="fas fa-save"></i> Salvar Alterações</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </div>
+            </form>
+        </main>
+        
+    </div>
+</div>
+
+<div id="notification-bar"></div>
+
+<!-- ====================================================================================== -->
+<!--             SCRIPT JAVASCRIPT COMPLETO E FUNCIONAL (COM LÓGICA DE NOTIFICAÇÃO)         -->
+<!-- ====================================================================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const ui = {
+        capa: { input: document.getElementById('capa-input'), preview: document.getElementById('capa-preview'), button: document.getElementById('capa-btn') },
+        avatar: { input: document.getElementById('avatar-input'), preview: document.getElementById('avatar-preview'), button: document.getElementById('avatar-btn') },
+        form: { element: document.getElementById('profile-info-form'), nomeInput: document.getElementById('nome'), bioInput: document.getElementById('bio'), saveButton: document.getElementById('save-button') },
+        notifications: { checkbox: document.getElementById('receberNotificacoes') },
+        notificationBar: document.getElementById('notification-bar'),
+    };
+
+    const showNotification = (message, type = 'success') => {
+        ui.notificationBar.textContent = message;
+        ui.notificationBar.className = `show ${type}`;
+        setTimeout(() => {
+            ui.notificationBar.className = ui.notificationBar.className.replace('show', '');
+        }, 5000);
+    };
+    
+    const setButtonLoading = (button, isLoading) => {
+        if(button) {
+            button.disabled = isLoading;
+            button.classList.toggle('is-loading', isLoading);
+        }
+    };
+
+    const handleImageUpload = async (file, endpoint, previewElement, button) => {
+        if (!file) return;
+        setButtonLoading(button, true);
+        const originalSrc = previewElement.src;
+        previewElement.src = URL.createObjectURL(file); // Mostra preview localmente
+        const formData = new FormData();
+        formData.append(endpoint, file);
+        try {
+            const response = await fetch(`/api/user/profile/${endpoint}`, { method: 'POST', body: formData });
+            const result = await response.json();
+            if (!response.ok) { throw new Error(result.message || 'Falha no upload.'); }
+            previewElement.src = result.filePath; // Atualiza com a imagem salva
+            showNotification(result.message, 'success');
+        } catch (error) {
+            console.error(`Erro no upload de ${endpoint}:`, error);
+            showNotification(error.message, 'error');
+            previewElement.src = originalSrc; // Reverte em caso de erro
+        } finally {
+            setButtonLoading(button, false);
+        }
+    };
+
+    const handleProfileInfoSubmit = async (event) => {
+        event.preventDefault();
+        setButtonLoading(ui.form.saveButton, true);
+        const body = {
+            nome: ui.form.nomeInput.value,
+            bio: ui.form.bioInput.value,
+            // A preferência de notificação é salva separadamente, mas pode ser incluída aqui também se a lógica do backend preferir
+        };
+        try {
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json();
+            if (!response.ok) { throw new Error(result.message || 'Erro ao salvar as informações.'); }
+            showNotification(result.message, 'success');
+            // Atualiza o nome de usuário na página sem precisar recarregar
+            if (result.user && result.user.nome) {
+                document.querySelector('.profile-info h1').textContent = result.user.nome;
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar perfil:', error);
+            showNotification(error.message, 'error');
+        } finally {
+            setButtonLoading(ui.form.saveButton, false);
+        }
+    };
+
+    // [NOVA FUNÇÃO] Manipula a alteração da preferência de notificação
+    const handleNotificationToggle = async (checkbox) => {
+        checkbox.disabled = true; // Desabilita para evitar cliques múltiplos
+        const wantsNotifications = checkbox.checked;
+        
+        try {
+            // Este endpoint é um exemplo. Ajuste para a sua rota de API real.
+            const response = await fetch('/api/user/profile/notifications', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ receberNotificacoes: wantsNotifications })
+            });
+            const result = await response.json();
+            if (!response.ok) { throw new Error(result.message || 'Erro ao salvar preferência.'); }
+            
+            showNotification(result.message, 'success');
+        } catch(error) {
+            console.error('Erro ao salvar preferência de notificação:', error);
+            showNotification(error.message, 'error');
+            // Reverte a mudança visual em caso de erro
+            checkbox.checked = !wantsNotifications;
+        } finally {
+            checkbox.disabled = false; // Reabilita o checkbox
+        }
+    };
+    
+    // MÓDULO DE TEMA (Opcional, se houver botão de toggle)
+    const themeModule = {
+        button: document.getElementById('theme-toggle'), 
+        applyInitialTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark'; // Padrão para 'dark' (Akatsuki)
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        },
+        toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        },
+        init() {
+            this.applyInitialTheme();
+            if (this.button) {
+                this.button.addEventListener('click', () => this.toggleTheme());
+            }
+        }
+    };
+
+    // --- INICIALIZAÇÃO DE TODOS OS LISTENERS E MÓDULOS ---
+    ui.capa.input.addEventListener('change', (e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'capa', ui.capa.preview, ui.capa.button));
+    ui.avatar.input.addEventListener('change', (e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'avatar', ui.avatar.preview, ui.avatar.button));
+    ui.form.element.addEventListener('submit', handleProfileInfoSubmit);
+    // [NOVO LISTENER] Adiciona o evento para o checkbox de notificações
+    ui.notifications.checkbox.addEventListener('change', (e) => handleNotificationToggle(e.target));
+    
+    themeModule.init();
+
+});
+</script>
+
+</body>
+</html>

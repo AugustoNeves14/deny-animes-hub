@@ -1,0 +1,35 @@
+<footer class="site-footer">
+    <div class="container">
+         <div class="footer-grid">
+             <div class="footer-column footer-column--about">
+                 <div class="footer-logo"> <a href="/"> <img src="/images/1.ico" alt="Logo DenyAnimeHub"> <span>DenyAnimeHub</span> </a> </div>
+                 <p class="footer-copyright">© <%= new Date().getFullYear() %> DenyAnimeHub.<br> Todos os direitos reservados.</p>
+                 <p class="footer-tagline">Feito com <i class="fas fa-heart text-accent"></i> por Fãs para Fãs.</p>
+             </div>
+             <div class="footer-column footer-column--links">
+                 <h4 class="footer-title">Navegação</h4>
+                 <ul class="footer-link-list">
+                     <li><a href="/">Início</a></li> <li><a href="/animes" class="<%= locals.page_name === 'todos-animes' ? 'active' : '' %>">Animes</a><a href="/assistir">Assistir</a></li> <li><a href="/noticias">Notícias</a></li> <li><a href="/login">Login / Registro</a></li> <li><a href="https://discord.gg/WQbFau2crf" target="_blank">Comunidade Discord</a></li> <li><a href="#">Termos de Uso</a></li> <li><a href="#">Política de Privacidade</a></li>
+                 </ul>
+             </div>
+             <div class="footer-column footer-column--contact">
+                 <h4 class="footer-title">Contato</h4>
+                 <ul class="footer-contact-list">
+                     <li> <i class="fas fa-map-marker-alt"></i> <span>Angola, Luanda, Talatona</span> </li> <li> <a href="mailto:denyneves14@gmail.com"> <i class="fas fa-envelope"></i> <span>denyneves14@gmail.com</span> </a> </li> <li> <a href="tel:+244935995336"> <i class="fas fa-phone"></i> <span>+244 935 995 336</span> </a> </li> <li> <a href="https://wa.me/244935995336" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> <span>WhatsApp</span> </a> </li>
+                 </ul>
+             </div>
+             <div class="footer-column footer-column--social">
+                 <h4 class="footer-title">Siga-nos</h4>
+                 <ul class="footer-social-list">
+                     <li> <a href="https://web.facebook.com/denyneves.francisco/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"> <i class="fab fa-facebook-f"></i> </a> </li> <li> <a href="https://www.instagram.com/denyneves14/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"> <i class="fab fa-instagram"></i> </a> </li> <li><a href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fab fa-twitter"></i></a></li> <li><a href="https://www.youtube.com/@memeiroitachi1264" target="_blank" rel="noopener noreferrer" aria-label="Youtube"><i class="fab fa-youtube"></i></a></li> <li><a href="https://discord.gg/WQbFau2crf" target="_blank" rel="noopener noreferrer" aria-label="Discord"><i class="fab fa-discord"></i></a></li>
+                 </ul>
+             </div>
+         </div>
+         <div class="footer-bottom"> <p>DenyAnimeHub não hospeda nenhum vídeo em seus servidores. Todo o conteúdo é fornecido por terceiros não afiliados.</p> </div>
+     </div>
+ </footer>
+<!-- Script de proteção chamado com 'defer' para não bloquear o carregamento -->
+    <script src="/js/protect.js" defer></script>
+ <script src="/js/script.js" defer></script>
+</body>
+</html>

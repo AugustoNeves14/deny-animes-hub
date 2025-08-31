@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akatsuki Hub | Supremo</title>
+<!-- Font Awesome para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Google Fonts para uma tipografia mais forte -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+    /*
+    ================================================================
+    TEMA DUAL "AKATSUKI SUPREMO"
+    ================================================================
+    */
+    :root {
+        /* MODO ESCURO (PADRÃO) */
+        --color-primary: #E50914;
+        --color-primary-glow: rgba(229, 9, 20, 0.5);
+        --color-background: #000000;
+        --color-surface: #101014;
+        --color-surface-translucent: rgba(16, 16, 20, 0.8);
+        --color-border: #2a2a2e;
+        --color-text-primary: #f1f1f1;
+        --color-text-secondary: #a1a1aa;
+        --color-text-on-primary: #ffffff;
+        
+        --background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%23e50914" fill-opacity="0.04"%3E%3Cpath opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h16v-4h1v4h9v-4h1v4h9v-4h1v4h9v-4h1v4h9v-4h1v4h9v-4h1v4h9v-4h1v4h9v-4h1v4h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm0-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm0-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm0-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z"/%3E%3Cpath d="M6 5V0h1v5h5v1H6v5H5V6H0V5h5z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        --shadow-sm: 0 2px 5px rgba(0,0,0,0.3);
+        --shadow-md: 0 5px 15px rgba(0,0,0,0.5);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.7);
+
+        /* MODO MODAL */
+        --modal-surface: #0c0c10;
+        --modal-border: #222226;
+        --modal-text-primary: #f1f1f1;
+        --modal-text-secondary: #a1a1aa;
+
+        /* FONTES */
+        --font-heading: 'Poppins', Poppins;
+        --font-body: 'Poppins', Poppins;
+    }
+
+    body.light-mode {
+        /* MODO CLARO (ALTERNATIVA) */
+        --color-primary: #D32F2F;
+        --color-primary-glow: rgba(211, 47, 47, 0.3);
+        --color-background: #f0f2f5;
+        --color-surface: #ffffff;
+        --color-surface-translucent: rgba(255, 255, 255, 0.8);
+        --color-border: #e0e0e0;
+        --color-text-primary: #1c1e21;
+        --color-text-secondary: #606770;
+        --color-text-on-primary: #ffffff;
+        
+        --background-image: none;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 25px rgba(0,0,0,0.1);
+
+        --modal-surface: #ffffff;
+        --modal-border: #e9ecef;
+        --modal-text-primary: #212529;
+        --modal-text-secondary: #6c757d;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+        font-family: var(--font-body);
+        background-color: var(--color-background);
+        background-image: var(--background-image);
+        color: var(--color-text-primary);
+        margin: 0;
+        padding-top: 75px;
+        transition: background-color 0.4s ease, color 0.4s ease;
+    }
+    body.modal-open { overflow: hidden; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 25px; }
+
+    /*
+    ================================================================
+    HEADER E NAVEGAÇÃO
+    ================================================================
+    */
+    .main-header {
+        position: fixed; top: 0; left: 0; width: 100%; height: 75px;
+        background-color: var(--color-surface-translucent);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--color-border);
+        z-index: 900;
+        transition: background-color 0.4s ease, border-color 0.4s ease;
+    }
+    .main-header .container { display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    
+    .header-logo {
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        text-decoration: none;
+        transition: color 0.3s;
+        letter-spacing: 1px;
+    }
+    .header-logo .fa-cloud { color: var(--color-primary); transition: transform 0.3s ease; }
+    .header-logo:hover .fa-cloud { transform: scale(1.1); }
+    
+    #theme-toggle-btn {
+        background: transparent; color: var(--color-text-secondary); border: none;
+        width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+        font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+        transition: all 0.4s ease; position: relative;
+    }
+    #theme-toggle-btn:hover { color: var(--color-primary); transform: rotate(20deg); }
+    #theme-toggle-btn .theme-icon { position: absolute; transition: transform 0.4s ease, opacity 0.4s ease; }
+    .theme-icon.fa-sun { transform: scale(0); opacity: 0; }
+    body.light-mode .theme-icon.fa-sun { transform: scale(1); opacity: 1; }
+    body.light-mode .theme-icon.fa-moon { transform: scale(0); opacity: 0; }
+
+
+    /* Layout Principal */
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 40px; padding-top: 50px; padding-bottom: 50px; }
+    @media (min-width: 1024px) { .main-layout { grid-template-columns: minmax(0, 3fr) minmax(0, 1.2fr); } }
+    
+    .section-title-main {
+        font-family: var(--font-heading);
+        font-size: 3rem; font-weight: 700;
+        margin-bottom: 30px; padding-bottom: 15px;
+        border-bottom: 3px solid var(--color-border);
+        display: flex; align-items: center; gap: 15px;
+        color: var(--color-text-primary);
+        transition: color 0.3s, border-color 0.3s;
+        text-transform: uppercase;
+    }
+    .section-title-main .fa-globe-americas { color: var(--color-primary); }
+    
+    /*
+    ================================================================
+    GRID DE NOTÍCIAS - REFORMULADO
+    ================================================================
+    */
+    .news-grid { display: grid; gap: 30px; }
+
+    /* Mobile: Matriz 2x2 */
+    @media (max-width: 767px) {
+        .news-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    }
+    /* Tablet e Desktop */
+    @media (min-width: 768px) {
+        .news-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+
+    .news-card {
+        background: var(--color-surface); color: var(--color-text-primary);
+        border-radius: 8px; overflow: hidden;
+        display: flex; flex-direction: column;
+        border: 1px solid var(--color-border);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        text-decoration: none; box-shadow: var(--shadow-md);
+    }
+    .news-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px var(--color-primary-glow);
+        border-color: var(--color-primary);
+    }
+    body.light-mode .news-card:hover { box-shadow: var(--shadow-lg); }
+
+    .news-card__image-container { position: relative; aspect-ratio: 16/10; }
+    .news-card__image-container img { width: 100%; height: 100%; object-fit: cover; }
+    .news-card__overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+        opacity: 0; transition: opacity 0.4s ease;
+        display: flex; align-items: flex-end; justify-content: flex-end; padding: 15px;
+    }
+    .news-card:hover .news-card__overlay { opacity: 1; }
+    .news-card__action-icon {
+        width: 50px; height: 50px; background: var(--color-primary);
+        border-radius: 50%; color: white; font-size: 1.5rem;
+        display: flex; align-items: center; justify-content: center;
+        transform: scale(0); transition: transform 0.3s ease 0.1s;
+    }
+    .news-card:hover .news-card__action-icon { transform: scale(1); }
+
+    .news-card__content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .news-card__category {
+        font-family: var(--font-heading); font-size: 1rem; font-weight: 600;
+        color: var(--color-primary); margin-bottom: 8px;
+        text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .news-card__title { 
+        font-family: var(--font-body); font-weight: 700;
+        font-size: 1.2rem; margin: 0; flex-grow: 1; 
+        line-height: 1.4; color: var(--color-text-primary);
+        /* Garante que o texto não saia do card */
+        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+    }
+    .news-card__meta {
+        display: flex; align-items: center; color: var(--color-text-secondary);
+        font-size: 0.85rem; margin-top: 15px; padding-top: 15px;
+        border-top: 1px solid var(--color-border); gap: 8px; font-weight: 500;
+    }
+
+
+    /* 
+    ================================================================
+    SIDEBAR - ELEGANTE E ROBUSTA
+    ================================================================
+    */
+    .sidebar-widget {
+        background: var(--color-surface); padding: 30px; border-radius: 12px;
+        margin-bottom: 40px; border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s ease;
+    }
+    .sidebar-widget h3 { 
+        font-family: var(--font-heading); text-transform: uppercase;
+        margin: 0 0 25px 0; font-size: 2rem; display: flex; align-items: center;
+        gap: 12px; color: var(--color-text-primary);
+    }
+    .sidebar-widget h3 .fa-fire-alt, .sidebar-widget h3 .fa-film { color: var(--color-primary); }
+    
+    .ranking-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px; }
+    .ranking-item a {
+        display: grid; grid-template-columns: 30px 60px 1fr;
+        align-items: center; gap: 15px; text-decoration: none;
+        padding: 10px; border-radius: 8px;
+        transition: background-color 0.2s, transform 0.2s;
+        border: 1px solid transparent;
+        position: relative; overflow: hidden;
+    }
+    .ranking-item a::before { /* Efeito de brilho no hover */
+        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(to right, transparent 0%, var(--color-primary-glow) 50%, transparent 100%);
+        transition: left 0.6s ease;
+    }
+    .ranking-item a:hover { 
+        background-color: rgba(255,255,255,0.05); transform: translateX(5px);
+        border-color: var(--color-border);
+    }
+    body.light-mode .ranking-item a:hover { background-color: rgba(0,0,0,0.03); }
+    .ranking-item a:hover::before { left: 150%; }
+
+    .rank-number {
+        font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700;
+        color: var(--color-text-secondary); text-align: center;
+    }
+    .ranking-item:nth-child(-n+3) .rank-number { color: var(--color-primary); }
+
+    .ranking-item img { width: 60px; height: 90px; object-fit: cover; border-radius: 4px; }
+    
+    .rank-info .title { 
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        color: var(--color-text-primary); font-weight: 700; font-size: 1rem; margin-bottom: 5px;
+    }
+    .rank-info .details { font-size: 0.8rem; color: var(--color-text-secondary); display: flex; gap: 15px; align-items: center;}
+    .rank-info .details .fa-star { color: #f5c518; }
+    
+    /*
+    ================================================================
+    MODAL SUPREMO
+    ================================================================
+    */
+    .modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 1000; opacity: 0; visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0s 0.4s;
+        padding: 20px;
+    }
+    .modal.active { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .modal__content {
+        position: relative; background: var(--modal-surface);
+        width: 100%; max-width: 1000px; display: flex; flex-direction: column;
+        box-shadow: var(--shadow-lg); border-radius: 12px;
+        border: 1px solid var(--modal-border); overflow: hidden;
+        transform: scale(0.9) translateY(20px);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), background-color 0.3s;
+    }
+    .modal.active .modal__content { transform: scale(1) translateY(0); }
+    
+    .modal__close {
+        position: absolute; top: 15px; right: 15px;
+        background: rgba(0,0,0,0.3); border: 1px solid var(--modal-border);
+        border-radius: 50%; width: 40px; height: 40px;
+        font-size: 24px; color: #fff; cursor: pointer; z-index: 20;
+        transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+    }
+    body.light-mode .modal__close { color: var(--modal-text-primary); background: rgba(255,255,255,0.4); }
+    .modal__close:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; transform: rotate(90deg); }
+
+    /* Estilos do Scrollbar */
+    .scrollbar-styled { scrollbar-width: thin; scrollbar-color: var(--color-primary) transparent; }
+    .scrollbar-styled::-webkit-scrollbar { width: 8px; }
+    .scrollbar-styled::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-styled::-webkit-scrollbar-thumb { background-color: var(--color-primary); border-radius: 4px; border: 2px solid var(--modal-surface); }
+
+    /*
+    ================================================================
+    MODAL DE DETALHES (API) - REFINADO
+    ================================================================
+    */
+    #api-modal .modal__content { height: 90vh; max-height: 850px; background: transparent; }
+    body.light-mode #api-modal .modal__content { background: var(--modal-surface); }
+    
+    .modal-backdrop-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; transition: opacity 0.5s; }
+    body.light-mode .modal-backdrop-image { opacity: 0.1; }
+    .modal-backdrop-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to top, var(--modal-surface) 30%, rgba(12, 12, 16, 0.7) 60%, var(--modal-surface) 100%);
+        z-index: 2; transition: background 0.3s;
+    }
+    body.light-mode .modal-backdrop-overlay { background: linear-gradient(to top, var(--modal-surface) 80%, transparent 100%); }
+
+    .modal-inner-content { position: relative; z-index: 3; display: flex; flex-direction: column; height: 100%; color: var(--modal-text-primary); }
+    
+    .modal__header { padding: 30px 40px; padding-top: 70px; }
+    .modal__header h2 { 
+        margin: 0; font-family: var(--font-heading); font-size: 3.5rem; font-weight: 700;
+        color: #fff; line-height: 1.1; text-shadow: 0 3px 8px #000;
+    }
+    body.light-mode .modal__header h2 { color: var(--modal-text-primary); text-shadow: none; }
+    
+    .modal__tabs {
+        display: flex; padding: 0 40px; position: relative;
+        border-bottom: 1px solid var(--modal-border);
+    }
+    #modal-tab-indicator {
+        position: absolute; bottom: -1px; height: 3px;
+        background-color: var(--color-primary); border-radius: 3px;
+        transition: left 0.4s cubic-bezier(0.23, 1, 0.32, 1), width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .modal__tab-btn {
+        background: none; border: none; color: var(--modal-text-secondary);
+        padding: 15px 25px; font-size: 1rem; font-weight: 700;
+        cursor: pointer; transition: color 0.3s;
+        text-transform: uppercase;
+    }
+    .modal__tab-btn.active { color: var(--modal-text-primary); }
+
+    .modal__body-wrapper { overflow-y: auto; flex-grow: 1; }
+    .modal-tab-panel { display: none; padding: 30px 40px; animation: fadeIn 0.5s ease-in-out; }
+    .modal-tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .modal__footer {
+        padding: 20px 40px; background-color: var(--color-surface-translucent);
+        border-top: 1px solid var(--modal-border); display: flex;
+        justify-content: flex-end; gap: 15px; flex-shrink: 0;
+    }
+    
+    .modal-section h4 {
+        margin: 0 0 20px 0; font-size: 1.5rem; color: var(--modal-text-primary);
+        font-family: var(--font-heading); text-transform: uppercase;
+        border-left: 4px solid var(--color-primary); padding-left: 15px;
+    }
+    .meta-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; }
+    /* CORREÇÃO: Altera o fundo no modo claro para uma cor sólida e coesa, em vez de cinza transparente. */
+    body.light-mode .meta-item { background: var(--color-background); }
+
+    .modal-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px; }
+    .meta-item__label { display: block; font-size: 0.8rem; color: var(--modal-text-secondary); margin-bottom: 6px; text-transform: uppercase; font-weight: 500;}
+    .meta-item__value { font-size: 1.1rem; color: var(--modal-text-primary); font-weight: 700;}
+    .meta-item__value .certification-tag { background: var(--modal-border); padding: 4px 10px; border-radius: 4px; font-size: 0.9em; display: inline-block; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .modal-tag {
+        background-color: var(--modal-border); color: var(--modal-text-primary);
+        padding: 6px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 500;
+        transition: all 0.2s;
+    }
+    .modal-tag:hover { background-color: var(--color-primary); color: #fff; }
+    .synopsis-content {
+        max-height: 125px; overflow: hidden; position: relative;
+        transition: max-height 0.5s ease-in-out;
+        line-height: 1.7; color: var(--modal-text-secondary);
+    }
+    .synopsis-content.is-expanded { max-height: 1500px; }
+    .synopsis-content:not(.is-expanded)::after {
+        content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+        background: linear-gradient(to top, var(--modal-surface) 20%, transparent);
+    }
+    /* CORREÇÃO: Removida regra redundante para light-mode, pois a principal já usa a variável --modal-surface. */
+
+    .btn-show-more {
+        background: none; border: none; color: var(--color-primary);
+        cursor: pointer; font-weight: bold; padding: 10px 0;
+        display: block; margin-top: 10px; font-family: var(--font-body);
+    }
+    .trailer-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }
+    .trailer-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px; }
+    .cast-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    
+    .cast-card { text-align: center; }
+    .cast-card__img { width: 100%; border-radius: 8px; margin-bottom: 12px; background-color: var(--modal-border); aspect-ratio: 2/3; object-fit: cover; }
+    .cast-card__name { font-weight: 700; font-size: 0.95rem; color: var(--modal-text-primary); margin: 0 0 4px 0; }
+    .cast-card__role { font-size: 0.8rem; color: var(--modal-text-secondary); }
+
+    .reco-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .reco-card { position: relative; display: block; text-decoration: none; border-radius: 8px; overflow: hidden; }
+    .reco-card__img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: var(--modal-border); transition: transform 0.3s ease; }
+    .reco-card:hover .reco-card__img { transform: scale(1.05); }
+    .reco-card__title {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 20%, transparent);
+        color: #fff; font-size: 0.9rem; padding: 25px 10px 10px 10px;
+        margin: 0; text-align: center; font-weight: 700;
+        transition: background 0.3s, color 0.3s;
+    }
+    /* CORREÇÃO: Adiciona um estilo específico para o título no modo claro, para garantir a legibilidade. */
+    body.light-mode .reco-card__title {
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 20%, transparent);
+        color: var(--color-text-primary);
+    }
+
+    /*
+    ================================================================
+    MODAL DE VÍDEO - REFINADO
+    ================================================================
+    */
+    #video-modal .modal__content {
+        height: 95vh; max-height: 850px; padding: 0;
+        display: grid; grid-template-rows: auto 1fr;
+    }
+    #video-player-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+    #video-player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 12px 12px 0 0; }
+    
+    #video-comments-section { display: flex; flex-direction: column; min-height: 0; padding: 25px; }
+    #video-comments-section h3 {
+        margin: 0 0 15px 0; font-family: var(--font-heading);
+        font-size: 1.8rem; color: var(--color-text-primary);
+        flex-shrink: 0; text-transform: uppercase;
+    }
+    #video-comments-container { overflow-y: auto; padding-right: 15px; }
+    .comment-card { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); }
+    .comment-card:last-child { border-bottom: none; }
+    .comment-author-avatar img { width: 40px; height: 40px; border-radius: 50%; }
+    .comment-body { flex-grow: 1; }
+    .comment-author-name { font-weight: 700; color: var(--color-text-primary); margin-right: 10px; }
+    .comment-date { font-size: 0.8em; color: var(--color-text-secondary); }
+    .comment-text { color: var(--color-text-primary); line-height: 1.6; margin-top: 5px; opacity: 0.9; }
+
+    /*
+    ================================================================
+    UI Geral e Animações
+    ================================================================
+    */
+    .btn {
+        font-family: var(--font-body); padding: 12px 25px; border-radius: 6px;
+        border: 2px solid transparent; cursor: pointer; font-weight: 700;
+        transition: all 0.3s ease; display: inline-flex; align-items: center;
+        gap: 8px; text-decoration: none; font-size: 0.95rem; text-transform: uppercase;
+    }
+    .btn--primary { background-color: var(--color-primary); color: var(--color-text-on-primary); border-color: var(--color-primary); }
+    .btn--primary:hover { background-color: transparent; color: var(--color-primary); transform: translateY(-2px); }
+    .btn--secondary { background-color: var(--color-surface); color: var(--color-text-primary); border-color: var(--color-border); }
+    .btn--secondary:hover { border-color: var(--color-text-secondary); }
+    
+    .status-message { padding: 40px 20px; text-align: center; color: var(--color-text-secondary); font-size: 1.1rem; }
+    .status-message .fa-spinner { color: var(--color-primary); margin-right: 10px; }
+    
+    .animated-section { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .animated-section.is-visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- HEADER PRINCIPAL -->
+<header class="main-header">
+    <div class="container">
+        <a href="#" class="header-logo">
+            <i class="fas fa-cloud"></i> Akatsuki Hub
+        </a>
+        <nav class="main-nav">
+            <!-- Outros links de navegação podem vir aqui se necessário -->
+        </nav>
+        <button id="theme-toggle-btn" aria-label="Alternar tema">
+            <i class="fas fa-moon theme-icon"></i>
+            <i class="fas fa-sun theme-icon"></i>
+        </button>
+    </div>
+</header>
+
+<!-- LAYOUT PRINCIPAL DO CONTEÚDO -->
+<div class="main-layout container" role="main">
+    <main class="main-content-area">
+        <section id="external-news" class="animated-section" aria-labelledby="section-title-web">
+            <h2 id="section-title-web" class="section-title-main"><i class="fas fa-globe-americas"></i> Destaques</h2>
+            <div class="news-grid" id="external-news-container">
+                <p class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando destaques...</p>
+            </div>
+        </section>
+    </main>
+    
+    <aside class="sidebar" role="complementary">
+        <div id="top-animes-widget" class="sidebar-widget animated-section" aria-labelledby="section-title-animes">
+            <h3 id="section-title-animes"><i class="fas fa-fire-alt"></i> Top Animes</h3>
+            <ol class="ranking-list" id="top-anime-list">
+                <li class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando animes...</li>
+            </ol>
+        </div>
+        <div id="top-movies-widget" class="sidebar-widget animated-section" aria-labelledby="section-title-movies">
+            <h3 id="section-title-movies"><i class="fas fa-film"></i> Filmes Populares</h3>
+            <ol class="ranking-list" id="top-movies-list">
+                <li class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando filmes...</li>
+            </ol>
+        </div>
+    </aside>
+</div>
+
+<!-- MODAL AVANÇADO PARA DETALHES DA API (JIKAN/TMDB) -->
+<div id="api-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-api-title">
+    <div class="modal__content">
+        <img id="modal-backdrop" src="" alt="Backdrop" class="modal-backdrop-image" aria-hidden="true">
+        <div class="modal-backdrop-overlay"></div>
+        <div class="modal-inner-content">
+            <header class="modal__header"><h2 id="modal-api-title">Carregando...</h2></header>
+            <nav class="modal__tabs" id="modal-api-tabs" role="tablist">
+                <!-- Abas geradas via JS -->
+                 <div id="modal-tab-indicator"></div>
+            </nav>
+            <div class="modal__body-wrapper scrollbar-styled" id="modal-api-tab-panels">
+                 <!-- Painéis gerados via JS -->
+            </div>
+            <footer class="modal__footer">
+                <a href="#" id="modal-details-link" target="_blank" rel="noopener noreferrer" class="btn btn--primary" style="display: none;">
+                    <i class="fas fa-info-circle"></i> Ver Original
+                </a>
+                <button class="btn btn--secondary modal__close">Fechar</button>
+            </footer>
+             <button class="modal__close" aria-label="Fechar modal">×</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA VÍDEO DO YOUTUBE E COMENTÁRIOS -->
+<div id="video-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-video-title">
+    <div class="modal__content">
+        <button class="modal__close" aria-label="Fechar modal">×</button>
+        <div id="video-player-container">
+            <!-- Iframe do YouTube será injetado aqui -->
+        </div>
+        <section id="video-comments-section" aria-labelledby="video-comments-heading">
+            <h3 id="video-comments-heading"><i class="fas fa-comments"></i> Comentários</h3>
+            <div id="video-comments-container" class="scrollbar-styled">
+                <!-- Comentários do YouTube serão injetados aqui -->
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const JIKAN_API = 'https://api.jikan.moe/v4';
+    const TMDB_API = 'https://api.themoviedb.org/3';
+    const TMDB_KEY = 'ebc6c62b1d31f28ab2d155ad4c921657'; 
+    const YOUTUBE_API_KEY = 'SUA_CHAVE_API_DO_YOUTUBE_AQUI'; 
+    const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3';
+    const IMG_PATH = 'https://image.tmdb.org/t/p/';
+    const PLACEHOLDER_IMG = 'https://via.placeholder.com/300x450/101014/a1a1aa?text=Akatsuki';
+    const PLACEHOLDER_BACKDROP = 'https://cutewallpaper.org/21/akatsuki-clouds-background/Akatsuki-Clouds-Wallpapers-Top-Free-Akatsuki-Clouds-.jpg';
+    
+    const body = document.body;
+
+    // --- LÓGICA DO TEMA ---
+    const themeToggleButton = document.getElementById('theme-toggle-btn');
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'light') body.classList.add('light-mode');
+    themeToggleButton.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+    });
+
+    // --- FUNÇÃO DE FETCH ---
+    const fetchData = async (url) => {
+        try {
+            const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}cache_bust=${new Date().getTime()}`);
+            if (!res.ok) throw new Error(`API Error: ${res.status} em ${url}`);
+            const data = await res.json();
+            return data.data || data;
+        } catch (error) {
+            console.error(`Falha ao buscar dados:`, error);
+            return null;
+        }
+    };
+
+    // --- LÓGICA GENÉRICA DOS MODAIS ---
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.querySelectorAll('.modal__close').forEach(button => button.addEventListener('click', () => closeModal(modal)));
+        modal.addEventListener('click', e => (e.target === modal) && closeModal(modal));
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) closeModal(activeModal);
+        }
+    });
+    
+    const openModal = (modal) => {
+        if (!modal) return;
+        modal.classList.add('active');
+        body.classList.add('modal-open');
+    };
+    
+    const closeModal = (modal) => {
+        if (!modal) return;
+        modal.classList.remove('active');
+        body.classList.remove('modal-open');
+        if (modal.id === 'video-modal') {
+            const iframeContainer = modal.querySelector('#video-player-container');
+            if (iframeContainer) iframeContainer.innerHTML = '';
+        }
+    };
+
+    // --- OBSERVER PARA ANIMAÇÕES ---
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.animated-section').forEach(section => observer.observe(section));
+
+    function extractYouTubeId(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // --- CARREGAMENTO DE CONTEÚDO DINÂMICO ---
+
+    // **NOVO**: Função para gerar diferentes tipos de cards de notícias
+    function createNewsCard(item) {
+        // Card de Lançamento de Anime (Texto)
+        if (item.source === 'jikan_season') {
+            const imageUrl = item.images?.jpg?.large_image_url || PLACEHOLDER_IMG;
+            return `
+                <a href="#" class="news-card btn-open-api-modal" data-type="jikan" data-id="${item.mal_id}" data-backdrop="${imageUrl}">
+                    <div class="news-card__image-container">
+                        <img src="${imageUrl}" alt="Capa de ${item.title}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMG}'"/>
+                        <div class="news-card__overlay">
+                            <span class="news-card__action-icon"><i class="fas fa-align-left"></i></span>
+                        </div>
+                    </div>
+                    <div class="news-card__content">
+                        <span class="news-card__category">Lançamento da Temporada</span>
+                        <h4 class="news-card__title">${item.title_english || item.title}</h4>
+                        <div class="news-card__meta"><span><i class="fas fa-info-circle"></i> Ver Detalhes</span></div>
+                    </div>
+                </a>
+            `;
+        }
+        
+        // Card de Promo/Trailer (Vídeo)
+        if (item.source === 'jikan_promo') {
+            const promo = item.entry;
+            const imageUrl = promo.images?.jpg?.large_image_url || PLACEHOLDER_IMG;
+            const videoId = extractYouTubeId(item.trailer.url);
+            if (!videoId) return '';
+
+            return `
+                <a href="#" class="news-card btn-open-video-modal" data-video-id="${videoId}" title="Assistir trailer de ${promo.title}">
+                    <div class="news-card__image-container">
+                        <img src="${imageUrl}" alt="Capa de ${promo.title}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMG}'"/>
+                        <div class="news-card__overlay">
+                            <span class="news-card__action-icon"><i class="fab fa-youtube"></i></span>
+                        </div>
+                    </div>
+                    <div class="news-card__content">
+                        <span class="news-card__category">Trailer / Promo</span>
+                        <h4 class="news-card__title">${promo.title}</h4>
+                        <div class="news-card__meta"><span><i class="fas fa-play-circle"></i> Assistir Agora</span></div>
+                    </div>
+                </a>
+            `;
+        }
+        return '';
+    }
+
+    async function fetchAndDisplayExternalNews() {
+        const container = document.getElementById('external-news-container');
+        container.innerHTML = `<p class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando destaques...</p>`;
+
+        // Buscar diferentes tipos de notícias
+        const [promos, season] = await Promise.all([
+            fetchData(`${JIKAN_API}/watch/promos`),
+            fetchData(`${JIKAN_API}/seasons/upcoming?limit=6`)
+        ]);
+
+        let combinedNews = [];
+        if (promos) {
+            combinedNews.push(...promos.slice(0, 6).map(p => ({ ...p, source: 'jikan_promo' })));
+        }
+        if (season) {
+            combinedNews.push(...season.map(s => ({ ...s, source: 'jikan_season' })));
+        }
+
+        // Embaralhar para misturar os tipos de notícias
+        combinedNews.sort(() => Math.random() - 0.5);
+
+        if (combinedNews.length === 0) {
+            container.innerHTML = `<p class="status-message">Nenhum destaque encontrado.</p>`;
+            return;
+        }
+        
+        container.innerHTML = combinedNews.map(createNewsCard).join('');
+    }
+
+    async function populateTopAnimesSidebar() {
+        const list = document.getElementById('top-anime-list');
+        const animes = await fetchData(`${JIKAN_API}/top/anime?filter=airing&limit=5`);
+
+        if (!animes?.length) {
+            list.innerHTML = `<li class="status-message">Erro ao carregar.</li>`;
+            return;
+        }
+
+        list.innerHTML = animes.map((anime, index) => `
+            <li class="ranking-item">
+                <a href="#" class="btn-open-api-modal" data-type="jikan" data-id="${anime.mal_id}" data-backdrop="${anime.images?.jpg?.large_image_url || PLACEHOLDER_BACKDROP}">
+                    <div class="rank-number">${index + 1}</div>
+                    <img src="${anime.images?.jpg?.image_url || PLACEHOLDER_IMG}" alt="Thumbnail ${anime.title}" onerror="this.src='${PLACEHOLDER_IMG}';">
+                    <div class="rank-info">
+                        <span class="title">${anime.title_english || anime.title}</span>
+                        <span class="details">
+                            <span><i class="fas fa-star"></i> ${anime.score || 'N/A'}</span>
+                            <span><i class="fas fa-user-friends"></i> ${(anime.members || 0).toLocaleString('pt-BR')}</span>
+                        </span>
+                    </div>
+                </a>
+            </li>
+        `).join('');
+    }
+    
+    async function populateTopMoviesSidebar() {
+        const list = document.getElementById('top-movies-list');
+        const moviesData = await fetchData(`${TMDB_API}/movie/popular?api_key=${TMDB_KEY}&language=pt-BR&page=1`);
+        
+        if (!moviesData?.results?.length) {
+            list.innerHTML = `<li class="status-message">Erro ao carregar.</li>`;
+            return;
+        }
+        
+        list.innerHTML = moviesData.results.slice(0, 5).map((filme, index) => `
+            <li class="ranking-item">
+                <a href="#" class="btn-open-api-modal" data-type="tmdb" data-media-type="movie" data-id="${filme.id}" data-backdrop="${filme.backdrop_path ? `${IMG_PATH}original${filme.backdrop_path}` : PLACEHOLDER_BACKDROP}">
+                    <div class="rank-number">${index + 1}</div>
+                    <img src="${filme.poster_path ? `${IMG_PATH}w185${filme.poster_path}` : PLACEHOLDER_IMG}" alt="Pôster ${filme.title}" onerror="this.src='${PLACEHOLDER_IMG}';">
+                    <div class="rank-info">
+                        <span class="title">${filme.title}</span>
+                        <span class="details">
+                            <span><i class="fas fa-star"></i> ${filme.vote_average.toFixed(1)}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${filme.release_date ? filme.release_date.split('-')[0] : 'N/A'}</span>
+                        </span>
+                    </div>
+                </a>
+            </li>
+        `).join('');
+    }
+
+    // --- LÓGICA DO MODAL DE VÍDEO E COMENTÁRIOS ---
+    const videoModal = document.getElementById('video-modal');
+    const playerContainer = document.getElementById('video-player-container');
+    const commentsContainer = document.getElementById('video-comments-container');
+
+    async function loadVideoAndComments(videoId) {
+        playerContainer.innerHTML = '';
+        commentsContainer.innerHTML = `<p class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando...</p>`;
+        openModal(videoModal);
+        playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        // Implementar fetch de comentários se a chave de API estiver disponível
+    }
+    
+    // --- LÓGICA DO MODAL AVANÇADO (API) ---
+    const apiModal = document.getElementById('api-modal');
+    const modalTitleEl = document.getElementById('modal-api-title');
+    const modalBackdropEl = document.getElementById('modal-backdrop');
+    const modalTabsContainer = document.getElementById('modal-api-tabs');
+    const modalPanelsContainer = document.getElementById('modal-api-tab-panels');
+    const modalDetailsLinkEl = document.getElementById('modal-details-link');
+    const modalTabIndicator = document.getElementById('modal-tab-indicator');
+
+    function updateTabIndicator(activeTab) {
+        if (!activeTab) {
+            modalTabIndicator.style.width = '0px';
+            return;
+        }
+        modalTabIndicator.style.left = `${activeTab.offsetLeft}px`;
+        modalTabIndicator.style.width = `${activeTab.offsetWidth}px`;
+    }
+
+    apiModal.addEventListener('click', e => {
+        const tabBtn = e.target.closest('.modal__tab-btn');
+        if (tabBtn?.dataset.target) {
+            apiModal.querySelectorAll('.modal__tab-btn, .modal-tab-panel').forEach(el => el.classList.remove('active'));
+            tabBtn.classList.add('active');
+            apiModal.querySelector(tabBtn.dataset.target)?.classList.add('active');
+            updateTabIndicator(tabBtn);
+        }
+        const showMoreBtn = e.target.closest('.btn-show-more');
+        if (showMoreBtn) {
+            const content = showMoreBtn.previousElementSibling;
+            if (content?.classList.toggle('is-expanded')) {
+                showMoreBtn.textContent = 'Ler menos';
+            } else {
+                showMoreBtn.textContent = 'Ler mais';
+            }
+        }
+    });
+
+    // --- GATILHOS DE EVENTOS (DELEGAÇÃO) ---
+    body.addEventListener('click', async e => {
+        const openVideoBtn = e.target.closest('.btn-open-video-modal');
+        if (openVideoBtn) {
+            e.preventDefault();
+            const videoId = openVideoBtn.dataset.videoId;
+            if (videoId) await loadVideoAndComments(videoId);
+            return;
+        }
+
+        const openApiBtn = e.target.closest('.btn-open-api-modal');
+        if (openApiBtn) {
+            e.preventDefault();
+            modalTitleEl.textContent = 'Carregando...';
+            modalTabsContainer.innerHTML = '<div id="modal-tab-indicator"></div>'; // Reset com indicador
+            modalPanelsContainer.innerHTML = `<p class="status-message"><i class="fas fa-spinner fa-spin"></i> Buscando...</p>`;
+            modalDetailsLinkEl.style.display = 'none';
+            modalBackdropEl.src = openApiBtn.dataset.backdrop || PLACEHOLDER_BACKDROP;
+            openModal(apiModal);
+            
+            const { type, id, mediaType } = openApiBtn.dataset;
+            const renderer = type === 'jikan' ? renderJikanDetails : renderTmdbDetails;
+            
+            if (renderer) await renderer(id, mediaType);
+        }
+    });
+
+    async function renderJikanDetails(id) {
+        const details = await fetchData(`${JIKAN_API}/anime/${id}/full`);
+        if (!details) {
+            modalPanelsContainer.innerHTML = `<p class="status-message">Não foi possível carregar os detalhes.</p>`;
+            return;
+        }
+        modalTitleEl.textContent = details.title_english || details.title;
+        modalDetailsLinkEl.href = details.url;
+        modalDetailsLinkEl.style.display = 'inline-flex';
+
+        const tabs = [
+            { id: 'overview', label: 'Visão Geral' },
+            { id: 'chars', label: 'Personagens' },
+            { id: 'recos', label: 'Recomendações' }
+        ];
+
+        modalTabsContainer.innerHTML = `
+            ${tabs.map((tab, i) => `<button class="modal__tab-btn ${i === 0 ? 'active' : ''}" data-target="#panel-${tab.id}" role="tab">${tab.label}</button>`).join('')}
+            <div id="modal-tab-indicator"></div>
+        `;
+        
+        const genres = details.genres?.map(g => `<span class="modal-tag">${g.name}</span>`).join('') || 'N/A';
+        const videoId = extractYouTubeId(details.trailer?.embed_url);
+        const trailer = videoId ? `
+            <div class="modal-section"><h4>Trailer</h4><div class="trailer-container"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div></div>
+        ` : '';
+
+        modalPanelsContainer.innerHTML = `
+            <div id="panel-overview" class="modal-tab-panel active" role="tabpanel">
+                <div class="modal-meta-grid">
+                    <div class="meta-item"><span class="meta-item__label">Nota</span><span class="meta-item__value"><i class="fas fa-star" style="color:#f5c518;"></i> ${details.score || 'N/A'}</span></div>
+                    <div class="meta-item"><span class="meta-item__label">Ano</span><span class="meta-item__value">${details.year || 'N/A'}</span></div>
+                    <div class="meta-item"><span class="meta-item__label">Classificação</span><span class="meta-item__value"><span class="certification-tag">${details.rating?.split(' - ')[0] || 'N/A'}</span></span></div>
+                    <div class="meta-item"><span class="meta-item__label">Status</span><span class="meta-item__value">${details.status || 'N/A'}</span></div>
+                </div>
+                <div class="modal-section"><h4>Gêneros</h4><div class="modal-tags">${genres}</div></div>
+                <div class="modal-section"><h4>Sinopse</h4><div class="synopsis-content"><p>${details.synopsis?.replace(/\n/g, '<br>') || 'Não disponível.'}</p></div>${details.synopsis && details.synopsis.length > 300 ? '<button class="btn-show-more">Ler mais</button>' : ''}</div>
+                ${trailer}
+            </div>
+            <div id="panel-chars" class="modal-tab-panel" role="tabpanel"><p class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando...</p></div>
+            <div id="panel-recos" class="modal-tab-panel" role="tabpanel"><p class="status-message"><i class="fas fa-spinner fa-spin"></i> Carregando...</p></div>
+        `;
+
+        setTimeout(() => updateTabIndicator(apiModal.querySelector('.modal__tab-btn.active')), 50);
+        loadJikanCharacters(id);
+        loadJikanRecommendations(id);
+    }
+
+    async function renderTmdbDetails(id, mediaType) {
+        const details = await fetchData(`${TMDB_API}/${mediaType}/${id}?api_key=${TMDB_KEY}&language=pt-BR&append_to_response=credits,videos,release_dates,recommendations`);
+         if (!details) {
+            modalPanelsContainer.innerHTML = `<p class="status-message">Não foi possível carregar os detalhes.</p>`;
+            return;
+        }
+        modalTitleEl.textContent = details.title || details.name;
+        modalDetailsLinkEl.href = `https://www.themoviedb.org/${mediaType}/${id}`;
+        modalDetailsLinkEl.style.display = 'inline-flex';
+        
+        const tabs = [
+            { id: 'overview', label: 'Visão Geral' },
+            { id: 'cast', label: 'Elenco' },
+            { id: 'recos', label: 'Similares' }
+        ];
+
+        modalTabsContainer.innerHTML = `
+            ${tabs.map((tab, i) => `<button class="modal__tab-btn ${i === 0 ? 'active' : ''}" data-target="#panel-${tab.id}" role="tab">${tab.label}</button>`).join('')}
+            <div id="modal-tab-indicator"></div>
+        `;
+
+        const releaseDate = details.release_date || details.first_air_date;
+        const certObj = details.release_dates?.results?.find(r => r.iso_3166_1 === 'BR');
+        const certification = certObj?.release_dates[0]?.certification || 'N/A';
+        const genres = details.genres?.map(g => `<span class="modal-tag">${g.name}</span>`).join('') || 'N/A';
+        const video = details.videos?.results?.find(v => v.site === 'YouTube' && v.type === 'Trailer');
+        const trailer = video ? `<div class="modal-section"><h4>Trailer</h4><div class="trailer-container"><iframe src="https://www.youtube.com/embed/${video.key}" allowfullscreen></iframe></div></div>` : '';
+
+        modalPanelsContainer.innerHTML = `
+            <div id="panel-overview" class="modal-tab-panel active" role="tabpanel">
+                <div class="modal-meta-grid">
+                    <div class="meta-item"><span class="meta-item__label">Nota</span><span class="meta-item__value"><i class="fas fa-star" style="color:#f5c518;"></i> ${details.vote_average?.toFixed(1) || 'N/A'}</span></div>
+                    <div class="meta-item"><span class="meta-item__label">Lançamento</span><span class="meta-item__value">${releaseDate ? new Date(releaseDate+'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}</span></div>
+                    <div class="meta-item"><span class="meta-item__label">Classificação</span><span class="meta-item__value"><span class="certification-tag">${certification}</span></span></div>
+                    <div class="meta-item"><span class="meta-item__label">Status</span><span class="meta-item__value">${details.status || 'N/A'}</span></div>
+                </div>
+                <div class="modal-section"><h4>Gêneros</h4><div class="modal-tags">${genres}</div></div>
+                <div class="modal-section"><h4>Sinopse</h4><div class="synopsis-content"><p>${details.overview || 'Não disponível.'}</p></div>${details.overview ? '<button class="btn-show-more">Ler mais</button>' : ''}</div>
+                ${trailer}
+            </div>
+            <div id="panel-cast" class="modal-tab-panel" role="tabpanel">${renderTmdbCredits(details.credits)}</div>
+            <div id="panel-recos" class="modal-tab-panel" role="tabpanel">${renderTmdbRecommendations(details.recommendations.results)}</div>
+        `;
+        setTimeout(() => updateTabIndicator(apiModal.querySelector('.modal__tab-btn.active')), 50);
+    }
+    
+    async function loadJikanCharacters(id) {
+        const data = await fetchData(`${JIKAN_API}/anime/${id}/characters`);
+        const panel = document.getElementById('panel-chars');
+        if (!panel || !data?.length) {
+            if(panel) panel.innerHTML = `<p class="status-message">Nenhum personagem encontrado.</p>`;
+            return;
+        }
+        const charactersHTML = data.slice(0, 18).map(item => `
+            <div class="cast-card">
+                <img class="cast-card__img" src="${item.character.images.jpg.image_url}" alt="${item.character.name}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMG}'">
+                <h5 class="cast-card__name">${item.character.name}</h5>
+                <p class="cast-card__role">${item.role}</p>
+            </div>
+        `).join('');
+        panel.innerHTML = `<div class="cast-grid">${charactersHTML}</div>`;
+    }
+
+    async function loadJikanRecommendations(id) {
+        const data = await fetchData(`${JIKAN_API}/anime/${id}/recommendations`);
+        const panel = document.getElementById('panel-recos');
+        if (!panel || !data?.length) {
+            if(panel) panel.innerHTML = `<p class="status-message">Nenhuma recomendação encontrada.</p>`;
+            return;
+        }
+        const recosHTML = data.slice(0, 12).map(reco => `
+            <a href="#" class="reco-card btn-open-api-modal" data-type="jikan" data-id="${reco.entry.mal_id}" data-backdrop="${reco.entry.images?.jpg?.large_image_url || PLACEHOLDER_BACKDROP}">
+                <img class="reco-card__img" src="${reco.entry.images?.jpg?.image_url || PLACEHOLDER_IMG}" alt="${reco.entry.title}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMG}'">
+                <h5 class="reco-card__title">${reco.entry.title}</h5>
+            </a>
+        `).join('');
+        panel.innerHTML = `<div class="reco-grid">${recosHTML}</div>`;
+    }
+    
+    function renderTmdbCredits(credits) {
+        if (!credits) return '<p class="status-message">Informações não disponíveis.</p>';
+        const castHTML = credits.cast?.slice(0, 18).map(person => `
+            <div class="cast-card">
+                <img class="cast-card__img" src="${person.profile_path ? IMG_PATH + 'w185' + person.profile_path : PLACEHOLDER_IMG}" alt="${person.name}" loading="lazy">
+                <h5 class="cast-card__name">${person.name}</h5>
+                <p class="cast-card__role">${person.character}</p>
+            </div>
+        `).join('');
+        return `<div class="cast-grid">${castHTML || '<p class="status-message">Elenco não encontrado.</p>'}</div>`;
+    }
+
+    function renderTmdbRecommendations(recos) {
+        if (!recos?.length) return `<p class="status-message">Nenhum título similar encontrado.</p>`;
+        const recosHTML = recos.slice(0, 12).map(reco => `
+             <a href="#" class="reco-card btn-open-api-modal" data-type="tmdb" data-media-type="${reco.media_type}" data-id="${reco.id}" data-backdrop="${reco.backdrop_path ? IMG_PATH + 'original' + reco.backdrop_path : PLACEHOLDER_BACKDROP}">
+                <img class="reco-card__img" src="${reco.poster_path ? IMG_PATH + 'w342' + reco.poster_path : PLACEHOLDER_IMG}" alt="${reco.title || reco.name}" loading="lazy">
+                <h5 class="reco-card__title">${reco.title || reco.name}</h5>
+            </a>
+        `).join('');
+        return `<div class="reco-grid">${recosHTML}</div>`;
+    }
+    
+    // --- INICIALIZAÇÃO GERAL ---
+    fetchAndDisplayExternalNews();
+    populateTopAnimesSidebar();
+    populateTopMoviesSidebar();
+});
+</script>
+</body>
+</html>
