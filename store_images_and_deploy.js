@@ -13,12 +13,14 @@ const fs = require("fs");
 const path = require("path");
 const { Client } = require("pg");
 const simpleGit = require("simple-git");
+const crypto = require("crypto");
 
 // =================== CONFIG ======================
 const UPLOAD_DIR = path.join(__dirname, "public", "uploads");
 const ROUTES_DIR = path.join(__dirname, "routes");
-const APP_FILES = ["app.js", "server.js", "index.js"]; // detecta qual existe
-const DB_URL = process.env.DATABASE_URL ||
+const APP_FILES = ["app.js", "server.js", "index.js"];
+const DB_URL =
+  process.env.DATABASE_URL ||
   "postgresql://neondb_owner:npg_6hImLi9pNDCM@ep-green-poetry-advyipjs-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
 // =================== POSTGRES ======================
@@ -30,6 +32,7 @@ async function connectDB() {
       id SERIAL PRIMARY KEY,
       filename TEXT NOT NULL,
       mimetype TEXT NOT NULL,
+      sha1 TEXT UNIQUE NOT NULL,
       data BYTEA NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     );
@@ -44,35 +47,37 @@ async function saveImages(client) {
     return;
   }
 
-  const folders = fs.readdirSync(UPLOAD_DIR);
-  for (const folder of folders) {
-    const folderPath = path.join(UPLOAD_DIR, folder);
-    if (!fs.lstatSync(folderPath).isDirectory()) continue;
+  const files = fs.readdirSync(UPLOAD_DIR);
+  for (const file of files) {
+    const filePath = path.join(UPLOAD_DIR, file);
+    if (!fs.lstatSync(filePath).isFile()) continue;
 
-    const files = fs.readdirSync(folderPath);
-    for (const file of files) {
-      const filePath = path.join(folderPath, file);
-      const data = fs.readFileSync(filePath);
-      const mimetype = getMimeType(file);
+    const data = fs.readFileSync(filePath);
 
-      const exists = await client.query(
-        "SELECT id FROM stored_images WHERE filename = $1",
-        [file]
-      );
-      if (exists.rows.length > 0) continue;
-
-      await client.query(
-        "INSERT INTO stored_images (filename, mimetype, data) VALUES ($1,$2,$3)",
-        [file, mimetype, data]
-      );
-      console.log(`✅ Salvo no banco: ${file}`);
+    // 🚨 Limite de 5MB
+    if (data.length > 5 * 1024 * 1024) {
+      console.log(`⚠ ${file} ignorado (maior que 5MB).`);
+      continue;
     }
+
+    const sha1 = crypto.createHash("sha1").update(data).digest("hex");
+    const mimetype = getMimeType(file);
+
+    await client.query(
+      `INSERT INTO stored_images (filename, mimetype, sha1, data)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (sha1) DO NOTHING`,
+      [file, mimetype, sha1, data]
+    );
+
+    console.log(`✅ Salvo no banco: ${file} (${sha1})`);
   }
 }
 
 function getMimeType(filename) {
   if (filename.endsWith(".png")) return "image/png";
-  if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) return "image/jpeg";
+  if (filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
+    return "image/jpeg";
   if (filename.endsWith(".webp")) return "image/webp";
   if (filename.endsWith(".gif")) return "image/gif";
   if (filename.endsWith(".mp4")) return "video/mp4";
@@ -91,14 +96,16 @@ const express = require("express");
 const router = express.Router();
 const { Client } = require("pg");
 
-const DB_URL = process.env.DATABASE_URL ||
-  "${DB_URL.replace(/"/g, '\\"')}";
+const DB_URL = process.env.DATABASE_URL || "${DB_URL.replace(/"/g, '\\"')}";
 
 router.get("/db-image/:filename", async (req, res) => {
   const client = new Client({ connectionString: DB_URL });
   await client.connect();
 
-  const result = await client.query("SELECT * FROM stored_images WHERE filename = $1", [req.params.filename]);
+  const result = await client.query(
+    "SELECT * FROM stored_images WHERE filename = $1",
+    [req.params.filename]
+  );
   await client.end();
 
   if (result.rows.length === 0) return res.status(404).send("Imagem não encontrada");
@@ -109,7 +116,7 @@ router.get("/db-image/:filename", async (req, res) => {
 });
 
 module.exports = router;
-  `;
+`;
 
   fs.writeFileSync(routeFile, content);
   console.log(`✅ Criada/atualizada rota: routes/dbImageRoute.js`);
@@ -117,7 +124,7 @@ module.exports = router;
 }
 
 function ensureAppIntegration() {
-  const appFile = APP_FILES.find(f => fs.existsSync(path.join(__dirname, f)));
+  const appFile = APP_FILES.find((f) => fs.existsSync(path.join(__dirname, f)));
   if (!appFile) {
     console.log("⚠ Nenhum arquivo principal (app.js/server.js/index.js) encontrado.");
     return;
@@ -132,10 +139,14 @@ function ensureAppIntegration() {
       `const express = require("express");
 const dbImageRoute = require("./routes/dbImageRoute");`
     );
-    code = code.replace(
-      /app\.use\(.*\);/,
-      (match) => `${match}\napp.use("/", dbImageRoute);`
-    );
+
+    if (!code.includes("app.use(\"/\", dbImageRoute)")) {
+      code = code.replace(
+        /app\.use\(.*\);/,
+        (match) => `${match}\napp.use("/", dbImageRoute);`
+      );
+    }
+
     fs.writeFileSync(appPath, code);
     console.log(`✅ Rota dbImageRoute integrada em ${appFile}`);
   } else {
@@ -156,7 +167,7 @@ async function commitAndPush() {
 
   await git.add(".");
   await git.commit("Auto: salvar imagens no banco + atualizar rotas");
-  await git.push("origin", "main");
+  await git.push("origin", "master"); // ⚡ agora usa master
   console.log("✅ Alterações commitadas e enviadas ao GitHub.");
 }
 
