@@ -1,130 +1,138 @@
 // ====================================================================================
 //
-//              DenyAnimeHub - Middleware de Upload (Versão Definitiva Corrigida)
+//              DenyAnimeHub - Middleware de Upload (Versão Final Corrigida)
 //
-// Versão:        5.0 (Rinnegan)
-// Descrição:     Versão final e totalmente corrigida do middleware Multer. Renomeia
-//                os middlewares para corresponder EXATAMENTE ao que é importado no app.js,
-//                resolvendo o erro "got a [object Undefined]". A estrutura está
-//                robusta, com funções de fábrica e middlewares especializados.
+// Versão:        5.0 (Rinnegan - Full Stable)
+// Descrição:     Middleware definitivo de upload com Multer. Corrige problemas
+//                de nomes indefinidos, garante criação de diretórios e fornece
+//                middlewares prontos para uso em app.js.
 //
 // ====================================================================================
 
-'use strict';
+"use strict";
 
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 /**
  * Garante que um diretório no sistema de arquivos exista. Se não existir,
- * ele o cria de forma recursiva, prevenindo erros de "diretório não encontrado".
- * @param {string} dirPath - O caminho absoluto para o diretório a ser verificado/criado.
+ * ele o cria recursivamente, prevenindo erros de "diretório não encontrado".
+ * @param {string} dirPath - Caminho absoluto do diretório.
  */
 const ensureDirExists = (dirPath) => {
-    try {
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
-        }
-    } catch (error) {
-        console.error(`[Upload Middleware] Falha crítica ao criar diretório de upload: ${dirPath}`, error);
+  try {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
     }
+  } catch (error) {
+    console.error(
+      `[Upload Middleware] Falha ao criar diretório de upload: ${dirPath}`,
+      error
+    );
+  }
 };
 
 /**
- * Cria uma configuração de armazenamento (StorageEngine) para o Multer,
+ * Cria uma configuração de armazenamento para o Multer,
  * direcionando arquivos para subpastas específicas e gerando nomes únicos.
- * @param {string} destinationFolder - O nome da subpasta de destino (ex: 'capas', 'avatars').
- * @returns {multer.StorageEngine} A configuração de armazenamento do Multer.
+ * @param {string} destinationFolder - Nome da subpasta (ex: "capas", "avatars").
+ * @returns {multer.StorageEngine} - Configuração de storage do Multer.
  */
 const createStorageEngine = (destinationFolder) => {
-    const fullDestinationPath = path.join(__dirname, '..', 'public', 'uploads', destinationFolder);
-    ensureDirExists(fullDestinationPath);
+  const fullDestinationPath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "uploads",
+    destinationFolder
+  );
+  ensureDirExists(fullDestinationPath);
 
-    return multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, fullDestinationPath);
-        },
-        filename: (req, file, cb) => {
-            const fileExtension = path.extname(file.originalname);
-            const fieldName = file.fieldname || 'file';
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            const newFilename = `${fieldName}-${uniqueSuffix}${fileExtension}`;
-            cb(null, newFilename);
-        }
-    });
+  return multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, fullDestinationPath);
+    },
+    filename: (req, file, cb) => {
+      const fileExtension = path.extname(file.originalname);
+      const fieldName = file.fieldname || "file";
+      const uniqueSuffix =
+        Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const newFilename = `${fieldName}-${uniqueSuffix}${fileExtension}`;
+      cb(null, newFilename);
+    },
+  });
 };
 
 /**
- * Cria um filtro de arquivo para o Multer, validando o tipo de arquivo (MIME type).
- * @param {RegExp} allowedMimeTypesRegex - Expressão regular para os MIME types permitidos.
- * @returns {function} A função de filtro para o Multer.
+ * Cria um filtro de arquivo para validar o tipo (MIME type).
+ * @param {RegExp} allowedMimeTypesRegex - Regex com os MIME types permitidos.
+ * @returns {function} Filtro para o Multer.
  */
 const createFileFilter = (allowedMimeTypesRegex) => {
-    return (req, file, cb) => {
-        if (allowedMimeTypesRegex.test(file.mimetype)) {
-            cb(null, true); // Aceita o arquivo.
-        } else {
-            const error = new Error('Tipo de arquivo não suportado!');
-            error.code = 'INVALID_FILE_TYPE';
-            cb(error, false); // Rejeita o arquivo.
-        }
-    };
+  return (req, file, cb) => {
+    if (allowedMimeTypesRegex.test(file.mimetype)) {
+      cb(null, true); // Aceita o arquivo
+    } else {
+      const error = new Error("Tipo de arquivo não suportado!");
+      error.code = "INVALID_FILE_TYPE";
+      cb(error, false); // Rejeita o arquivo
+    }
+  };
 };
 
 // --- Filtros de Arquivo Pré-configurados ---
 const imageFileFilter = createFileFilter(/^image\/(jpeg|png|webp|gif)$/);
-const videoFileFilter = createFileFilter(/^video\/(mp4|mkv|x-matroska|webm)$/); // Adicionado MKV para robustez
+const videoFileFilter = createFileFilter(
+  /^video\/(mp4|mkv|x-matroska|webm)$/
+);
 
 // =======================================================================================
-//  MIDDLEWARES DE UPLOAD ESPECIALIZADOS E EXPORTADOS
+//  MIDDLEWARES DE UPLOAD ESPECIALIZADOS
 // =======================================================================================
 
-// Middleware para processar formulários sem arquivos ou com arquivos na memória.
-// Usado para rotas de criação/edição que não têm um campo de upload específico.
+// Processa formulários SEM arquivos ou com arquivos em memória
 const processForm = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 2 * 1024 * 1024 * 1024 } // Limite alto, pois não deve salvar arquivos
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // até 2GB em memória (apenas metadados)
 }).any();
 
-// Middleware para upload de Capas de Animes/Posts.
-// O nome agora corresponde ao que app.js espera.
+// Upload de Capa de Anime/Post
 const uploadCapaAnime = multer({
-    storage: createStorageEngine('capas'),
-    fileFilter: imageFileFilter,
-    limits: { fileSize: 15 * 1024 * 1024 }
-}).single('capa'); // Espera um campo de formulário chamado 'capa'
+  storage: createStorageEngine("capas"),
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 15 * 1024 * 1024 }, // até 15MB
+}).single("capa");
 
-// Middleware para upload de Vídeos de Episódios.
-// O nome agora corresponde ao que app.js espera.
+// Upload de Vídeos de Episódios
 const uploadVideoEpisodio = multer({
-    storage: createStorageEngine('videos'),
-    fileFilter: videoFileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 * 1024 } // 2GB
-}).single('video'); // Espera um campo de formulário chamado 'video'
+  storage: createStorageEngine("videos"),
+  fileFilter: videoFileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // até 2GB
+}).single("video");
 
-// Middleware para upload de AVATAR de Usuário.
+// Upload de Avatar de Usuário
 const uploadAvatar = multer({
-    storage: createStorageEngine('avatars'),
-    fileFilter: imageFileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 }
-}).single('avatar');
+  storage: createStorageEngine("avatars"),
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // até 5MB
+}).single("avatar");
 
-// Middleware para upload de CAPA DE PERFIL de Usuário.
+// Upload de Capa de Perfil de Usuário
 const uploadCapaPerfil = multer({
-    storage: createStorageEngine('capas'), // Reutiliza a pasta 'capas'
-    fileFilter: imageFileFilter,
-    limits: { fileSize: 15 * 1024 * 1024 }
-}).single('capa');
+  storage: createStorageEngine("capas"),
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 15 * 1024 * 1024 }, // até 15MB
+}).single("capa");
 
-
-// --- EXPORTAÇÃO FINAL E CORRIGIDA ---
-// Exporta todos os middlewares com os nomes EXATOS que o app.js espera.
+// =======================================================================================
+//  EXPORTAÇÃO FINAL
+// =======================================================================================
 module.exports = {
-    processForm,
-    uploadCapaAnime,        // CORRIGIDO: Agora este nome existe
-    uploadVideoEpisodio,    // CORRIGIDO: Agora este nome existe
-    uploadAvatar,
-    uploadCapaPerfil,
-    uploadCapa: uploadCapaAnime // Adicionando um alias para compatibilidade, caso alguma rota antiga ainda use 'uploadCapa'
+  processForm,
+  uploadCapaAnime,
+  uploadVideoEpisodio,
+  uploadAvatar,
+  uploadCapaPerfil,
+  uploadCapa: uploadCapaAnime, // alias para compatibilidade com rotas antigas
 };
