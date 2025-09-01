@@ -2,10 +2,10 @@
 "use strict";
 
 /**
- * DenyAnimeHub - Script Automatizado
+ * DenyAnimeHub - Script Automatizado (FINAL)
  * - Move imagens locais para o banco Neon (BYTEA)
  * - Garante .gitignore atualizado
- * - Cria rota para servir imagens
+ * - Cria rota para servir imagens (Render usa SEMPRE do banco)
  * - Faz commit/push automático
  */
 
@@ -102,17 +102,24 @@ router.get("/db-image/:filename", async (req, res) => {
   const client = new Client({ connectionString: DB_URL });
   await client.connect();
 
-  const result = await client.query(
-    "SELECT * FROM stored_images WHERE filename = $1",
-    [req.params.filename]
-  );
-  await client.end();
+  try {
+    const result = await client.query(
+      "SELECT * FROM stored_images WHERE filename = $1",
+      [req.params.filename]
+    );
+    if (result.rows.length === 0) {
+      await client.end();
+      return res.status(404).send("Imagem não encontrada");
+    }
 
-  if (result.rows.length === 0) return res.status(404).send("Imagem não encontrada");
-
-  const img = result.rows[0];
-  res.setHeader("Content-Type", img.mimetype);
-  res.send(img.data);
+    const img = result.rows[0];
+    res.setHeader("Content-Type", img.mimetype);
+    res.send(img.data);
+  } catch (err) {
+    res.status(500).send("Erro ao buscar imagem");
+  } finally {
+    await client.end();
+  }
 });
 
 module.exports = router;
@@ -140,7 +147,7 @@ function ensureAppIntegration() {
 const dbImageRoute = require("./routes/dbImageRoute");`
     );
 
-    if (!code.includes("app.use(\"/\", dbImageRoute)")) {
+    if (!code.includes('app.use("/", dbImageRoute)')) {
       code = code.replace(
         /app\.use\(.*\);/,
         (match) => `${match}\napp.use("/", dbImageRoute);`
@@ -167,7 +174,7 @@ async function commitAndPush() {
 
   await git.add(".");
   await git.commit("Auto: salvar imagens no banco + atualizar rotas");
-  await git.push("origin", "master"); // ⚡ agora usa master
+  await git.push("origin", "master"); // ⚡ agora fixo para master
   console.log("✅ Alterações commitadas e enviadas ao GitHub.");
 }
 

@@ -9,17 +9,24 @@ router.get("/db-image/:filename", async (req, res) => {
   const client = new Client({ connectionString: DB_URL });
   await client.connect();
 
-  const result = await client.query(
-    "SELECT * FROM stored_images WHERE filename = $1",
-    [req.params.filename]
-  );
-  await client.end();
+  try {
+    const result = await client.query(
+      "SELECT * FROM stored_images WHERE filename = $1",
+      [req.params.filename]
+    );
+    if (result.rows.length === 0) {
+      await client.end();
+      return res.status(404).send("Imagem não encontrada");
+    }
 
-  if (result.rows.length === 0) return res.status(404).send("Imagem não encontrada");
-
-  const img = result.rows[0];
-  res.setHeader("Content-Type", img.mimetype);
-  res.send(img.data);
+    const img = result.rows[0];
+    res.setHeader("Content-Type", img.mimetype);
+    res.send(img.data);
+  } catch (err) {
+    res.status(500).send("Erro ao buscar imagem");
+  } finally {
+    await client.end();
+  }
 });
 
 module.exports = router;
