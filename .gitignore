@@ -25,3 +25,5 @@ node_modules/
 *.rar
 *.gz
 *.tar
+# Ignorar diretório de uploads local após migração para DB
+/public/uploads/
