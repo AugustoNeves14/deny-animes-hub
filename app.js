@@ -70,6 +70,32 @@ app.use((req, res, next) => {
     next();
 });
 
+// --- FUNÇÃO AUXILIAR PARA AJUSTAR IMAGENS ---
+// Centralizada aqui para fácil acesso em todas as rotas
+const ajustarImagens = (item) => {
+    if (!item) return item;
+
+    const isArray = Array.isArray(item);
+    const arr = isArray ? item : [item];
+
+    const adjustedArr = arr.map(data => {
+        const plain = data.get ? data.get({ plain: true }) : { ...data }; // Trata instâncias Sequelize e objetos planos
+        if (plain.imagemCapa && !plain.imagemCapa.startsWith('/db-image/')) {
+            plain.imagemCapa = `/db-image/${plain.imagemCapa}`;
+        }
+        if (plain.capaPerfil && !plain.capaPerfil.startsWith('/db-image/')) {
+            plain.capaPerfil = `/db-image/${plain.capaPerfil}`;
+        }
+        if (plain.avatar && !plain.avatar.startsWith('/db-image/')) {
+            plain.avatar = `/db-image/${plain.avatar}`;
+        }
+        // Se houver outras imagens diretas em animes ou usuários, adicione aqui
+        return plain;
+    });
+
+    return isArray ? adjustedArr : adjustedArr[0];
+};
+
 // ====================================================================================
 // --- 5. ROTAS DE VISUALIZAÇÃO (FRONT-END & ADMIN) ---
 // ====================================================================================
@@ -81,7 +107,12 @@ app.get('/', async (req, res) => {
             db.Anime.findAll({ order: [['createdAt', 'DESC']], limit: 24 }),
             db.Anime.findAll({ order: [['views', 'DESC']], limit: 5 })
         ]);
-        res.render('index', { page_name: 'index', titulo: 'Início', animes: animesRecentes, topAnimes: animesPopulares });
+        res.render('index', {
+            page_name: 'index',
+            titulo: 'Início',
+            animes: ajustarImagens(animesRecentes), // ✅ Aplicado
+            topAnimes: ajustarImagens(animesPopulares) // ✅ Aplicado
+        });
     } catch (err) {
         console.error("Erro na página inicial:", err);
         res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
@@ -95,51 +126,41 @@ app.get('/', async (req, res) => {
 app.get('/animes', async (req, res) => {
     try {
         // [1] PARÂMETROS DE FILTRO E PAGINAÇÃO
-        // Pegamos todos os possíveis parâmetros da URL.
         const page = parseInt(req.query.page) || 1;
         const { search, genre, order, letter } = req.query;
         const limit = 24; // Itens por página
         const offset = (page - 1) * limit;
 
         // [2] QUERIES PARA OS CARROSSÉIS (EXECUTADAS EM PARALELO PARA EFICIÊNCIA)
-        // Estes dados são independentes dos filtros principais e sempre aparecem no topo.
         const [topAnimes, recentAnimes, topDownloads] = await Promise.all([
-            db.Anime.findAll({ 
-                order: [['views', 'DESC']], 
-                limit: 12 
+            db.Anime.findAll({
+                order: [['views', 'DESC']],
+                limit: 12
             }),
-            db.Anime.findAll({ 
-                order: [['createdAt', 'DESC']], 
-                limit: 12 
+            db.Anime.findAll({
+                order: [['createdAt', 'DESC']],
+                limit: 12
             }),
-            // ATENÇÃO: Supondo que você tenha uma coluna 'downloads'. 
-            // Se não tiver, troque 'downloads' por uma coluna existente como 'views' ou 'id'.
-            db.Anime.findAll({ 
+            db.Anime.findAll({
                 order: [['views', 'DESC']], // Usando 'views' como exemplo para "downloads". Mude se necessário.
-                limit: 12 
+                limit: 12
             })
         ]);
 
         // [3] LÓGICA DE FILTRAGEM PARA O CATÁLOGO PRINCIPAL
-        // Construímos a cláusula 'where' baseada nos filtros ativos.
         let whereClause = {};
 
         if (search) {
-            // Se houver uma busca, ela tem prioridade sobre o filtro de letra.
             whereClause.titulo = { [Op.iLike]: `%${search}%` };
         } else if (letter) {
-            // Se não houver busca, mas houver uma letra, filtramos por ela.
             whereClause.titulo = { [Op.iLike]: `${letter}%` };
         }
 
         if (genre) {
-            // Adiciona o filtro de gênero (funciona em conjunto com os outros).
-            // Esta busca funciona para campos de texto que armazenam JSON.
             whereClause.generos = { [Op.iLike]: `%"${genre}"%` };
         }
 
         // [4] LÓGICA DE ORDENAÇÃO
-        // Define a ordem padrão e a altera se um parâmetro de ordem for fornecido.
         let orderClause = [['createdAt', 'DESC']]; // Padrão: mais recentes
         if (order) {
             const [field, direction] = order.split('_');
@@ -149,7 +170,6 @@ app.get('/animes', async (req, res) => {
         }
 
         // [5] QUERY PRINCIPAL NO BANCO DE DADOS
-        // Busca os animes para a página atual, contando o total para a paginação.
         const { count, rows: animes } = await db.Anime.findAndCountAll({
             where: whereClause,
             order: orderClause,
@@ -158,7 +178,6 @@ app.get('/animes', async (req, res) => {
         });
 
         // [6] BUSCA DE TODOS OS GÊNEROS ÚNICOS PARA O DROPDOWN DE FILTRO
-        // Esta lógica é eficiente pois só busca uma coluna e processa em memória.
         const allAnimesForGenres = await db.Anime.findAll({ attributes: ['generos'] });
         const genreSet = new Set(allAnimesForGenres.flatMap(a => {
             try { return JSON.parse(a.generos) } catch { return [] }
@@ -166,33 +185,24 @@ app.get('/animes', async (req, res) => {
         const uniqueGenres = [...genreSet].sort();
 
         // [7] RENDERIZAÇÃO DA PÁGINA COM TODOS OS DADOS NECESSÁRIOS
-        // Enviamos tudo que o template 'todos-animes.ejs' precisa para funcionar.
         res.render('todos-animes', {
-            // Dados para o título e meta tags
             titulo: 'Todos os Animes',
-
-            // Dados para o catálogo principal e paginação
-            animes: animes,
+            animes: ajustarImagens(animes), // ✅ Aplicado
             totalAnimes: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
-            
-            // Dados para os filtros
-            uniqueGenres: uniqueGenres, // Essencial para o <select> de gêneros
-            query: req.query, // Passa todos os parâmetros atuais para o EJS
-
-            // [NOVO E ESSENCIAL] Dados para os carrosséis
-            topAnimes: topAnimes,
-            recentAnimes: recentAnimes,
-            topDownloads: topDownloads
+            uniqueGenres: uniqueGenres,
+            query: req.query,
+            topAnimes: ajustarImagens(topAnimes), // ✅ Aplicado
+            recentAnimes: ajustarImagens(recentAnimes), // ✅ Aplicado
+            topDownloads: ajustarImagens(topDownloads) // ✅ Aplicado
         });
 
     } catch (error) {
-        // Tratamento de erro robusto
         console.error("ERRO FATAL AO CARREGAR A PÁGINA DE ANIMES:", error);
-        res.status(500).render('500', { 
-            layout: false, 
-            titulo: 'Erro no Servidor', 
+        res.status(500).render('500', {
+            layout: false,
+            titulo: 'Erro no Servidor',
             error: 'Não foi possível carregar o catálogo de animes. Por favor, tente novamente mais tarde.'
         });
     }
@@ -225,11 +235,16 @@ app.get('/anime/:slug', proteger, async (req, res) => {
     try {
         const anime = await db.Anime.findOne({
             where: { slug: req.params.slug },
-            include: [{ model: db.Episodio, as: 'episodios', order: [['temporada', 'ASC'],['numero', 'ASC']] }]
+            include: [{ model: db.Episodio, as: 'episodios', order: [['temporada', 'ASC'], ['numero', 'ASC']] }]
         });
         if (!anime) return res.status(404).render('404', { layout: false, titulo: 'Anime não encontrado' });
         await anime.increment('views');
-        res.render('detalhe-anime', { page_name: 'anime-detail', titulo: anime.titulo, anime: anime.get({ plain: true }), db });
+        res.render('detalhe-anime', {
+            page_name: 'anime-detail',
+            titulo: anime.titulo,
+            anime: ajustarImagens(anime), // ✅ Aplicado aqui
+            db
+        });
     } catch (err) {
         res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: err });
     }
@@ -251,10 +266,10 @@ app.get('/assistir/:slug/:epId', proteger, async (req, res) => {
 
         res.render('assistir', {
             layout: 'layouts/main', page_name: 'player',
-            initialAnime: anime.get({ plain: true }),
+            initialAnime: ajustarImagens(anime), // ✅ Aplicado aqui
             initialEpisode: episodioAtual.get({ plain: true }),
             todosEpisodios: todosEpisodiosOrdenados.map(ep => ep.get({ plain: true })),
-            sugestoes: sugestoes.map(s => s.get({ plain: true })),
+            sugestoes: ajustarImagens(sugestoes), // ✅ Aplicado aqui
             titulo: `Assistindo: ${anime.titulo} - Ep. ${episodioAtual.numero}`
         });
     } catch (err) {
@@ -269,7 +284,23 @@ app.get('/perfil', proteger, async (req, res) => {
             where: { userId: req.user.id }, limit: 10, order: [['updatedAt', 'DESC']],
             include: [{ model: db.Anime, as: 'anime' }, { model: db.Episodio, as: 'episodio' }]
         });
-        res.render('perfil', { page_name: 'perfil', titulo: 'Meu Perfil', user: req.user.get({ plain: true }), historico: historico.map(h => h.get({ plain: true })) });
+
+        // ✅ Ajusta imagens para o usuário e animes no histórico
+        const userWithAdjustedImages = ajustarImagens(req.user);
+        const historicoComImagens = historico.map(h => {
+            const plain = h.get({ plain: true });
+            if (plain.anime) {
+                plain.anime = ajustarImagens(plain.anime);
+            }
+            return plain;
+        });
+
+        res.render('perfil', {
+            page_name: 'perfil',
+            titulo: 'Meu Perfil',
+            user: userWithAdjustedImages, // ✅ Aplicado aqui
+            historico: historicoComImagens // ✅ Aplicado aqui
+        });
     } catch (error) {
         console.error("Erro ao carregar a página de perfil:", error);
         res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error });
@@ -277,7 +308,7 @@ app.get('/perfil', proteger, async (req, res) => {
 });
 
 app.get('/perfil/editar', proteger, (req, res) => {
-    res.render('editar-perfil', { page_name: 'editar-perfil', titulo: 'Editar Perfil' });
+    res.render('editar-perfil', { page_name: 'editar-perfil', titulo: 'Editar Perfil', user: ajustarImagens(req.user) }); // ✅ Aplicado aqui, caso o avatar/capa seja exibido no form
 });
 
 app.get('/login', (req, res) => {
@@ -306,8 +337,8 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
                 group: ['date'], order: [['date', 'ASC']]
             })
         ]);
-        res.render('admin/dashboard', { 
-            layout: false, title: 'Painel de Administração', 
+        res.render('admin/dashboard', {
+            layout: false, title: 'Painel de Administração',
             totalAnimes, totalPosts, totalUsers,
             newUsersData: JSON.stringify(newUsersData),
             newAnimesData: JSON.stringify(newAnimesData)
@@ -412,7 +443,7 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
-    
+
     // Para requisições de API, envia um erro JSON
     if (req.originalUrl.startsWith('/api/')) {
         return res.status(500).json({ success: false, error: 'Ocorreu um problema inesperado no servidor.' });
