@@ -1,4 +1,3 @@
-
 /**
  * @file middleware/uploadMiddleware.db.js
  * @description Versão "drop-in" do seu uploadMiddleware:
@@ -26,7 +25,7 @@ const imageFilter = (req, file, cb) => {
     if (/^image\/(jpeg|png|webp|gif)$/i.test(file.mimetype)) {
         cb(null, true);
     } else {
-        const err = new Error(`Tipo de imagem não suportado: ${{file.mimetype}}`);
+        const err = new Error(`Tipo de imagem não suportado: ${file.mimetype}`);
         err.code = "INVALID_FILE_TYPE";
         cb(err, false);
     }
@@ -36,7 +35,7 @@ const videoFilter = (req, file, cb) => {
     if (/^video\//i.test(file.mimetype)) {
         cb(null, true);
     } else {
-        const err = new Error(`Tipo de vídeo não suportado: ${{file.mimetype}}`);
+        const err = new Error(`Tipo de vídeo não suportado: ${file.mimetype}`);
         err.code = "INVALID_FILE_TYPE";
         cb(err, false);
     }
