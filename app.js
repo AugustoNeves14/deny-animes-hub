@@ -27,7 +27,7 @@ const {
     uploadCapaPerfil,
     uploadCapaAnime,
     uploadVideoEpisodio
-} = require('./middleware/uploadMiddleware');
+} = require("./middleware/uploadMiddleware.db");
 
 // Controllers
 const authController = require('./controllers/authController');
@@ -60,7 +60,7 @@ app.use(cookieParser());
 
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// Removido pelo script: // Removido pelo script: // Removido pelo script: app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'))); // Imagens agora são servidas do DB. // Imagens agora são servidas do DB. // Imagens agora são servidas do DB.
 
 // --- 4. MIDDLEWARE GLOBAL DA APLICAÇÃO ---
 app.use(protegerOpcional);
