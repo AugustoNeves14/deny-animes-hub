@@ -13,7 +13,7 @@ const episodioController = {};
  * @param {string} filePath - O caminho relativo do arquivo a ser deletado.
  */
 const deletarArquivoDeVideo = async (filePath) => {
-    if (!filePath || filePath.includes('default-') || !filePath.startsWith('/uploads/videos/')) {
+    if (!filePath || filePath.includes('default-') || !filePath.startsWith('/db-image/file/videos/')) {
         return;
     }
     try {
@@ -94,7 +94,7 @@ episodioController.createEpisodioViaLink = async (req, res) => {
  * @desc    Cria um novo episódio a partir de um upload de arquivo.
  */
 episodioController.createEpisodioComUpload = async (req, res) => {
-    const filePath = req.file ? `/uploads/videos/${req.file.filename}` : null;
+    const filePath = req.file ? `/db-image/file/videos/${req.file.filename}` : null;
     try {
         const { animeId, numero, titulo, temporada } = req.body;
         const numEpisodio = parseInt(numero, 10);

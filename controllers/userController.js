@@ -1,25 +1,8 @@
 'use strict';
 const db = require('../models');
-const fs = require('fs');
-const path = require('path');
-
-/**
- * Deleta um arquivo do sistema de arquivos, tipicamente uma imagem de avatar ou capa antiga.
- * Não deleta arquivos com 'default-' no nome.
- * @param {string} filePath - O caminho relativo do arquivo a ser deletado (ex: /uploads/avatars/imagem.jpg).
- */
-const deletarArquivoAntigo = (filePath) => {
-    // Verifica se o caminho do arquivo existe e não é um arquivo padrão
-    if (filePath && !filePath.includes('default-')) {
-        // Constrói o caminho absoluto para o arquivo
-        const fullPath = path.join(__dirname, '..', 'public', filePath);
-        fs.unlink(fullPath, (err) => {
-            if (err) {
-                console.error(`[CONTROLADOR] Falha ao tentar deletar arquivo antigo: ${fullPath}`, err);
-            }
-        });
-    }
-};
+const {
+    deleteImageFromDb
+} = require('../utils/imageDbHandler'); // Importe a função
 
 const userController = {};
 
@@ -80,75 +63,101 @@ userController.updateUserProfile = async (req, res) => {
 };
 
 /**
- * Atualiza o avatar do usuário logado.
- * @param {object} req - O objeto de requisição do Express.
- * @param {object} res - O objeto de resposta do Express.
+ * Atualiza avatar do usuário - VERSÃO CORRIGIDA
  */
 userController.updateUserAvatar = async (req, res) => {
     try {
-        if (!req.file) {
+        if (!req.fileUrl) {
             return res.status(400).json({
                 success: false,
-                message: 'Nenhum arquivo de imagem enviado.'
+                error: 'Nenhuma imagem foi enviada ou processada.'
             });
         }
 
-        const oldAvatarPath = req.user.avatar;
-        const newAvatarPath = `/uploads/avatars/${req.file.filename}`;
+        const user = await db.User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado.'
+            });
+        }
 
-        await req.user.update({
-            avatar: newAvatarPath
+        // Se existir um avatar antigo no banco, podemos excluí-lo
+        if (user.avatarImageId) {
+            try {
+                await deleteImageFromDb(user.avatarImageId);
+            } catch (deleteError) {
+                console.warn('Não foi possível excluir avatar antigo:', deleteError);
+            }
+        }
+
+        // Atualizar com a URL do banco de dados
+        await user.update({
+            avatar: req.fileUrl, // URL do banco: /db-image/id/123
+            avatarImageId: req.fileDb ? req.fileDb.id : null
         });
 
-        deletarArquivoAntigo(oldAvatarPath);
-
-        res.status(200).json({
+        res.json({
             success: true,
             message: 'Avatar atualizado com sucesso!',
-            filePath: newAvatarPath
+            avatarUrl: req.fileUrl
         });
-    } catch (err) {
-        console.error("Erro em updateUserAvatar:", err);
+
+    } catch (error) {
+        console.error('Erro ao atualizar avatar:', error);
         res.status(500).json({
             success: false,
-            message: err.message || 'Erro interno ao atualizar o avatar.'
+            error: 'Erro interno ao atualizar avatar.'
         });
     }
 };
 
 /**
- * Atualiza a imagem de capa do perfil do usuário logado.
- * @param {object} req - O objeto de requisição do Express.
- * @param {object} res - O objeto de resposta do Express.
+ * Atualiza capa do perfil - VERSÃO CORRIGIDA
  */
 userController.updateUserCapa = async (req, res) => {
     try {
-        if (!req.file) {
+        if (!req.fileUrl) {
             return res.status(400).json({
                 success: false,
-                message: 'Nenhum arquivo de imagem enviado.'
+                error: 'Nenhuma imagem foi enviada ou processada.'
             });
         }
 
-        const oldCapaPath = req.user.capaPerfil;
-        const newCapaPath = `/uploads/capas/${req.file.filename}`;
+        const user = await db.User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado.'
+            });
+        }
 
-        await req.user.update({
-            capaPerfil: newCapaPath
+        // Se existir uma capa antiga no banco, podemos excluí-la
+        if (user.capaImageId) {
+            try {
+                await deleteImageFromDb(user.capaImageId);
+            } catch (deleteError) {
+                console.warn('Não foi possível excluir capa antiga:', deleteError);
+            }
+        }
+
+        // Atualizar com a URL do banco de dados
+        await user.update({
+            capa: req.fileUrl, // URL do banco: /db-image/id/123
+            capaImageId: req.fileDb ? req.fileDb.id : null
         });
 
-        deletarArquivoAntigo(oldCapaPath);
-
-        res.status(200).json({
+        res.json({
             success: true,
-            message: 'Capa do perfil atualizada com sucesso!',
-            filePath: newCapaPath
+            message: 'Capa de perfil atualizada com sucesso!',
+            capaUrl: req.fileUrl
         });
-    } catch (err) {
-        console.error("Erro em updateUserCapa:", err);
+
+    } catch (error) {
+        console.error('Erro ao atualizar capa de perfil:', error);
         res.status(500).json({
             success: false,
-            message: err.message || 'Erro interno ao atualizar a capa.'
+            error: 'Erro interno ao atualizar capa de perfil.'
         });
     }
 };
@@ -282,6 +291,23 @@ userController.deleteUserByAdmin = async (req, res) => {
                 error: 'Você não pode deletar sua própria conta.'
             });
         }
+
+        // Se o usuário tiver avatar ou capa persistidos no banco de dados, eles devem ser removidos.
+        if (user.avatarImageId) {
+            try {
+                await deleteImageFromDb(user.avatarImageId);
+            } catch (deleteError) {
+                console.warn('Não foi possível excluir avatar do usuário deletado:', deleteError);
+            }
+        }
+        if (user.capaImageId) {
+            try {
+                await deleteImageFromDb(user.capaImageId);
+            } catch (deleteError) {
+                console.warn('Não foi possível excluir capa do usuário deletado:', deleteError);
+            }
+        }
+
 
         await user.destroy();
 

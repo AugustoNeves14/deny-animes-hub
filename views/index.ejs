@@ -101,7 +101,7 @@
                                        <div class="anime-card__image-container">
                                             <!-- CORREÇÃO: Link agora usa anime.slug -->
                                             <a href="/anime/<%= anime.slug %>" title="Ver detalhes de <%= anime.titulo %>">
-                                                <img src="<%= anime.imagemCapa %>" alt="Capa <%= anime.titulo %>" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder_poster.png';">
+                                                <img src="/db-image/id/<%= anime.imagemCapa %>" alt="Capa <%= anime.titulo %>" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder_poster.png';">
                                             </a>
                                        </div>
                                        <div class="anime-card__content">

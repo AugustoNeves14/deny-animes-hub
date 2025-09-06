@@ -114,7 +114,7 @@ apiRouter.use(proteger); // Protege todas as rotas de API com login
 // API DE UPLOADS (Protegida)
 apiRouter.post('/upload/image', admin, upload.single('imagem'), (req, res) => {
     if (req.file) {
-        res.json({ success: true, filePath: `/uploads/images/${req.file.filename}` });
+        res.json({ success: true, filePath: `/db-image/file/images/${req.file.filename}` });
     } else {
         res.status(400).json({ success: false, error: 'Falha no upload da imagem.' });
     }

@@ -1,15 +1,24 @@
-
-/**
- * @file middleware/dbImageStore.js
- * @description Middleware para persistir uploads de IMAGEM diretamente no Neon (BYTEA).
- *              Usado em conjunto com Multer para processar arquivos em memória.
- */
+// middleware/dbImageStore.js - VERSÃO CORRIGIDA
 "use strict";
 const { Pool } = require("pg");
 const crypto = require("crypto");
 
-const DB_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_6hImLi9pNDCM@ep-green-poetry-advyipjs-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
-const pool = new Pool({ connectionString: DB_URL, max: 10, idleTimeoutMillis: 30000 });
+// Use memoryStorage para processar arquivos em memória
+const multer = require('multer');
+const memoryStorage = multer.memoryStorage();
+
+const DB_URL = process.env.DATABASE_URL;
+if (!DB_URL) {
+    console.error("❌ ERRO: DATABASE_URL não está definida");
+    // Em produção, isso deve ser tratado de forma mais robusta
+}
+
+const pool = new Pool({ 
+    connectionString: DB_URL, 
+    max: 10, 
+    idleTimeoutMillis: 30000,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 /**
  * Garante que a tabela 'stored_images' exista.
@@ -34,23 +43,29 @@ async function ensureTable() {
         client.release();
     }
 }
-ensureTable().catch(console.error);
+
+// Executar apenas se DATABASE_URL estiver definida
+if (DB_URL) {
+    ensureTable().catch(console.error);
+} else {
+    console.warn("⚠️  DATABASE_URL não definida - Tabela de imagens não será criada");
+}
 
 /**
  * Salva um único arquivo (buffer) no banco de dados.
- * @param {object} file - Objeto de arquivo do Multer (com `buffer`, `originalname`, `mimetype`).
- * @returns {object|null} O registro salvo (id, filename, mimetype, sha1) ou null em caso de falha.
  */
 async function saveOne(file) {
     if (!file || !file.buffer) return null;
+    if (!DB_URL) {
+        console.error("❌ Não é possível salvar imagem: DATABASE_URL não definida");
+        return null;
+    }
 
     const buf = file.buffer;
     const sha1 = crypto.createHash("sha1").update(buf).digest("hex");
     const client = await pool.connect();
 
     try {
-        // Tenta inserir; se houver conflito (sha1 já existe), atualiza o filename
-        // e retorna os dados existentes. Isso evita duplicatas.
         const insert = `
             INSERT INTO stored_images (filename, mimetype, sha1, data)
             VALUES ($1, $2, $3, $4)
@@ -65,7 +80,7 @@ async function saveOne(file) {
         ]);
         return rows[0];
     } catch (e) {
-        console.error(`[dbImageStore] Erro ao salvar arquivo '${file.originalname}' no Neon:`, e);
+        console.error(`[dbImageStore] Erro ao salvar arquivo '${file.originalname}':`, e);
         return null;
     } finally {
         client.release();
@@ -73,34 +88,36 @@ async function saveOne(file) {
 }
 
 /**
- * Middleware que processa arquivos em memória (do Multer) e os persiste no Neon.
- * Adiciona `req.fileDb`, `req.fileUrl`, `req.filesDb`, `req.filesUrl` ao request.
- *
- * @param {string|Array<string>} fieldNames - O(s) nome(s) do(s) campo(s) de arquivo no formulário.
- * @param {object} [options] - Opções de configuração.
- * @param {boolean} [options.setUrlOnReq=true] - Define se URLs amigáveis (`req.fileUrl`) devem ser adicionadas ao request.
- * @returns {function} Middleware assíncrono.
+ * Middleware que processa arquivos em memória
  */
 function persistUpload(fieldNames, options = {}) {
     const names = Array.isArray(fieldNames) ? fieldNames : [fieldNames];
-    const setUrl = options.setUrlOnReq !== false; // default true
+    const setUrl = options.setUrlOnReq !== false;
 
     return async function(req, res, next) {
         try {
-            const collectedFiles = [];
+            // Verificar se DATABASE_URL está definida
+            if (!DB_URL) {
+                console.error("❌ DATABASE_URL não definida - Upload não pode ser processado");
+                return res.status(500).json({ 
+                    success: false, 
+                    error: "Configuração do servidor incompleta. Contate o administrador." 
+                });
+            }
 
-            // Coleta arquivos de diferentes configurações do Multer (single, array, any)
+            const collectedFiles = [];
+            
             if (req.files) {
-                if (Array.isArray(req.files)) { // Multer .array() ou .any()
+                if (Array.isArray(req.files)) {
                     collectedFiles.push(...req.files.filter(f => names.includes(f.fieldname)));
-                } else { // Multer .fields() (por campo)
+                } else {
                     for (const n of names) {
                         const arr = req.files[n];
                         if (Array.isArray(arr)) collectedFiles.push(...arr);
                     }
                 }
             }
-            // Para .single()
+            
             if (req.file && names.includes(req.file.fieldname)) {
                 collectedFiles.push(req.file);
             }
@@ -111,13 +128,10 @@ function persistUpload(fieldNames, options = {}) {
                 if (saved) results.push(saved);
             }
 
-            if (setUrl) {
-                // Expõe URLs amigáveis para controllers usarem na persistência no modelo
+            if (setUrl && results.length > 0) {
                 if (results.length === 1) {
-                    req.fileDb = results[0]; // Objeto completo salvo no DB
-                    // A URL mais recomendada, por ID numérico
+                    req.fileDb = results[0];
                     req.fileUrl = `/db-image/id/${results[0].id}`;
-                    // URL alternativa por filename, para compatibilidade ou legibilidade (menos eficiente)
                     req.fileUrlByName = `/db-image/file/${encodeURIComponent(results[0].filename)}`;
                 } else if (results.length > 1) {
                     req.filesDb = results;
@@ -135,4 +149,5 @@ function persistUpload(fieldNames, options = {}) {
 
 module.exports = {
     persistUpload,
+    pool // Exportar pool para testes
 };

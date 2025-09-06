@@ -135,7 +135,7 @@ exports.updateUserAvatar = async (req, res) => {
         }
 
         // CORREÇÃO CRUCIAL: Salva o caminho PÚBLICO completo no banco de dados.
-        const avatarPath = `/uploads/avatars/${req.file.filename}`;
+        const avatarPath = `/db-image/file/${req.file.filename}`;
         user.avatar = avatarPath;
         await user.save();
         
@@ -167,7 +167,7 @@ exports.updateUserCapa = async (req, res) => {
 
         // CORREÇÃO CRUCIAL: Salva o caminho PÚBLICO completo no banco de dados.
         // O nome do campo no seu model é 'capaPerfil'
-        const capaPath = `/uploads/capas/${req.file.filename}`;
+        const capaPath = `/db-image/file/${req.file.filename}`;
         user.capaPerfil = capaPath;
         await user.save();
         
