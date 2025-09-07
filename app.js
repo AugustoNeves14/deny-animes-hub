@@ -1,6 +1,6 @@
 // ====================================================================================
 //
-//      DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta)
+//      DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta.3.4)
 //
 // ====================================================================================
 
