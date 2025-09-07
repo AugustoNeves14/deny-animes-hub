@@ -1,23 +1,26 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "ADMIN",
-    "database": "denyanimehub_dev",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "test": {
-    "username": "postgres",
-    "password": "ADMIN",
-    "database": "denyanimehub_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "production": {
-    "username": "denyanimeshub_user",
-    "password": "NIVbnBSFkoqrT5jp6FxZWORVO1VS4c2I",
-    "database": "denyanimeshub",
-    "host": "dpg-d1l6k2ndiees73f9g4n0-a.oregon-postgres.render.com",
+    "use_env_variable": "DATABASE_URL",
     "dialect": "postgres",
     "dialectOptions": {
       "ssl": {
