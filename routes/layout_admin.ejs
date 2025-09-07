@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> | Admin DenyAnimeHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/images/1.ico" type="image/ico">
+    <style>
+        /* Estilos específicos para o painel de admin para mantê-lo limpo */
+        body {
+            display: flex;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            padding: var(--space-5);
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-sidebar-header {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+        .admin-sidebar-header a {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+        .admin-sidebar-header img {
+            height: 30px;
+        }
+        .admin-nav {
+            list-style: none;
+            flex-grow: 1;
+        }
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            border-radius: var(--border-radius-md);
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: var(--space-2);
+            transition: all 0.2s ease;
+        }
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            background-color: rgba(var(--accent-primary-rgb), 0.1);
+            color: var(--accent-primary);
+        }
+        .admin-nav a i {
+            width: 20px;
+            text-align: center;
+        }
+        .admin-sidebar-footer {
+            margin-top: auto;
+            font-size: 0.8rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .admin-main-content {
+            flex-grow: 1;
+            padding: var(--space-6);
+            overflow-y: auto;
+        }
+        .admin-main-content h1 {
+            margin-bottom: var(--space-5);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: var(--space-3);
+        }
+        /* Estilos para cards e formulários dentro do admin */
+        .admin-stats { display: flex; flex-wrap: wrap; gap: var(--space-5); margin-bottom: var(--space-6); }
+        .stat-card { background: var(--bg-secondary); padding: var(--space-5); border-radius: var(--border-radius-lg); flex: 1; min-width: 200px; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+        .stat-card h3 { margin-bottom: var(--space-2); color: var(--text-secondary); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card p { font-size: 2rem; font-weight: 700; color: var(--accent-primary); margin-bottom: 0; }
+        .admin-form-container { max-width: 800px; background-color: var(--bg-secondary); padding: var(--space-6); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); }
+        .admin-form-container .form-group { margin-bottom: var(--space-4); }
+        .admin-form-container textarea { width: 100%; min-height: 150px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--space-3); color: var(--text-primary); }
+    </style>
+</head>
+<body data-theme="dark" class="page-admin">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <a href="/admin/dashboard">
+                <img src="/images/1.ico" alt="Logo">
+                <span>Admin Panel</span>
+            </a>
+        </div>
+        <ul class="admin-nav">
+            <li><a href="/admin/dashboard" class="<%= titulo === 'Admin Dashboard' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="/admin/animes" class="<%= titulo.includes('Animes') ? 'active' : '' %>"><i class="fas fa-film"></i> Gerenciar Animes</a></li>
+            <li><a href="/admin/posts" class="<%= titulo.includes('Notícias') ? 'active' : '' %>"><i class="fas fa-newspaper"></i> Gerenciar Notícias</a></li>
+            <li><a href="/admin/users" class="<%= titulo.includes('Usuários') ? 'active' : '' %>"><i class="fas fa-users"></i> Gerenciar Usuários</a></li>
+        </ul>
+        <div class="admin-sidebar-footer">
+            <a href="/" class="btn btn--secondary btn--small" style="width: 100%; margin-bottom: 10px;">Ver Site</a>
+            <a href="/auth/logout" class="btn btn--primary btn--small" style="width: 100%;">Sair</a>
+            <p class="mt-4">© <%= new Date().getFullYear() %> DenyAnimeHub</p>
+        </div>
+    </aside>
+
+    <main class="admin-main-content">
+        <%- body %>
+    </main>
+
+</body>
+</html>

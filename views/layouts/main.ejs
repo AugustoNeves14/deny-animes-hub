@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<!-- O atributo data-theme será gerenciado pelo JavaScript -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.titulo || 'DenyAnimeHub' %> | O seu universo Otaku</title>
+
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    
+    <!-- CSS Externo (APENAS para conteúdo específico das páginas, não layout) -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/images/1.ico" type="image/ico">
+    
+    <!-- ================================================================================================== -->
+    <!--      ESTILOS GLOBAIS E UNIFICADOS - V10.0 "Rinnegan" (FONTE DA VERDADE)                          -->
+    <!-- ================================================================================================== -->
+    <style>
+        /* --- [1] SISTEMA DE DESIGN GLOBAL (VARIÁVEIS) --- */
+        :root {
+            /* Configurações Gerais */
+            --header-height: 70px;
+            --transition-smooth: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            --transition-fast: 0.2s ease;
+            --border-radius: 8px;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        /* Tema Escuro (Padrão) */
+        html[data-theme='dark'] {
+            --theme-bg-primary: #0A0A0A;
+            --theme-bg-secondary: #141414;
+            --theme-bg-secondary-rgb: 20, 20, 20;
+            --theme-bg-overlay: rgba(10, 10, 10, 0.85);
+            --theme-text-primary: #F5F5F5;
+            --theme-text-secondary: #A0A0A0;
+            --theme-border-color: rgba(255, 255, 255, 0.1);
+            --theme-accent-primary: #E50914;
+            --theme-accent-hover: #ff1f2b;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Tema Claro */
+        html[data-theme='light'] {
+            --theme-bg-primary: #F0F2F5;
+            --theme-bg-secondary: #FFFFFF;
+            --theme-bg-secondary-rgb: 255, 255, 255;
+            --theme-bg-overlay: rgba(240, 242, 245, 0.85);
+            --theme-text-primary: #1C1C1E;
+            --theme-text-secondary: #636366;
+            --theme-border-color: #D1D1D6;
+            --theme-accent-primary: #D32F2F;
+            --theme-accent-hover: #C62828;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- [2] BASE DO LAYOUT (APLICA AS VARIÁVEIS) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--theme-bg-primary);
+            color: var(--theme-text-primary);
+            padding-top: var(--header-height);
+            transition: background-color var(--transition-fast), color var(--transition-fast);
+        }
+        body.nav-open { overflow: hidden; }
+        .container { width: 100%; max-width: 1700px; margin: 0 auto; padding: 0 2rem; }
+
+        /* --- [3] HEADER E NAVEGAÇÃO DESKTOP --- */
+        .site-header {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: var(--header-height);
+            z-index: 1000;
+            background-color: rgba(var(--theme-bg-secondary-rgb), 0.75);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--theme-border-color);
+            transition: all var(--transition-fast);
+        }
+        .site-header .container { height: 100%; display: flex; justify-content: space-between; align-items: center; }
+        
+        .site-header__logo a { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--theme-text-primary); font-weight: 700; font-size: 1.25rem; }
+        .site-header__logo img { height: 40px; }
+
+        .site-header__nav ul { display: flex; align-items: center; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
+        .site-header__nav a:not(.btn) { color: var(--theme-text-secondary); text-decoration: none; font-weight: 500; position: relative; padding: 0.5rem 0; }
+        .site-header__nav a:not(.btn)::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--theme-accent-primary); transition: width var(--transition-fast) ease; }
+        .site-header__nav a:not(.btn):hover, .site-header__nav a:not(.btn).active { color: var(--theme-text-primary); }
+        .site-header__nav a:not(.btn):hover::after, .site-header__nav a:not(.btn).active::after { width: 100%; }
+
+        /* --- [4] BOTÃO DE TEMA (DESKTOP E MOBILE) --- */
+        .theme-switch {
+            background: transparent;
+            border: 1px solid var(--theme-border-color);
+            color: var(--theme-text-secondary);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .theme-switch:hover {
+            color: var(--theme-accent-primary);
+            border-color: var(--theme-accent-primary);
+            transform: scale(1.1) rotate(15deg);
+        }
+        
+        /* Lógica para mostrar/esconder o ícone correto */
+        .theme-switch .icon-sun { display: none; }
+        .theme-switch .icon-moon { display: block; }
+        html[data-theme='light'] .theme-switch .icon-sun { display: block; }
+        html[data-theme='light'] .theme-switch .icon-moon { display: none; }
+        
+        /* Ajuste específico para o botão no menu mobile */
+        #fullscreen-nav .theme-switch { width: 50px; height: 50px; font-size: 1.4rem; }
+
+        /* --- [5] NAVEGAÇÃO MOBILE (MENU HAMBÚRGUER E OVERLAY) --- */
+        .menu-toggle-btn { display: none; width: 44px; height: 44px; background-color: transparent; border: none; cursor: pointer; z-index: 1002; padding: 10px; }
+        .menu-toggle-btn .line { width: 24px; height: 2px; background-color: var(--theme-text-primary); border-radius: 2px; transition: all 0.3s ease-in-out; display: block; margin: 5px auto; }
+        .nav-open .menu-toggle-btn .line-1 { transform: translateY(7px) rotate(45deg); }
+        .nav-open .menu-toggle-btn .line-2 { opacity: 0; }
+        .nav-open .menu-toggle-btn .line-3 { transform: translateY(-7px) rotate(-45deg); }
+        
+        #fullscreen-nav { position: fixed; inset: 0; z-index: 999; background-color: var(--theme-bg-overlay); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s 0.4s; }
+        #fullscreen-nav.is-active { opacity: 1; visibility: visible; transition-delay: 0s; }
+        #fullscreen-nav ul { list-style: none; text-align: center; padding: 0; }
+        #fullscreen-nav li { opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        #fullscreen-nav.is-active li { opacity: 1; transform: translateY(0); }
+        #fullscreen-nav.is-active li:nth-child(1) { transition-delay: 0.1s; }
+        #fullscreen-nav.is-active li:nth-child(2) { transition-delay: 0.15s; }
+        #fullscreen-nav.is-active li:nth-child(3) { transition-delay: 0.2s; }
+        #fullscreen-nav.is-active li:nth-child(4) { transition-delay: 0.25s; }
+        #fullscreen-nav.is-active li:nth-child(5) { transition-delay: 0.3s; }
+        #fullscreen-nav.is-active li:nth-child(6) { transition-delay: 0.35s; } /* Ajustado para o botão de tema */
+
+        #fullscreen-nav a { display: inline-block; padding: 1rem; font-size: 1.8rem; font-weight: 600; color: var(--theme-text-secondary); text-decoration: none; transition: color var(--transition-fast), transform var(--transition-fast); }
+        #fullscreen-nav a:hover, #fullscreen-nav a.active { color: var(--theme-text-primary); transform: scale(1.1); }
+        
+        /* --- [6] RESPONSIVIDADE --- */
+        @media (max-width: 992px) {
+            .site-header__nav { display: none; } /* Esconde a navegação desktop */
+            .menu-toggle-btn { display: block; }  /* Mostra o botão hambúrguer */
+        }
+    </style>
+</head>
+<body class="page-<%= locals.page_name || 'default' %>">
+
+    <header class="site-header">
+        <div class="container">
+            <div class="site-header__logo">
+                <a href="/">
+                    <img src="/images/1.ico" alt="Logo DenyAnimeHub">
+                    <span>DenyAnimeHub</span>
+                </a>
+            </div>
+
+            <!-- Navegação Desktop (escondida em mobile pelo CSS) -->
+            <nav class="site-header__nav">
+                <ul>
+                    <li><a href="/" class="<%= locals.page_name === 'index' ? 'active' : '' %>">Início</a></li>
+                    <li><a href="/animes" class="<%= ['todos-animes', 'anime-detail'].includes(locals.page_name) ? 'active' : '' %>">Animes</a></li>
+                    <li><a href="/noticias" class="<%= ['noticias', 'detalhe-post'].includes(locals.page_name) ? 'active' : '' %>">Notícias</a></li>
+                    
+                    <% if (userIsLoggedIn) { %>
+                        <li><a href="/perfil" class="<%= ['perfil', 'editar-perfil'].includes(locals.page_name) ? 'active' : '' %>">Perfil</a></li>
+                        <li><a href="/auth/logout" class="btn btn--small btn--primary">Sair</a></li>
+                    <% } else { %>
+                        <li><a href="/login" class="btn btn--small btn--primary <%= locals.page_name === 'login-page' ? 'active' : '' %>">Login</a></li>
+                    <% } %>
+                    
+                    <!-- [CORREÇÃO] Botão de tema para desktop adicionado aqui -->
+                    <li>
+                        <button class="theme-switch" aria-label="Alternar tema">
+                            <i class="fas fa-moon icon-moon"></i>
+                            <i class="fas fa-sun icon-sun"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Botão de Menu (visível apenas em mobile) -->
+            <button class="menu-toggle-btn" id="menu-toggle-btn" aria-label="Abrir menu" aria-expanded="false">
+                <span class="line line-1"></span>
+                <span class="line line-2"></span>
+                <span class="line line-3"></span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Menu de Tela Cheia (controlado por JS) -->
+    <div id="fullscreen-nav">
+        <ul>
+            <li><a href="/" class="<%= locals.page_name === 'index' ? 'active' : '' %>">Início</a></li>
+            <li><a href="/animes" class="<%= ['todos-animes', 'anime-detail'].includes(locals.page_name) ? 'active' : '' %>">Animes</a></li>
+            <li><a href="/noticias" class="<%= ['noticias', 'detalhe-post'].includes(locals.page_name) ? 'active' : '' %>">Notícias</a></li>
+            
+            <% if (userIsLoggedIn) { %>
+                <li><a href="/perfil" class="<%= ['perfil', 'editar-perfil'].includes(locals.page_name) ? 'active' : '' %>">Perfil</a></li>
+                <li><a href="/auth/logout" class="btn btn--primary">Sair</a></li>
+            <% } else { %>
+                <li><a href="/login" class="btn btn--primary <%= locals.page_name === 'login-page' ? 'active' : '' %>">Login / Registro</a></li>
+            <% } %>
+            
+            <li>
+                <!-- [CORREÇÃO] Botão usa a classe '.theme-switch', sem ID -->
+                <button class="theme-switch" aria-label="Alternar tema">
+                    <i class="fas fa-moon icon-moon"></i>
+                    <i class="fas fa-sun icon-sun"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <main class="main-content-wrapper">
+        <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <!-- [CORREÇÃO] JAVASCRIPT UNIFICADO E ROBUSTO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const htmlElement = document.documentElement;
+
+            // --- LÓGICA DO MENU DE TELA CHEIA ---
+            const menuToggleBtn = document.getElementById('menu-toggle-btn');
+            const fullscreenNav = document.getElementById('fullscreen-nav');
+
+            if (menuToggleBtn && fullscreenNav) {
+                const toggleMenu = () => {
+                    const isActive = fullscreenNav.classList.toggle('is-active');
+                    body.classList.toggle('nav-open', isActive);
+                    menuToggleBtn.setAttribute('aria-expanded', isActive);
+                };
+                menuToggleBtn.addEventListener('click', toggleMenu);
+            }
+
+            // --- LÓGICA DE TEMA GLOBAL E INFALÍVEL ---
+            // [CORREÇÃO] Seleciona TODOS os botões de tema pela classe
+            const themeToggleBtns = document.querySelectorAll('.theme-switch');
+
+            // Função que aplica o tema salvo no localStorage ou o padrão 'dark'
+            const applySavedTheme = () => {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                htmlElement.setAttribute('data-theme', savedTheme);
+            };
+
+            // Função que alterna o tema, atualiza o atributo e salva no localStorage
+            const toggleTheme = () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            };
+
+            // Aplica o tema salvo assim que a página carrega
+            applySavedTheme();
+
+            // [CORREÇÃO] Adiciona o evento de clique a CADA botão encontrado
+            themeToggleBtns.forEach(btn => {
+                btn.addEventListener('click', toggleTheme);
+            });
+        });
+    </script>
+     <script src="/js/theme.js" defer></script>
+</body>
+</html>

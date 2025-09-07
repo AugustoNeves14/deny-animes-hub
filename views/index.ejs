@@ -1,0 +1,238 @@
+<!-- ======================================= -->
+<!-- SEÇÃO HERO CAROUSEL -->
+<!-- ======================================= -->
+<section id="hero-carousel" class="hero-carousel-section animated-section fade-in">
+    <div class="container">
+        <header class="hero-carousel-header">
+            <h2><i class="fas fa-meteor"></i> Em Órbita Agora</h2>
+            <p>Os lançamentos e destaques mais explosivos!</p>
+        </header>
+        <div class="hero-carousel-container">
+             <% if (locals.animes && animes.length > 0) { %>
+                <% animes.slice(0, 15).forEach(anime => { %>
+                    <!-- CORREÇÃO: Link agora usa anime.slug -->
+                    <a href="/anime/<%= anime.slug %>" class="hero-anime-card" title="<%= anime.titulo %>">
+                        <div class="hero-card__image">
+                            <img src="<%= anime.imagemCapa %>" alt="Capa <%= anime.titulo %>" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder_poster.png';">
+                        </div>
+                        <div class="hero-card__content">
+                            <h4 class="hero-card__title"><%= anime.titulo %></h4>
+                            <span class="hero-card__rating"><i class="fas fa-star"></i> <%= anime.classificacao || 'N/A' %></span>
+                        </div>
+                    </a>
+                <% }) %>
+             <% } else { %>
+                <p class="status-message">Carregando animes em destaque...</p>
+             <% } %>
+        </div>
+    </div>
+</section>
+
+<!-- ======================================= -->
+<!-- LAYOUT PRINCIPAL (CONTEÚDO E SIDEBAR) -->
+<!-- ======================================= -->
+<div class="main-layout container">
+    <main class="main-content-area">
+        <!-- SEÇÃO DE FILTROS -->
+        <section class="filters-section animated-section fade-in-up">
+            <header class="filters-header">
+                <h2><i class="fas fa-atom"></i> Filtrar Dimensões</h2>
+                <p>Refine sua busca no multiverso DenyAnimeHub!</p>
+            </header>
+            <form class="filter-controls" id="anime-filter-form">
+                <div class="filter-group">
+                    <label for="search-filter"><i class="fas fa-search"></i> Busca Direta</label>
+                    <input type="search" id="search-filter" name="q" placeholder="Digite o nome do anime...">
+                </div>
+                <div class="filter-group">
+                    <label for="genre-filter"><i class="fas fa-theater-masks"></i> Gênero</label>
+                    <div class="select-wrapper">
+                        <select id="genre-filter" name="genre">
+                            <option value="">Todos</option>
+                            <option value="Ação">Ação</option><option value="Aventura">Aventura</option><option value="Comédia">Comédia</option><option value="Drama">Drama</option><option value="Fantasia">Fantasia</option><option value="Sci-Fi">Sci-Fi</option><option value="Shonen">Shonen</option><option value="Romance">Romance</option><option value="Isekai">Isekai</option><option value="Horror">Horror</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                     <button type="reset" class="btn btn--secondary" id="reset-filters"><i class="fas fa-undo-alt"></i> Limpar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- SEÇÃO DE LISTAGEM DE ANIMES (CARROSSÉIS E GRID) -->
+        <section id="animes" class="anime-list animated-section fade-in-up">
+             
+             <!-- Container para os resultados da busca/filtro (inicialmente oculto) -->
+             <div class="anime-grid-results" id="filtered-results-container" style="display: none;"></div>
+             
+             <!-- Container para os carrosséis alfabéticos originais -->
+             <div id="original-carousels-container">
+                <% if (locals.animes && animes.length > 0) { %>
+                    <%
+                        const animesAgrupados = animes.reduce((acc, anime) => {
+                            const tituloStr = String(anime.titulo || '');
+                            if (!tituloStr) return acc;
+                            const primeiraLetra = tituloStr[0].toUpperCase();
+                            let grupo = null;
+                            if (/[A-Z]/.test(primeiraLetra)) {
+                                if (/[A-E]/.test(primeiraLetra)) grupo = 'A - E';
+                                else if (/[F-J]/.test(primeiraLetra)) grupo = 'F - J';
+                                else if (/[K-O]/.test(primeiraLetra)) grupo = 'K - O';
+                                else if (/[P-T]/.test(primeiraLetra)) grupo = 'P - T';
+                                else if (/[U-Z]/.test(primeiraLetra)) grupo = 'U - Z';
+                            } else {
+                                grupo = '#'; // Grupo para títulos que não começam com letra
+                            }
+                            if (grupo) {
+                                if (!acc[grupo]) acc[grupo] = [];
+                                acc[grupo].push(anime);
+                            }
+                            return acc;
+                        }, {});
+                    %>
+
+                    <% Object.keys(animesAgrupados).sort((a,b) => a.localeCompare(b)).forEach(grupo => { %>
+                        <section class="anime-carousel-section">
+                            <h3 class="carousel-title"><%= grupo %></h3>
+                            <div class="anime-carousel-container">
+                                <% animesAgrupados[grupo].forEach(anime => { %>
+                                    <!-- CORREÇÃO: Adicionados data-attributes para o filtro JS funcionar -->
+                                    <article class="anime-card" data-title="<%= anime.titulo.toLowerCase() %>" data-genres="<%= Array.isArray(anime.generos) ? anime.generos.join(',').toLowerCase() : '' %>">
+                                       <div class="anime-card__image-container">
+                                            <!-- CORREÇÃO: Link agora usa anime.slug -->
+                                            <a href="/anime/<%= anime.slug %>" title="Ver detalhes de <%= anime.titulo %>">
+                                                <img src="<%= anime.imagemCapa %>" alt="Capa <%= anime.titulo %>" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder_poster.png';">
+                                            </a>
+                                       </div>
+                                       <div class="anime-card__content">
+                                           <h3 class="anime-card__title"><a href="/anime/<%= anime.slug %>"><%= anime.titulo %></a></h3>
+                                           <div class="anime-card__info">
+                                               <span><i class="fas fa-star"></i> <%= anime.classificacao || 'N/A' %></span>
+                                               <span><i class="fas fa-calendar-alt"></i> <%= anime.anoLancamento %></span>
+                                           </div>
+                                           <div class="anime-card__actions">
+                                               <!-- CORREÇÃO: Link agora usa anime.slug -->
+                                               <a href="/anime/<%= anime.slug %>" class="btn btn--secondary btn--small" style="width:100%; justify-content:center;">Ver Detalhes</a>
+                                           </div>
+                                       </div>
+                                    </article>
+                                <% }) %>
+                            </div>
+                        </section>
+                    <% }) %>
+                <% } else { %>
+                    <p class="status-message">Nenhum anime encontrado no catálogo.</p>
+                <% } %>
+             </div>
+             <div id="no-results-message" class="status-message" style="display: none;">Nenhum anime encontrado com os filtros selecionados.</div>
+        </section>
+        
+        <!-- SEÇÃO COMUNIDADE -->
+        <section id="community-hub" class="community-hub-section animated-section fade-in-up">
+            <h2 class="section-title"><i class="fab fa-discord"></i> Conecte-se à Comunidade</h2>
+            <p class="section-subtitle">Junte-se ao nosso servidor no Discord para discussões, eventos e muito mais!</p>
+            <div class="discord-cta">
+                <a href="https://discord.gg/WQbFau2crf" target="_blank" class="btn btn--primary btn--large btn--icon-left">
+                    <i class="fab fa-discord"></i> Entrar no QG DenyAnimeHub
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar animated-section fade-in-up">
+        <div class="sidebar-widget">
+           <h3><i class="fas fa-fire-alt"></i> Top Semanal</h3>
+           <ol class="ranking-list">
+                <% if (locals.topAnimes && topAnimes.length > 0) { %>
+                    <% topAnimes.forEach(anime => { %>
+                    <li>
+                       <!-- CORREÇÃO: Link agora usa anime.slug -->
+                       <a href="/anime/<%= anime.slug %>">
+                            <img src="<%= anime.imagemCapa %>" alt="Thumbnail <%= anime.titulo %>" onerror="this.onerror=null;this.src='/images/placeholder_poster.png';">
+                            <div class="rank-info">
+                                <span class="title"><%= anime.titulo %></span>
+                                <span class="details"><span><i class="fas fa-star"></i> <%= anime.classificacao || 'N/A' %></span><span><i class="fas fa-eye"></i> <%= (anime.views || 0).toLocaleString('pt-BR') %></span></span>
+                            </div>
+                       </a>
+                   </li>
+                   <% }) %>
+                <% } else { %>
+                    <li><p class="status-message">Não foi possível carregar o ranking.</p></li>
+                <% } %>
+           </ol>
+       </div>
+    </aside>
+</div>
+
+<!-- Estilos para garantir que o carrossel e o grid de resultados funcionem -->
+<style>
+    .anime-carousel-container { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(190px, 1fr); overflow-x: auto; overflow-y: hidden; gap: var(--space-4); padding: var(--space-3) 0 var(--space-5) 0; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--accent-primary) var(--bg-tertiary); }
+    .anime-carousel-container::-webkit-scrollbar { height: 12px; }
+    .anime-carousel-container::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 10px; }
+    .anime-carousel-container::-webkit-scrollbar-thumb { background-color: var(--accent-primary); border-radius: 10px; border: 3px solid var(--bg-tertiary); }
+    .anime-grid-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--space-5); }
+</style>
+
+<!-- JAVASCRIPT INTEGRADO PARA FILTROS E BUSCA -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('anime-filter-form');
+    if (!filterForm) return;
+
+    const searchInput = document.getElementById('search-filter');
+    const genreInput = document.getElementById('genre-filter');
+    
+    const resultsContainer = document.getElementById('filtered-results-container');
+    const originalContainer = document.getElementById('original-carousels-container');
+    const noResultsMessage = document.getElementById('no-results-message');
+    
+    // Pega uma cópia estática dos cards no início
+    const allAnimeCards = Array.from(document.querySelectorAll('#original-carousels-container .anime-card'));
+
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedGenre = genreInput.value.toLowerCase();
+        
+        const isFilterActive = searchTerm || selectedGenre;
+
+        if (isFilterActive) {
+            originalContainer.style.display = 'none';
+            resultsContainer.style.display = 'grid';
+
+            const filteredCards = allAnimeCards.filter(card => {
+                const title = card.dataset.title || '';
+                const genres = card.dataset.genres || '';
+                
+                const matchesSearch = title.includes(searchTerm);
+                const matchesGenre = !selectedGenre || genres.includes(selectedGenre);
+                
+                return matchesSearch && matchesGenre;
+            });
+            
+            resultsContainer.innerHTML = ''; // Limpa resultados anteriores
+            if (filteredCards.length > 0) {
+                filteredCards.forEach(card => resultsContainer.appendChild(card.cloneNode(true)));
+                noResultsMessage.style.display = 'none';
+            } else {
+                noResultsMessage.style.display = 'block';
+            }
+        } else {
+            // Se não há filtro, mostra o conteúdo original e esconde os resultados
+            originalContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    genreInput.addEventListener('change', applyFilters);
+    
+    filterForm.addEventListener('reset', () => {
+        // Usa um timeout para garantir que os campos do formulário sejam resetados antes de reavaliar
+        setTimeout(() => {
+            applyFilters();
+        }, 0);
+    });
+});
+</script>

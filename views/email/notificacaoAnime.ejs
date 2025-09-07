@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title><%= tipoNotificacao %>: <%= anime.titulo %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos Globais e Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; background-color: #121212; font-family: 'Poppins', sans-serif; }
+
+        /* Estrutura Principal */
+        .wrapper { width: 100%; table-layout: fixed; background-color: #121212; padding: 40px 0; }
+        .main { background-color: #181818; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; color: #f5f5f5; border-radius: 12px; border: 1px solid #303030; }
+        
+        /* Cabeçalho com Logo */
+        .header { text-align: center; padding: 20px; background-color: #000000; border-bottom: 3px solid #E50914; border-radius: 12px 12px 0 0; }
+        .logo { width: 50px; height: auto; }
+        
+        /* Conteúdo do E-mail */
+        .content { padding: 30px 40px; }
+        .content h2 { font-size: 24px; margin: 0 0 10px; color: #ffffff; font-weight: 700; }
+        .content p { font-size: 16px; line-height: 1.7; color: #b3b3b3; margin-bottom: 20px; }
+        .thumbnail-link { display: block; margin: 25px 0; text-decoration: none; }
+        .thumbnail { width: 100%; height: auto; border-radius: 8px; border: 2px solid #303030; display: block; }
+        
+        /* Botão de Ação (CTA) */
+        .button-wrapper { text-align: center; margin: 30px 0; }
+        .button { display: inline-block; background-color: #E50914; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; }
+        .button:hover { background-color: #ff1f2b; transform: scale(1.05); }
+
+        /* [APRIMORADO] Rodapé e Assinatura */
+        .footer { padding: 30px; text-align: center; }
+        .signature {
+            color: #f5f5f5;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+            position: relative;
+        }
+        /* Efeito de sublinhado Akatsuki */
+        .signature::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            bottom: -5px;
+            left: 25%;
+            background-color: #E50914;
+        }
+        .socials { margin-bottom: 25px; }
+        .socials a { margin: 0 10px; display: inline-block; text-decoration: none; }
+        .socials img { width: 32px; height: 32px; transition: opacity 0.3s; } /* Ícones maiores */
+        .socials a:hover img { opacity: 0.8; }
+        .footer-text { font-size: 12px; color: #a0a0a0; line-height: 1.5; }
+        .unsubscribe-link { color: #888; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <!-- CABEÇALHO -->
+            <tr>
+                <td class="header">
+                    <a href="<%= process.env.APP_URL || '#' %>" target="_blank">
+                        <img src="https://deny-animes-hub.onrender.com/images/1.ico" alt="DenyAnimeHub Logo" class="logo">
+                    </a>
+                </td>
+            </tr>
+            <!-- CONTEÚDO PRINCIPAL -->
+            <tr>
+                <td class="content">
+                    <h2><%= tipoNotificacao %></h2>
+                    <p>Olá, fã de animes!</p>
+                    <p>Temos uma novidade incrível para você na nossa plataforma que você não pode perder:</p>
+                    
+                    <a href="<%= urlDestino %>" class="thumbnail-link" target="_blank">
+                        <img src="<%= anime.imagemCapa %>" alt="Capa de <%= anime.titulo %>" class="thumbnail">
+                    </a>
+
+                    <% if (episodio) { %>
+                        <p style="font-size: 18px; text-align: center; color: #ffffff;">O <strong>Episódio <%= episodio.numero %></strong> de <strong><%= anime.titulo %></strong> já está disponível!</p>
+                    <% } else { %>
+                        <p style="font-size: 18px; text-align: center; color: #ffffff;">O novo anime <strong><%= anime.titulo %></strong> foi adicionado ao nosso catálogo!</p>
+                    <% } %>
+                    
+                    <div class="button-wrapper">
+                        <a href="<%= urlDestino %>" target="_blank" class="button">
+                            <% if (episodio) { %> Assistir Agora <% } else { %> Ver Detalhes <% } %>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <!-- ASSINATURA E RODAPÉ PROFISSIONAIS -->
+            <tr>
+                <td class="footer">
+                    <p class="signature">Equipe DenyAnimeHub</p>
+                    <div class="socials">
+                        <!-- Substitua # pelos seus links reais. Ícones hospedados para compatibilidade máxima. -->
+                        <a href="#" target="_blank"><img src="https://i.ibb.co/L8dCf6Y/discord.png" alt="Discord"></a>
+                        <a href="#" target="_blank"><img src="https://i.ibb.co/wJ15R1D/instagram.png" alt="Instagram"></a>
+                        <a href="#" target="_blank"><img src="https://i.ibb.co/mHk5xYh/telegram.png" alt="Telegram"></a>
+                    </div>
+                    <p class="footer-text">
+                        Você está recebendo este e-mail porque é um membro valioso da nossa comunidade.
+                        <br>
+                        <a href="#" class="unsubscribe-link">Cancelar inscrição</a>
+                    </p>
+                    <p class="footer-text">© <%= new Date().getFullYear() %> DenyAnimeHub. Todos os direitos reservados.</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
