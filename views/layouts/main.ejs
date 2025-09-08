@@ -16,7 +16,8 @@
     <!-- CSS Externo (APENAS para conteúdo específico das páginas, não layout) -->
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/images/1.ico" type="image/ico">
-    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1346896143567817"
+     crossorigin="anonymous"></script>
     <!-- ================================================================================================== -->
     <!--      ESTILOS GLOBAIS E UNIFICADOS - V10.0 "Rinnegan" (FONTE DA VERDADE)                          -->
     <!-- ================================================================================================== -->
@@ -224,7 +225,19 @@
     </main>
 
     <%- include('../partials/footer') %>
+    <!-- No head do seu layout -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= process.env.ADSENSE_CLIENT_ID %>" crossorigin="anonymous"></script>
 
+    <!-- Exemplo de anúncio no corpo -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="<%= process.env.ADSENSE_CLIENT_ID %>"
+        data-ad-slot="your_ad_slot_id"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
     <!-- [CORREÇÃO] JAVASCRIPT UNIFICADO E ROBUSTO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {

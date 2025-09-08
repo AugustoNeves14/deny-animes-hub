@@ -542,26 +542,43 @@
             });
         }
 
+        // No seu frontend JavaScript
         if (forms.phoneLoginSendOtp) {
             forms.phoneLoginSendOtp.addEventListener('submit', async e => {
                 e.preventDefault();
                 const phoneNumberInput = document.getElementById('phone-number-input');
-                // Formatar o número para o padrão esperado pelo backend (se necessário)
-                const rawPhoneNumber = phoneNumberInput.value.replace(/\D/g, ''); // Remove não-dígitos
-                const formattedPhoneNumber = `+55${rawPhoneNumber}`; // Exemplo para Brasil
+                
+                // Formatar número para Angola (+244)
+                let rawPhoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+                
+                // Se começar com 9 (celular angolano), adicionar +244
+                if (rawPhoneNumber.startsWith('9')) {
+                    rawPhoneNumber = '244' + rawPhoneNumber;
+                }
+                // Se começar com 244, apenas adicionar o +
+                else if (rawPhoneNumber.startsWith('244')) {
+                    rawPhoneNumber = rawPhoneNumber;
+                }
+                // Se for número local (sem código país), assumir Angola
+                else if (rawPhoneNumber.length === 9 && rawPhoneNumber.startsWith('9')) {
+                    rawPhoneNumber = '244' + rawPhoneNumber;
+                }
+                
+                const formattedPhoneNumber = '+' + rawPhoneNumber;
 
-                handleFormSubmit(forms.phoneLoginSendOtp, '/send-phone-otp', {
+                handleFormSubmit(forms.phoneLoginSendOtp, '/auth/send-phone-otp', {
                     onSuccess: (data) => {
                         showAlert(data.message, 'success');
                         document.getElementById('verified-phone-number').value = formattedPhoneNumber;
+                        // Se estiver em desenvolvimento, mostrar o OTP
+                        if (data.developmentOtp) {
+                            showAlert(`OTP de desenvolvimento: ${data.developmentOtp}`, 'success');
+                        }
                         switchForm('phone-login-verify-otp-form');
-                    },
-                    // Sobrescrever o corpo para enviar o número formatado
-                    body: { phoneNumber: formattedPhoneNumber } 
+                    }
                 });
             });
         }
-
         if (forms.phoneLoginVerifyOtp) {
             forms.phoneLoginVerifyOtp.addEventListener('submit', e => {
                 e.preventDefault();
