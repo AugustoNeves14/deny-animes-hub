@@ -1,42 +1,42 @@
 // ==========================================================================
-// == SCRIPT CENTRAL DE PROTEÇÃO E ALERTA - NÍVEL KAGE (VERSÃO MELHORADA)  ==
-// == Autor: Gemini AI - Focado em Inteligência e Baixo Falso-Positivo   ==
+// == ARQUIVO CENTRAL DE PROTEÇÃO E ALERTA - NÍVEL KAGE                      ==
+// == Este script bloqueia ações, detecta DevTools e envia alertas ao      ==
+// == servidor para notificação por e-mail.                                ==
 // ==========================================================================
 
+// [CORREÇÃO] O código agora está envolto em uma IIFE (Immediately Invoked Function Expression)
+// A sintaxe (function() { ... })(); garante que o código seja executado imediatamente
+// e que suas variáveis não entrem em conflito com outros scripts.
 (function() {
     'use strict';
 
-    // Garante que o script seja executado apenas uma vez, mesmo que seja importado acidentalmente de novo.
+    // Verificação para garantir que o script não seja carregado múltiplas vezes
     if (window.protectionScriptLoaded) {
         return;
     }
     window.protectionScriptLoaded = true;
 
-    // --- CONFIGURAÇÕES GERAIS ---
-    const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-    const THROTTLE_DELAY = 10000; // Intervalo (ms) para evitar spam de alertas do mesmo tipo.
-    const DETECTOR_INTERVAL = 1000; // Intervalo (ms) para verificar a abertura do DevTools.
-
-    let lastAlerts = {}; // Armazena o timestamp do último alerta enviado para cada tipo.
+    // Constantes e variáveis de controle
+    const IS_PRODUCTION = window.location.hostname !== 'localhost';
+    const THROTTLE_DELAY = 10000; // 10 segundos de espera entre alertas do mesmo tipo
+    let lastAlerts = {};
 
     /**
-     * Envia um alerta de segurança para o back-end.
-     * Esta função é o coração do sistema de notificação.
-     * @param {string} eventType - O tipo de evento detectado (ex: 'devtools-opened', 'right-click').
-     * @param {string} severity - A gravidade do evento ('low', 'medium', 'high').
+     * Envia um evento de segurança para o back-end para log e notificação por e-mail.
+     * @param {string} eventType - O tipo de evento (ex: 'devtools-opened', 'right-click').
      */
-    async function sendSecurityAlert(eventType, severity = 'medium') {
+    async function sendSecurityAlert(eventType) {
+        // Controle para não sobrecarregar o servidor com alertas repetidos
         const now = Date.now();
         if (lastAlerts[eventType] && (now - lastAlerts[eventType] < THROTTLE_DELAY)) {
-            return; // Aborta se um alerta recente do mesmo tipo já foi enviado.
+            return; // Aborta se um alerta recente do mesmo tipo já foi enviado
         }
         lastAlerts[eventType] = now;
+    
+        console.warn(`[PROTEÇÃO] Ação suspeita detectada: ${eventType}. Evento registrado.`);
 
-        console.warn(`[PROTEÇÃO KAGE] Ação suspeita detectada: ${eventType} (Gravidade: ${severity})`);
-
-        // Em um ambiente real, esta chamada para a API notificaria o administrador.
-        // Certifique-se de que a rota '/api/security/log-event' existe e está funcional no seu back-end.
         try {
+            // A chamada fetch é feita para a rota da API de segurança
             await fetch('/api/security/log-event', {
                 method: 'POST',
                 headers: {
@@ -44,146 +44,108 @@
                 },
                 body: JSON.stringify({
                     eventType: eventType,
-                    severity: severity,
                     pageUrl: window.location.href,
-                    userAgent: navigator.userAgent,
-                    timestamp: new Date().toISOString()
+                    userAgent: navigator.userAgent
                 }),
             });
         } catch (error) {
-            // A falha é silenciosa no console do usuário para não dar pistas.
-            // O erro é logado internamente para que o desenvolvedor possa ver.
-            console.error('Falha ao enviar log de segurança para o servidor.', error);
+            // Falha silenciosamente para não alertar o usuário sobre o erro no log do console.
+            console.error('Falha ao enviar log de segurança para o servidor.');
         }
     }
 
-    // --- MÓDULO 1: BLOQUEIO DE AÇÕES DO USUÁRIO ---
-
-    // 1.1. Bloqueia o menu de contexto (clique direito e toque longo em mobile)
+    // 1. Desabilitar o menu de contexto (clique direito do mouse)
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-        sendSecurityAlert("Menu de Contexto (Clique Direito)", 'low');
+        sendSecurityAlert("Menu de Contexto (Clique Direito)");
     }, false);
 
-    // 1.2. Bloqueia a seleção de texto e a funcionalidade de cópia (Ctrl+C / Cmd+C)
-    // A propriedade CSS é mais eficiente e funciona em todos os dispositivos.
+    // 2. Desabilitar a seleção de texto e cópia
     const style = document.createElement('style');
-    style.innerHTML = `
-      body, html {
-        -webkit-user-select: none; /* Safari */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* IE/Edge */
-        user-select: none; /* Padrão */
-        -webkit-touch-callout: none; /* Desabilita o menu de toque longo no iOS */
-      }
-    `;
+    style.innerHTML = 'body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }';
     document.head.appendChild(style);
 
-    document.addEventListener('copy', (e) => {
+    document.addEventListener('copy', function(e) {
         e.preventDefault();
-        sendSecurityAlert("Tentativa de Cópia (Ctrl+C)", 'low');
+        sendSecurityAlert("Tentativa de Cópia (Ctrl+C)");
+        return false;
     });
 
-    // 1.3. Bloqueia atalhos de teclado comuns para inspeção e salvamento
+    // 3. Desabilitar atalhos de teclado comuns para ferramentas de desenvolvedor
     document.addEventListener('keydown', function(e) {
-        // Bloqueia F12
+        const key = e.key.toUpperCase();
         if (e.key === "F12" || e.keyCode === 123) {
             e.preventDefault();
-            sendSecurityAlert("Tecla F12 Pressionada", 'medium');
-            return;
+            sendSecurityAlert("Tecla F12 Pressionada");
         }
-        // Bloqueia Ctrl+Shift+I/J/C (Inspecionar, Console, Inspecionar Elemento)
-        if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+        if (e.ctrlKey && e.shiftKey && key === "I") {
             e.preventDefault();
-            sendSecurityAlert(`Atalho de Inspeção (${e.key.toUpperCase()})`, 'high');
-            return;
+            sendSecurityAlert("Atalho Inspecionar (Ctrl+Shift+I)");
         }
-        // Bloqueia Ctrl+U (Ver código-fonte) e Ctrl+S (Salvar página)
-        if (e.ctrlKey && ['U', 'S'].includes(e.key.toUpperCase())) {
+        if (e.ctrlKey && e.shiftKey && key === "J") {
             e.preventDefault();
-            sendSecurityAlert(`Atalho de Página (${e.key.toUpperCase()})`, 'medium');
-            return;
+            sendSecurityAlert("Atalho Console (Ctrl+Shift+J)");
+        }
+        if (e.ctrlKey && e.shiftKey && key === "C") {
+            e.preventDefault();
+            sendSecurityAlert("Atalho Inspecionar Elemento (Ctrl+Shift+C)");
+        }
+        if (e.ctrlKey && key === "U") {
+            e.preventDefault();
+            sendSecurityAlert("Atalho Ver Código-Fonte (Ctrl+U)");
+        }
+        if (e.ctrlKey && key === "S") {
+            e.preventDefault();
+            sendSecurityAlert("Atalho Salvar Página (Ctrl+S)");
         }
     }, false);
 
-
-    // --- MÓDULO 2: DETECÇÃO INTELIGENTE DE DEVTOOLS ---
-
-    const devToolsDetector = {
-        isOpen: false,
-        isBlocked: false,
-        detectionTries: 0,
-        threshold: 170, // Sensibilidade para a detecção por tamanho de janela.
-
-        // Técnica 1: Verifica a diferença entre o tamanho da janela externa e interna.
-        // Funciona bem para DevTools ancorado na janela.
-        checkSize: function() {
+    // 4. Detecção robusta de abertura das Ferramentas de Desenvolvedor (DevTools)
+    const devtools = {
+        open: false,
+        threshold: 170, // Sensibilidade da detecção
+        check() {
             const widthThreshold = window.outerWidth - window.innerWidth > this.threshold;
             const heightThreshold = window.outerHeight - window.innerHeight > this.threshold;
-            return widthThreshold || heightThreshold;
-        },
 
-        // Técnica 2: Mede o tempo de execução de um 'debugger'.
-        // Se as ferramentas de desenvolvedor estiverem abertas, o tempo será muito maior.
-        // Esta técnica é mais robusta contra DevTools flutuantes.
-        checkDebugger: function() {
-            const startTime = performance.now();
-            debugger; // Esta linha só pausa se o DevTools estiver aberto.
-            const endTime = performance.now();
-            // Se demorar mais de 100ms, é quase certeza que o DevTools interceptou.
-            return (endTime - startTime) > 100;
-        },
-
-        // Ação a ser tomada quando as DevTools são detectadas.
-        onDevToolsOpen: function() {
-            if (this.isBlocked) return; // Se a página já está bloqueada, não faz nada.
-            
-            this.isOpen = true;
-            sendSecurityAlert("Ferramentas de Desenvolvedor Abertas", 'high');
-
-            // Ação drástica apenas em ambiente de produção e após detecção confirmada.
-            if (IS_PRODUCTION) {
-                this.detectionTries++;
-                
-                // A partir da segunda detecção, a ação se torna mais severa.
-                if (this.detectionTries > 1) {
-                    this.isBlocked = true; // Marca como bloqueado para evitar loops.
-                    
-                    // Armadilha 1: Congela o debugger, tornando as ferramentas inúteis.
-                    setInterval(() => {
-                        debugger;
-                    }, 50);
-
-                    // Armadilha 2: Mensagem de bloqueio final e redirecionamento/bloqueio.
-                    console.error("[VIOLAÇÃO] Atividade de depuração confirmada. Acesso bloqueado.");
-                    setTimeout(() => {
-                        document.body.innerHTML = `
-                            <div style='position:fixed; inset:0; background:black; color:red; display:flex; align-items:center; justify-content:center; font-size:1.5rem; text-align:center; font-family:monospace; z-index:999999;'>
-                                <h1>ACESSO NEGADO<br>Atividade Suspeita Detectada (Código: KAGE-01)</h1>
-                            </div>`;
-                        // Opcional: redirecionar para uma página de bloqueio.
-                        // window.location.href = "/acesso-negado";
-                    }, 1000);
-                }
-            }
-        },
-
-        // Lógica principal de verificação
-        runCheck: function() {
-            if (this.checkSize() || this.checkDebugger()) {
-                if (!this.isOpen) {
+            if (widthThreshold || heightThreshold) {
+                if (!this.open) {
+                    sendSecurityAlert("Ferramentas de Desenvolvedor Abertas");
                     this.onDevToolsOpen();
                 }
+                this.open = true;
             } else {
-                this.isOpen = false;
-                this.detectionTries = 0; // Reseta as tentativas se o DevTools for fechado.
+                this.open = false;
+            }
+        },
+        // Ação a ser tomada quando as DevTools são abertas
+        onDevToolsOpen() {
+            // Em ambiente de produção, executa ações mais drásticas.
+            if (IS_PRODUCTION) {
+                // Armadilha 1: Congela o debugger, tornando as ferramentas inúteis
+                setInterval(() => {
+                    debugger;
+                }, 50);
+
+                // Armadilha 2: Limpa o console repetidamente
+                setInterval(() => {
+                    console.clear();
+                    console.warn('[VIOLAÇÃO] Atividade de depuração detectada. A página será recarregada.');
+                }, 1500);
+
+                // Armadilha 3: Redireciona o usuário após um tempo
+                setTimeout(() => {
+                    document.body.innerHTML = "<div style='position:fixed;inset:0;background:black;color:red;display:flex;align-items:center;justify-content:center;font-size:2rem;text-align:center;'><h1>ACESSO NEGADO<br>Atividade Suspeita Detectada</h1></div>";
+                    // Alternativamente, redirecionar:
+                    // window.location.href = "/acesso-negado";
+                }, 2000);
             }
         }
     };
 
-    // Inicia o monitoramento contínuo em intervalos regulares.
-    setInterval(() => devToolsDetector.runCheck(), DETECTOR_INTERVAL);
+    // Roda a verificação de DevTools em um intervalo regular
+    setInterval(() => devtools.check(), 1000);
 
-    console.log("Módulo de Proteção Akatsuki Nível Kage (v2.0): Ativado e monitorando.");
+    console.log("Módulo de Proteção Akatsuki Nível Kage: Ativado.");
 
 })();
