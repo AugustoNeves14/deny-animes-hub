@@ -33,6 +33,8 @@
             --error: #EF5350;
             --shadow-color: rgba(0, 0, 0, 0.5);
             --font-family: 'Poppins', sans-serif;
+            --google-btn-bg: #4285F4; /* Cor do Google */
+            --google-btn-hover: #357ae8;
         }
 
         body.light-theme {
@@ -158,6 +160,7 @@
             cursor: pointer;
             font-size: 1rem;
             transition: color 0.3s ease;
+            z-index: 10; /* Garante que o ícone seja clicável */
         }
         .password-toggle:hover {
             color: var(--accent-primary);
@@ -181,6 +184,65 @@
         }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
         
+        /* Botões de provedores sociais */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn--social {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .btn--google {
+            background-color: var(--google-btn-bg);
+            color: white;
+        }
+        .btn--google:hover {
+            background-color: var(--google-btn-hover);
+        }
+
+        .btn--phone {
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn--phone:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 2rem 0;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .divider:not(:empty)::before {
+            margin-right: .75em;
+        }
+        .divider:not(:empty)::after {
+            margin-left: .75em;
+        }
+
         .auth-form__footer { margin-top: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-secondary); }
         .auth-form__footer p { margin-bottom: 0.75rem; }
         .auth-form__footer a { font-weight: 500; color: var(--accent-primary); cursor: pointer; text-decoration: none; }
@@ -195,7 +257,6 @@
     </style>
 </head>
 <body class="login-page">
-
     <div class="auth-container">
         <div class="theme-toggle-container">
             <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
@@ -216,12 +277,25 @@
                 <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
                 <span class="password-toggle" data-target="login-password"><i class="fas fa-eye-slash"></i></span>
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Entrar <i class="fas fa-arrow-right"></i></button></div>
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">Entrar <i class="fas fa-arrow-right"></i></button>
+            </div>
             <div class="auth-form__footer">
                 <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a>.</p>
                 <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
-                <a href="/" class="home-link">Voltar ao Início</a>
             </div>
+
+            <div class="divider">ou</div>
+
+            <div class="social-login">
+                <button type="button" class="btn btn--social btn--google" id="google-login-btn">
+                    <i class="fab fa-google"></i> Continuar com Google
+                </button>
+                <button type="button" class="btn btn--social btn--phone" id="phone-login-btn">
+                    <i class="fas fa-phone-alt"></i> Continuar com Telefone
+                </button>
+            </div>
+            <a href="/" class="home-link">Voltar ao Início</a>
         </form>
 
         <form class="auth-form" id="register-form">
@@ -278,6 +352,30 @@
             <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Salvar Nova Senha <i class="fas fa-save"></i></button></div>
             <div class="auth-form__footer"><p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Tente novamente</a>.</p></div>
         </form>
+
+        <!-- NOVO FORMULÁRIO: Login/Cadastro por Telefone - Solicitar OTP -->
+        <form class="auth-form" id="phone-login-send-otp-form">
+            <div class="auth-form__header"><h2>Login/Cadastro por Telefone</h2><p>Insira seu telefone para receber um código.</p></div>
+            <div class="auth-form__group">
+                <i class="fas fa-phone-alt input-icon"></i>
+                <input type="tel" id="phone-number-input" name="phoneNumber" required placeholder="(XX) XXXXX-XXXX" pattern="^\(\d{2}\)\s\d{5}-\d{4}$">
+            </div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Enviar Código <i class="fas fa-sms"></i></button></div>
+            <div class="auth-form__footer"><p>Voltar para <a class="form-switch-link" data-target="login-form">Login</a>.</p></div>
+        </form>
+
+        <!-- NOVO FORMULÁRIO: Login/Cadastro por Telefone - Verificar OTP -->
+        <form class="auth-form" id="phone-login-verify-otp-form">
+            <div class="auth-form__header"><h2>Verificar Código</h2><p>Insira o código que enviamos para seu telefone.</p></div>
+            <input type="hidden" id="verified-phone-number" name="phoneNumber">
+            <div class="auth-form__group">
+                <i class="fas fa-hashtag input-icon"></i>
+                <input type="text" id="otp-input" name="otp" required placeholder="Código de 6 dígitos">
+            </div>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Verificar e Entrar <i class="fas fa-check-circle"></i></button></div>
+            <div class="auth-form__footer"><p>Não recebeu o código? <a class="resend-otp-link">Reenviar</a></p><p>Voltar para <a class="form-switch-link" data-target="phone-login-send-otp-form">Telefone</a>.</p></div>
+        </form>
+
     </div>
 
     <script>
@@ -287,10 +385,15 @@
             register: document.getElementById('register-form'), 
             forgotPassword: document.getElementById('forgot-password-form'), 
             resetPassword: document.getElementById('reset-password-form'), 
+            phoneLoginSendOtp: document.getElementById('phone-login-send-otp-form'), // Novo
+            phoneLoginVerifyOtp: document.getElementById('phone-login-verify-otp-form'), // Novo
         };
         const authAlert = document.getElementById('auth-alert');
         const formSwitchLinks = document.querySelectorAll('.form-switch-link');
         const themeToggleButton = document.getElementById('theme-toggle');
+        const googleLoginBtn = document.getElementById('google-login-btn'); // Novo
+        const phoneLoginBtn = document.getElementById('phone-login-btn'); // Novo
+        const resendOtpLink = document.querySelector('.resend-otp-link'); // Novo
 
         const showAlert = (message, type = 'error') => { authAlert.textContent = message; authAlert.className = `auth-alert ${type}`; authAlert.style.display = 'block'; };
         const switchForm = (targetId) => { 
@@ -323,7 +426,6 @@
                     submitButton.innerHTML = originalButtonHTML;
                     return;
                 }
-                // Remover a confirmação de senha antes de enviar (se o backend não espera)
                 delete body.confirmarSenha; 
             }
             
@@ -362,6 +464,7 @@
             }
         };
 
+        // --- Event Listeners para os formulários existentes ---
         if (forms.login) { 
             forms.login.addEventListener('submit', e => { 
                 e.preventDefault(); 
@@ -415,13 +518,96 @@
             }); 
         }
         
+        // --- Novos Event Listeners para Login Social e Telefone ---
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', async () => {
+                showAlert('Redirecionando para login com Google...', 'success');
+                try {
+                    const response = await fetch('/auth/google');
+                    const data = await response.json();
+                    if (data.success && data.authorizeUrl) {
+                        window.location.href = data.authorizeUrl; // Redireciona para o Google OAuth
+                    } else {
+                        throw new Error(data.error || 'Falha ao iniciar login com Google.');
+                    }
+                } catch (error) {
+                    showAlert(error.message, 'error');
+                }
+            });
+        }
+
+        if (phoneLoginBtn) {
+            phoneLoginBtn.addEventListener('click', () => {
+                switchForm('phone-login-send-otp-form');
+            });
+        }
+
+        if (forms.phoneLoginSendOtp) {
+            forms.phoneLoginSendOtp.addEventListener('submit', async e => {
+                e.preventDefault();
+                const phoneNumberInput = document.getElementById('phone-number-input');
+                // Formatar o número para o padrão esperado pelo backend (se necessário)
+                const rawPhoneNumber = phoneNumberInput.value.replace(/\D/g, ''); // Remove não-dígitos
+                const formattedPhoneNumber = `+55${rawPhoneNumber}`; // Exemplo para Brasil
+
+                handleFormSubmit(forms.phoneLoginSendOtp, '/send-phone-otp', {
+                    onSuccess: (data) => {
+                        showAlert(data.message, 'success');
+                        document.getElementById('verified-phone-number').value = formattedPhoneNumber;
+                        switchForm('phone-login-verify-otp-form');
+                    },
+                    // Sobrescrever o corpo para enviar o número formatado
+                    body: { phoneNumber: formattedPhoneNumber } 
+                });
+            });
+        }
+
+        if (forms.phoneLoginVerifyOtp) {
+            forms.phoneLoginVerifyOtp.addEventListener('submit', e => {
+                e.preventDefault();
+                handleFormSubmit(forms.phoneLoginVerifyOtp, '/verify-phone-otp', {
+                    onSuccess: (data) => {
+                        showAlert('Login por telefone bem-sucedido! Redirecionando...', 'success');
+                        window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/';
+                    }
+                });
+            });
+        }
+
+        if (resendOtpLink) {
+            resendOtpLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const phoneNumber = document.getElementById('verified-phone-number').value;
+                if (!phoneNumber) {
+                    showAlert('Número de telefone não encontrado para reenviar o código.', 'error');
+                    return;
+                }
+                showAlert('Reenviando código OTP...', 'success');
+                try {
+                    const response = await fetch('/auth/send-phone-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phoneNumber }),
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert(data.message, 'success');
+                    } else {
+                        throw new Error(data.error || 'Falha ao reenviar o código OTP.');
+                    }
+                } catch (error) {
+                    showAlert(error.message, 'error');
+                }
+            });
+        }
+        
+        // --- Lógica de Tema e Parâmetros de URL ---
         const params = new URLSearchParams(window.location.search);
         const sucessoUrl = params.get('sucesso');
         const erroUrl = params.get('erro');
         if (sucessoUrl) showAlert(decodeURIComponent(sucessoUrl), 'success');
         if (erroUrl) showAlert(decodeURIComponent(erroUrl), 'error');
 
-        // Lógica de Tema
         const applyTheme = (theme) => {
             document.body.className = `login-page ${theme}-theme`;
             localStorage.setItem('theme', theme);
@@ -430,8 +616,6 @@
             const newTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
             applyTheme(newTheme);
         });
-
-        // Aplica o tema salvo ou o padrão 'dark'
         applyTheme(localStorage.getItem('theme') || 'dark');
 
         // Lógica para alternar visibilidade da senha

@@ -1,19 +1,13 @@
-// ====================================================================================
-//
-//      DenyAnimeHub - Ponto de Entrada Principal (Versão Definitiva e Robusta.3.4)
-//
-// ====================================================================================
-
-// --- 1. IMPORTAÇÕES E CONFIGURAÇÃO INICIAL ---
+// server.js (Versão Final Completa)
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const multer = require('multer');
-const { Sequelize, Op } = require('sequelize'); // ÚNICA importação de 'Op'
+const { Sequelize, Op } = require('sequelize');
 
-// --- 2. IMPORTAÇÕES DE MÓDULOS DA APLICAÇÃO ---
+// Importações de módulos da aplicação
 const db = require('./models');
 const slugify = require('./utils/slugify');
 
@@ -22,7 +16,6 @@ const { proteger, admin, protegerOpcional } = require('./middleware/authMiddlewa
 const {
     processForm,
     uploadAvatar,
-    uploadCapa, // Mantido para compatibilidade, se necessário
     uploadCapaPerfil,
     uploadCapaAnime,
     uploadVideoEpisodio
@@ -41,7 +34,7 @@ const securityController = require('./controllers/securityController');
 // Rotas
 const authRoutes = require('./routes/authRoutes');
 
-// --- 3. INICIALIZAÇÃO E CONFIGURAÇÃO DO EXPRESS ---
+// Inicialização e configuração do Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -60,7 +53,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// --- 4. MIDDLEWARE GLOBAL DA APLICAÇÃO ---
+// Middleware global da aplicação
 app.use(protegerOpcional);
 app.use((req, res, next) => {
     res.locals.user = req.user ? req.user.get({ plain: true }) : null;
@@ -69,10 +62,10 @@ app.use((req, res, next) => {
 });
 
 // ====================================================================================
-// --- 5. ROTAS DE VISUALIZAÇÃO (FRONT-END & ADMIN) ---
+// ROTAS DE VISUALIZAÇÃO (FRONT-END & ADMIN)
 // ====================================================================================
 
-// --- Rotas Públicas e do Usuário ---
+// Rotas Públicas e do Usuário
 app.get('/', async (req, res) => {
     try {
         const [animesRecentes, animesPopulares] = await Promise.all([
@@ -86,59 +79,31 @@ app.get('/', async (req, res) => {
     }
 });
 
-// ==================================================================================================
-//      ROTA '/animes' COMPLETA E ROBUSTA - V10.0 (COM CARROSSÉIS E FILTROS FUNCIONAIS)
-// ==================================================================================================
-
+// Rota '/animes' completa
 app.get('/animes', async (req, res) => {
     try {
-        // [1] PARÂMETROS DE FILTRO E PAGINAÇÃO
-        // Pegamos todos os possíveis parâmetros da URL.
         const page = parseInt(req.query.page) || 1;
         const { search, genre, order, letter } = req.query;
-        const limit = 24; // Itens por página
+        const limit = 24;
         const offset = (page - 1) * limit;
 
-        // [2] QUERIES PARA OS CARROSSÉIS (EXECUTADAS EM PARALELO PARA EFICIÊNCIA)
-        // Estes dados são independentes dos filtros principais e sempre aparecem no topo.
         const [topAnimes, recentAnimes, topDownloads] = await Promise.all([
-            db.Anime.findAll({ 
-                order: [['views', 'DESC']], 
-                limit: 12 
-            }),
-            db.Anime.findAll({ 
-                order: [['createdAt', 'DESC']], 
-                limit: 12 
-            }),
-            // ATENÇÃO: Supondo que você tenha uma coluna 'downloads'. 
-            // Se não tiver, troque 'downloads' por uma coluna existente como 'views' ou 'id'.
-            db.Anime.findAll({ 
-                order: [['views', 'DESC']], // Usando 'views' como exemplo para "downloads". Mude se necessário.
-                limit: 12 
-            })
+            db.Anime.findAll({ order: [['views', 'DESC']], limit: 12 }),
+            db.Anime.findAll({ order: [['createdAt', 'DESC']], limit: 12 }),
+            db.Anime.findAll({ order: [['views', 'DESC']], limit: 12 })
         ]);
 
-        // [3] LÓGICA DE FILTRAGEM PARA O CATÁLOGO PRINCIPAL
-        // Construímos a cláusula 'where' baseada nos filtros ativos.
         let whereClause = {};
-
         if (search) {
-            // Se houver uma busca, ela tem prioridade sobre o filtro de letra.
             whereClause.titulo = { [Op.iLike]: `%${search}%` };
         } else if (letter) {
-            // Se não houver busca, mas houver uma letra, filtramos por ela.
             whereClause.titulo = { [Op.iLike]: `${letter}%` };
         }
-
         if (genre) {
-            // Adiciona o filtro de gênero (funciona em conjunto com os outros).
-            // Esta busca funciona para campos de texto que armazenam JSON.
             whereClause.generos = { [Op.iLike]: `%"${genre}"%` };
         }
 
-        // [4] LÓGICA DE ORDENAÇÃO
-        // Define a ordem padrão e a altera se um parâmetro de ordem for fornecido.
-        let orderClause = [['createdAt', 'DESC']]; // Padrão: mais recentes
+        let orderClause = [['createdAt', 'DESC']];
         if (order) {
             const [field, direction] = order.split('_');
             if (['titulo', 'views', 'createdAt'].includes(field) && ['asc', 'desc'].includes(direction)) {
@@ -146,8 +111,6 @@ app.get('/animes', async (req, res) => {
             }
         }
 
-        // [5] QUERY PRINCIPAL NO BANCO DE DADOS
-        // Busca os animes para a página atual, contando o total para a paginação.
         const { count, rows: animes } = await db.Anime.findAndCountAll({
             where: whereClause,
             order: orderClause,
@@ -155,38 +118,26 @@ app.get('/animes', async (req, res) => {
             offset,
         });
 
-        // [6] BUSCA DE TODOS OS GÊNEROS ÚNICOS PARA O DROPDOWN DE FILTRO
-        // Esta lógica é eficiente pois só busca uma coluna e processa em memória.
         const allAnimesForGenres = await db.Anime.findAll({ attributes: ['generos'] });
         const genreSet = new Set(allAnimesForGenres.flatMap(a => {
             try { return JSON.parse(a.generos) } catch { return [] }
         }));
         const uniqueGenres = [...genreSet].sort();
 
-        // [7] RENDERIZAÇÃO DA PÁGINA COM TODOS OS DADOS NECESSÁRIOS
-        // Enviamos tudo que o template 'todos-animes.ejs' precisa para funcionar.
         res.render('todos-animes', {
-            // Dados para o título e meta tags
             titulo: 'Todos os Animes',
-
-            // Dados para o catálogo principal e paginação
             animes: animes,
             totalAnimes: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
-            
-            // Dados para os filtros
-            uniqueGenres: uniqueGenres, // Essencial para o <select> de gêneros
-            query: req.query, // Passa todos os parâmetros atuais para o EJS
-
-            // [NOVO E ESSENCIAL] Dados para os carrosséis
+            uniqueGenres: uniqueGenres,
+            query: req.query,
             topAnimes: topAnimes,
             recentAnimes: recentAnimes,
             topDownloads: topDownloads
         });
 
     } catch (error) {
-        // Tratamento de erro robusto
         console.error("ERRO FATAL AO CARREGAR A PÁGINA DE ANIMES:", error);
         res.status(500).render('500', { 
             layout: false, 
@@ -285,7 +236,7 @@ app.get('/login', (req, res) => {
 
 app.get('/download/proxy', proteger, downloadController.proxyDownload);
 
-// --- Rota do Painel de Admin ---
+// Rota do Painel de Admin
 app.get('/admin/dashboard', proteger, admin, async (req, res) => {
     try {
         const sevenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 7));
@@ -316,9 +267,37 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
     }
 });
 
+// ====================================================================================
+// ROTAS DE AUTENTICAÇÃO (Implementação das novas rotas)
+// ====================================================================================
+
+// Rotas de Autenticação (Backend API)
+app.post('/auth/registrar', authController.registrar);
+app.post('/auth/login', authController.login);
+app.post('/auth/forgot-password', authController.forgotPassword);
+app.post('/auth/reset-password', authController.resetPassword);
+
+// Rotas para Social Login (Google)
+app.get('/auth/google', authController.googleLogin);
+app.get('/auth/google/callback', authController.googleCallback);
+
+// Rotas para Telefone/OTP
+app.post('/auth/send-phone-otp', authController.sendPhoneOtp);
+app.post('/auth/verify-phone-otp', authController.verifyPhoneOtp);
+
+// Rota para renderizar a página de login/registro
+app.get('/auth/login-page', (req, res) => {
+    if (res.locals.userIsLoggedIn) return res.redirect('/');
+    res.render('login', { titulo: 'Login/Registro' });
+});
+
+// Rota inicial
+app.get('/', (req, res) => {
+    res.send('Bem-vindo ao DenyAnimeHub! <br><a href="/auth/login-page">Ir para Login/Registro</a>');
+});
 
 // ====================================================================================
-// --- 6. ROTAS DE API (usadas pelo Painel de Admin e outras interações) ---
+// ROTAS DE API (usadas pelo Painel de Admin e outras interações)
 // ====================================================================================
 
 app.use('/auth', authRoutes);
@@ -326,7 +305,7 @@ app.use('/auth', authRoutes);
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
-// --- Rotas Públicas da API ---
+// Rotas Públicas da API
 const protegerComChaveApi = (req, res, next) => {
     const chaveApi = req.headers['x-api-key'];
     if (chaveApi && chaveApi === process.env.AUTOMATION_API_KEY) next();
@@ -335,17 +314,16 @@ const protegerComChaveApi = (req, res, next) => {
 apiRouter.post('/automacao/postar-anime-completo', protegerComChaveApi, animeApiController.createAnime);
 apiRouter.post('/security/log-event', protegerOpcional, securityController.logSecurityEvent);
 
-// --- Rotas Protegidas para Usuários Autenticados ---
+// Rotas Protegidas para Usuários Autenticados
 apiRouter.use(proteger);
 apiRouter.put('/user/profile', userApiController.updateUserProfile);
 apiRouter.post('/user/profile/avatar', uploadAvatar, userApiController.updateUserAvatar);
 apiRouter.post('/user/profile/capa', uploadCapaPerfil, userApiController.updateUserCapa);
-// apiRouter.post('/history/update', interactionController.updateHistory); // Descomente quando a função for implementada
 apiRouter.get('/comments/:animeId', interactionController.getComments);
 apiRouter.post('/comments', interactionController.postComment);
 apiRouter.post('/ratings', interactionController.postRating);
 
-// --- Rotas Protegidas para Administradores ---
+// Rotas Protegidas para Administradores
 apiRouter.use(admin);
 
 // Uploads
@@ -368,7 +346,7 @@ apiRouter.delete('/episodios/:id', episodioApiController.deleteEpisodio);
 
 // CRUD Posts (Notícias)
 apiRouter.get('/posts', postApiController.getAllPosts);
-apiRouter.get('/posts/:id', postApiController.getPostById); // Rota para buscar por ID
+apiRouter.get('/posts/:id', postApiController.getPostById);
 apiRouter.post('/posts', processForm, postApiController.createPost);
 apiRouter.put('/posts/:id', processForm, postApiController.updatePost);
 apiRouter.delete('/posts/:id', postApiController.deletePost);
@@ -385,9 +363,8 @@ apiRouter.get('/comments/:id', interactionController.getSingleComment);
 apiRouter.put('/comments-admin/:id', interactionController.updateComment);
 apiRouter.delete('/comments-admin/:id', interactionController.deleteComment);
 
-
 // ====================================================================================
-// --- 7. TRATAMENTO DE ERROS E INICIALIZAÇÃO ---
+// TRATAMENTO DE ERROS E INICIALIZAÇÃO
 // ====================================================================================
 
 // Middleware para rotas não encontradas (404)
@@ -406,21 +383,18 @@ app.use((err, req, res, next) => {
         return res.status(400).json({ success: false, error: err.message });
     }
 
-    // Se a resposta já foi enviada, delega para o próximo handler de erro do Express
     if (res.headersSent) {
         return next(err);
     }
     
-    // Para requisições de API, envia um erro JSON
     if (req.originalUrl.startsWith('/api/')) {
         return res.status(500).json({ success: false, error: 'Ocorreu um problema inesperado no servidor.' });
     }
 
-    // Para requisições normais, renderiza a página de erro
     res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Ocorreu um problema inesperado.' });
 });
 
-// --- Inicialização do Servidor ---
+// Inicialização do Servidor
 db.sequelize.sync({ alter: true })
     .then(() => {
         console.log('✅ Banco de dados sincronizado e pronto.');

@@ -1,8 +1,44 @@
+// controllers/authController.js
 'use strict';
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { User, sequelize } = require('../models');
-const sendEmail = require('../utils/sendEmail');
+//const { StackClient } = require('@stackso/js-client');
+const nodemailer = require('nodemailer');
+
+// Configuração do Stack Client
+//const stackClient = new StackClient({
+    //projectId: process.env.STACK_PROJECT_ID,
+    //publishableClientKey: process.env.STACK_PUBLISHABLE_CLIENT_KEY,
+    //secretServerKey: process.env.STACK_SECRET_SERVER_KEY
+//});
+
+// Configuração do Nodemailer
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE_PROVIDER,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+// Função para enviar e-mails
+const sendEmail = async (to, subject, htmlContent) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: to,
+            subject: subject,
+            html: htmlContent,
+        };
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent to ${to}`);
+        return true;
+    } catch (error) {
+        console.error('!!! FALHA AO EXECUTAR transporter.sendMail:', error);
+        throw new Error('ERRO AO ENVIAR EMAIL: ' + error.message);
+    }
+};
 
 /**
  * @desc    Gera um token JWT, define-o num cookie seguro e envia a resposta ao utilizador.
@@ -58,6 +94,18 @@ exports.registrar = async (req, res) => {
             return res.status(400).json({ success: false, error: 'A senha deve ter no mínimo 6 caracteres.' });
         }
 
+        // Cria usuário no Stack (se necessário)
+        try {
+            await stackClient.users.create({
+                email,
+                password: senha,
+                displayName: nome,
+            });
+        } catch (stackError) {
+            console.log("Usuário não criado no Stack (pode já existir):", stackError.message);
+        }
+
+        // Cria usuário no banco de dados local
         await User.create({ nome, email, senha });
 
         res.status(201).json({
@@ -128,34 +176,69 @@ exports.logout = (req, res) => {
  */
 exports.forgotPassword = async (req, res) => {
     try {
-        const user = await User.findOne({ where: { email: req.body.email } });
-
-        if (!user) {
-            // Não revele que o utilizador não existe. Envie uma resposta de sucesso genérica por segurança.
-            return res.status(200).json({ success: true, message: 'Se existir uma conta com este e-mail, um código de redefinição foi enviado.' });
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ success: false, error: 'Por favor, informe seu e-mail.' });
         }
 
-        const resetToken = user.getResetPasswordToken();
-        await user.save({ validate: false });
+        // Verifica se o usuário existe no banco local
+        const user = await User.findOne({ where: { email } });
 
-        const messageToUser = `<h1>Você solicitou uma redefinição de senha</h1><p>Use o seguinte código para redefinir a sua senha. Ele é válido por 10 minutos:</p><h2 style="font-size: 24px; letter-spacing: 2px;">${resetToken}</h2><p>Se você não fez esta solicitação, pode ignorar este e-mail com segurança.</p>`;
+        if (!user) {
+            // É uma boa prática não informar se o email existe ou não por segurança
+            console.warn(`Tentativa de redefinição de senha para email não encontrado: ${email}`);
+            return res.status(200).json({ success: true, message: 'Se o e-mail estiver registrado, enviaremos um código de redefinição.' });
+        }
 
+        // Tenta usar o Stack para redefinição de senha
         try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Redefinição de Senha - DenyAnimeHub',
-                message: messageToUser
-            });
+            // 1. Gerar um token de redefinição de senha (Stack)
+            const { resetToken } = await stackClient.passwords.createResetToken({ userId: user.id });
 
-            res.status(200).json({ success: true, message: 'E-mail enviado com sucesso! Verifique a sua caixa de entrada e a pasta de spam.' });
+            if (!resetToken) {
+                throw new Error('Falha ao gerar o token de redefinição.');
+            }
 
-        } catch (error) {
-            console.error("ERRO AO ENVIAR EMAIL DE REDEFINIÇÃO:", error);
-            // Limpa os tokens se o envio de e-mail falhar para que o utilizador possa tentar novamente.
-            user.resetPasswordToken = null;
-            user.resetPasswordExpire = null;
+            // 2. Enviar o e-mail com o token
+            const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken.token}&email=${encodeURIComponent(email)}`;
+            const emailContent = `
+                <p>Você solicitou a redefinição de senha. Use o código abaixo ou clique no link:</p>
+                <p><strong>Código: ${resetToken.token}</strong></p>
+                <p><a href="${resetLink}">Redefinir Senha</a></p>
+                <p>Se você não solicitou isso, ignore este e-mail.</p>
+            `;
+
+            await sendEmail(email, 'Redefinição de Senha - DenyAnimeHub', emailContent);
+
+            return res.status(200).json({ success: true, message: 'Código de redefinição enviado para o seu e-mail!' });
+            
+        } catch (stackError) {
+            console.log("Stack não disponível, usando método local:", stackError.message);
+            
+            // Método local de fallback
+            const resetToken = user.getResetPasswordToken();
             await user.save({ validate: false });
-            return res.status(500).json({ success: false, error: 'Não foi possível enviar o e-mail de redefinição. Tente novamente mais tarde.' });
+
+            const messageToUser = `<h1>Você solicitou uma redefinição de senha</h1><p>Use o seguinte código para redefinir a sua senha. Ele é válido por 10 minutos:</p><h2 style="font-size: 24px; letter-spacing: 2px;">${resetToken}</h2><p>Se você não fez esta solicitação, pode ignorar este e-mail com segurança.</p>`;
+
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Redefinição de Senha - DenyAnimeHub',
+                    message: messageToUser
+                });
+
+                res.status(200).json({ success: true, message: 'E-mail enviado com sucesso! Verifique a sua caixa de entrada e a pasta de spam.' });
+
+            } catch (error) {
+                console.error("ERRO AO ENVIAR EMAIL DE REDEFINIÇÃO:", error);
+                // Limpa os tokens se o envio de e-mail falhar para que o utilizador possa tentar novamente.
+                user.resetPasswordToken = null;
+                user.resetPasswordExpire = null;
+                await user.save({ validate: false });
+                return res.status(500).json({ success: false, error: 'Não foi possível enviar o e-mail de redefinição. Tente novamente mais tarde.' });
+            }
         }
 
     } catch (error) {
@@ -177,33 +260,153 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ success: false, error: "Faltam informações para redefinir a senha."});
         }
 
-        // Criptografa o token recebido para o comparar com o que está na base de dados.
-        const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
-
-        // Procura o utilizador com o e-mail, o token correspondente e que não tenha expirado.
-        const user = await User.scope('comSenha').findOne({
-            where: {
+        // Tenta usar o Stack para redefinir a senha
+        try {
+            await stackClient.passwords.reset({
                 email,
-                resetPasswordToken,
-                resetPasswordExpire: { [sequelize.Op.gt]: Date.now() } // Verifica se o token não expirou.
+                token,
+                newPassword: novaSenha,
+            });
+
+            // Atualiza também no banco local
+            const user = await User.scope('comSenha').findOne({ where: { email } });
+            if (user) {
+                user.senha = novaSenha;
+                await user.save();
             }
-        });
 
-        if (!user) {
-            return res.status(400).json({ success: false, error: 'O código fornecido é inválido ou expirou.' });
+            return res.status(200).json({ success: true, message: 'Sua senha foi redefinida com sucesso! Faça login.' });
+            
+        } catch (stackError) {
+            console.log("Stack não disponível, usando método local:", stackError.message);
+            
+            // Método local de fallback
+            const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+
+            // Procura o utilizador com o e-mail, o token correspondente e que não tenha expirado.
+            const user = await User.scope('comSenha').findOne({
+                where: {
+                    email,
+                    resetPasswordToken,
+                    resetPasswordExpire: { [sequelize.Op.gt]: Date.now() } // Verifica se o token não expirou.
+                }
+            });
+
+            if (!user) {
+                return res.status(400).json({ success: false, error: 'O código fornecido é inválido ou expirou.' });
+            }
+
+            // Se o utilizador for encontrado, atualiza a senha e limpa os campos de redefinição.
+            user.senha = novaSenha;
+            user.resetPasswordToken = null;
+            user.resetPasswordExpire = null;
+            await user.save();
+
+            // Envia um novo token de login para que o utilizador já fique autenticado.
+            enviarTokenResponse(user, 200, res);
         }
-
-        // Se o utilizador for encontrado, atualiza a senha e limpa os campos de redefinição.
-        user.senha = novaSenha;
-        user.resetPasswordToken = null;
-        user.resetPasswordExpire = null;
-        await user.save();
-
-        // Envia um novo token de login para que o utilizador já fique autenticado.
-        enviarTokenResponse(user, 200, res);
 
     } catch (error) {
         console.error("ERRO EM RESETPASSWORD:", error);
         res.status(500).json({ success: false, error: 'Erro no servidor ao redefinir a senha.' });
+    }
+};
+
+// 5. Login com Google (via Stack/Neon Auth)
+exports.googleLogin = async (req, res) => {
+    try {
+        // O cliente Stack deve ter um método para iniciar o fluxo OAuth2.
+        const { authorizeUrl } = await stackClient.oauth.authorizeUrl({
+            provider: 'google',
+            redirectUri: `${process.env.BACKEND_URL}/auth/google/callback`,
+            scope: ['profile', 'email'],
+        });
+
+        res.json({ success: true, authorizeUrl });
+    } catch (error) {
+        console.error('Erro ao iniciar login com Google:', error);
+        res.status(500).json({ success: false, error: 'Erro ao iniciar login com Google.' });
+    }
+};
+
+// 6. Callback do Google (após o usuário autorizar)
+exports.googleCallback = async (req, res) => {
+    const { code } = req.query; // Código de autorização do Google
+    try {
+        // Trocar o código de autorização por um token de sessão do Stack
+        const { session } = await stackClient.sessions.authenticate({
+            provider: 'google',
+            code,
+            redirectUri: `${process.env.BACKEND_URL}/auth/google/callback`,
+        });
+
+        // Verifica se o usuário já existe no banco local, se não, cria
+        let user = await User.findOne({ where: { email: session.user.email } });
+        
+        if (!user) {
+            user = await User.create({
+                nome: session.user.displayName || session.user.email.split('@')[0],
+                email: session.user.email,
+                senha: crypto.randomBytes(20).toString('hex') // Senha aleatória
+            });
+        }
+
+        // Configurar cookie de sessão seguro usando nosso sistema
+        enviarTokenResponse(user, 200, res);
+
+    } catch (error) {
+        console.error('Erro no callback do Google:', error);
+        res.redirect('/login?erro=' + encodeURIComponent('Falha no login com Google: ' + error.message));
+    }
+};
+
+// 7. Login/Registro por Número de Telefone (OTP/SMS)
+exports.sendPhoneOtp = async (req, res) => {
+    const { phoneNumber } = req.body;
+    if (!phoneNumber) {
+        return res.status(400).json({ success: false, error: 'Por favor, forneça um número de telefone.' });
+    }
+    try {
+        // Stack deve ter uma API para enviar OTP por SMS
+        await stackClient.passkeys.sendOtp({
+            phoneNumber,
+        });
+
+        res.status(200).json({ success: true, message: 'Código OTP enviado para o seu telefone!' });
+    } catch (error) {
+        console.error('Erro ao enviar OTP por telefone:', error);
+        res.status(500).json({ success: false, error: error.message || 'Erro ao enviar código OTP.' });
+    }
+};
+
+// 8. Verificar OTP e Logar/Registrar
+exports.verifyPhoneOtp = async (req, res) => {
+    const { phoneNumber, otp } = req.body;
+    if (!phoneNumber || !otp) {
+        return res.status(400).json({ success: false, error: 'Por favor, forneça o número e o código OTP.' });
+    }
+    try {
+        // Stack deve ter uma API para verificar OTP e autenticar/criar usuário
+        const { session } = await stackClient.sessions.authenticate({
+            phoneNumber,
+            otp,
+        });
+
+        // Verifica se o usuário já existe no banco local, se não, cria
+        let user = await User.findOne({ where: { telefone: phoneNumber } });
+        
+        if (!user) {
+            user = await User.create({
+                nome: `Usuário ${phoneNumber}`,
+                telefone: phoneNumber,
+                senha: crypto.randomBytes(20).toString('hex') // Senha aleatória
+            });
+        }
+
+        // Configurar cookie de sessão seguro usando nosso sistema
+        enviarTokenResponse(user, 200, res);
+    } catch (error) {
+        console.error('Erro ao verificar OTP por telefone:', error);
+        res.status(401).json({ success: false, error: error.message || 'Código OTP inválido ou expirado.' });
     }
 };
