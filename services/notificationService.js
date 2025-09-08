@@ -11,9 +11,10 @@ const path = require('path');
  */
 const sendNotification = async (anime, episodio = null) => {
     console.log("--- INICIANDO PROCESSO DE NOTIFICAÇÃO EM MASSA ---");
+    
     if (!anime || !anime.titulo) {
         console.error("ERRO DE NOTIFICAÇÃO: Objeto 'anime' inválido ou sem título.");
-        return;
+        throw new Error("Anime inválido para notificação");
     }
 
     try {
@@ -27,38 +28,49 @@ const sendNotification = async (anime, episodio = null) => {
             return;
         }
 
-        const emails = allUsers.map(user => user.email);
-        const tipoNotificacao = episodio ? 'Novo Episódio Disponível' : 'Novo Anime Adicionado';
+        const emails = allUsers.map(user => user.email).filter(email => email);
         
-        const urlDestino = episodio
-            ? `${process.env.APP_URL}/assistir/${anime.slug}/${episodio.id}`
-            : `${process.env.APP_URL}/anime/${anime.slug}`;
-        
-        if (!process.env.APP_URL) {
-            console.error("ERRO GRAVE: A variável de ambiente APP_URL não está definida! As URLs nos e-mails estarão quebradas.");
+        if (emails.length === 0) {
+            console.log("Nenhum e-mail válido encontrado para notificação");
+            return;
         }
 
+        const tipoNotificacao = episodio ? 'Novo Episódio Disponível' : 'Novo Anime Adicionado';
+        
+        // Usar APP_URL do ambiente ou fallback para URL local
+        const baseUrl = process.env.APP_URL || 'http://localhost:3000';
+        const urlDestino = episodio
+            ? `${baseUrl}/assistir/${anime.slug}/${episodio.id}`
+            : `${baseUrl}/anime/${anime.slug}`;
+
+        // Renderizar o template de e-mail
         const emailHtml = await ejs.renderFile(
             path.join(__dirname, '../views/email/notificacaoAnime.ejs'),
-            { anime, episodio, tipoNotificacao, urlDestino }
+            { 
+                anime, 
+                episodio, 
+                tipoNotificacao, 
+                urlDestino,
+                baseUrl 
+            }
         );
 
         console.log(`Preparando para enviar notificação para ${emails.length} e-mails...`);
 
-        // [CORREÇÃO DEFINITIVA] Envia um único e-mail para você, com todos os outros usuários em cópia oculta.
-        // Esta é a maneira mais eficiente e segura de enviar e-mails em massa.
+        // Enviar e-mail para todos os usuários em BCC
         await sendEmail({
-            to: 'denyneves14@gmail.com', // O destinatário principal, para seu controle
-            bcc: emails, // Todos os seus usuários recebem uma cópia sem ver os outros destinatários
+            to: process.env.EMAIL_USERNAME, // Para controle e evitar problemas com BCC vazio
+            bcc: emails,
             subject: `🔥 ${tipoNotificacao}: ${anime.titulo}`,
-            html: emailHtml
+            html: emailHtml,
+            text: `Olá! Temos uma novidade para você: ${tipoNotificacao} - ${anime.titulo}. Acesse: ${urlDestino}`
         });
 
-        // O console.log de sucesso já está dentro da função sendEmail.
+        console.log("✅ Notificação enviada com sucesso para todos os usuários");
 
     } catch (error) {
-        // O erro detalhado já será logado pela função sendEmail, aqui apenas registramos o contexto.
-        console.error("!!! ERRO NO SERVIÇO DE NOTIFICAÇÃO: Não foi possível completar o envio de e-mails.", error.message);
+        console.error("❌ ERRO NO SERVIÇO DE NOTIFICAÇÃO:", error.message);
+        throw error;
     }
 };
 

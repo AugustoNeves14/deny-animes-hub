@@ -68,8 +68,8 @@
             <!-- CABEÇALHO -->
             <tr>
                 <td class="header">
-                    <a href="<%= process.env.APP_URL || '#' %>" target="_blank">
-                        <img src="https://deny-animes-hub.onrender.com/images/1.ico" alt="DenyAnimeHub Logo" class="logo">
+                    <a href="<%= baseUrl || process.env.APP_URL || 'https://deny-animes-hub.onrender.com' %>" target="_blank">
+                        <img src="<%= baseUrl || process.env.APP_URL || 'https://deny-animes-hub.onrender.com' %>/images/1.ico" alt="DenyAnimeHub Logo" class="logo">
                     </a>
                 </td>
             </tr>
@@ -81,7 +81,7 @@
                     <p>Temos uma novidade incrível para você na nossa plataforma que você não pode perder:</p>
                     
                     <a href="<%= urlDestino %>" class="thumbnail-link" target="_blank">
-                        <img src="<%= anime.imagemCapa %>" alt="Capa de <%= anime.titulo %>" class="thumbnail">
+                        <img src="<%= anime.imagemCapa || anime.imagemUrl %>" alt="Capa de <%= anime.titulo %>" class="thumbnail">
                     </a>
 
                     <% if (episodio) { %>
@@ -103,14 +103,14 @@
                     <p class="signature">Equipe DenyAnimeHub</p>
                     <div class="socials">
                         <!-- Substitua # pelos seus links reais. Ícones hospedados para compatibilidade máxima. -->
-                        <a href="#" target="_blank"><img src="https://i.ibb.co/L8dCf6Y/discord.png" alt="Discord"></a>
-                        <a href="#" target="_blank"><img src="https://i.ibb.co/wJ15R1D/instagram.png" alt="Instagram"></a>
-                        <a href="#" target="_blank"><img src="https://i.ibb.co/mHk5xYh/telegram.png" alt="Telegram"></a>
+                        <a href="#" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord" width="32" height="32"></a>
+                        <a href="#" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" alt="Instagram" width="32" height="32"></a>
+                        <a href="#" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/906/906377.png" alt="Telegram" width="32" height="32"></a>
                     </div>
                     <p class="footer-text">
                         Você está recebendo este e-mail porque é um membro valioso da nossa comunidade.
                         <br>
-                        <a href="#" class="unsubscribe-link">Cancelar inscrição</a>
+                        <a href="<%= baseUrl || process.env.APP_URL || 'https://deny-animes-hub.onrender.com' %>/editar-perfil" class="unsubscribe-link">Gerenciar preferências</a>
                     </p>
                     <p class="footer-text">© <%= new Date().getFullYear() %> DenyAnimeHub. Todos os direitos reservados.</p>
                 </td>

@@ -147,6 +147,21 @@
             box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.2);
         }
         .auth-form input:focus + .input-icon { color: var(--accent-primary); }
+
+        /* Estilos para o ícone de toggle de senha */
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        .password-toggle:hover {
+            color: var(--accent-primary);
+        }
         
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; cursor: pointer; font-weight: 600; transition: all 0.3s ease; border: none; }
         .btn--primary {
@@ -192,8 +207,15 @@
 
         <form class="auth-form active-form" id="login-form">
             <div class="auth-form__header"><h2>Bem-vindo de Volta</h2><p>Acesse sua conta para continuar.</p></div>
-            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="login-email" name="email" required placeholder="seu@email.com"></div>
-            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="login-password" name="senha" required placeholder="Sua senha"></div>
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
+                <span class="password-toggle" data-target="login-password"><i class="fas fa-eye-slash"></i></span>
+            </div>
             <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Entrar <i class="fas fa-arrow-right"></i></button></div>
             <div class="auth-form__footer">
                 <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a>.</p>
@@ -204,16 +226,34 @@
 
         <form class="auth-form" id="register-form">
             <div class="auth-form__header"><h2>Crie sua Conta</h2><p>Junte-se à comunidade DenyAnimeHub.</p></div>
-            <div class="auth-form__group"><i class="fas fa-user input-icon"></i><input type="text" id="register-username" name="nome" required placeholder="Seu nome de usuário"></div>
-            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="register-email" name="email" required placeholder="Um e-mail válido"></div>
-            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="register-password" name="senha" minlength="6" required placeholder="Crie uma senha (mín. 6 caracteres)"></div>
+            <div class="auth-form__group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="register-username" name="nome" required placeholder="Seu nome de usuário">
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="register-email" name="email" required placeholder="Um e-mail válido">
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-password" name="senha" minlength="6" required placeholder="Crie uma senha (mín. 6 caracteres)">
+                <span class="password-toggle" data-target="register-password"><i class="fas fa-eye-slash"></i></span>
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required placeholder="Confirme sua senha">
+                <span class="password-toggle" data-target="register-confirm-password"><i class="fas fa-eye-slash"></i></span>
+            </div>
             <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Registrar <i class="fas fa-user-plus"></i></button></div>
             <div class="auth-form__footer"><p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
         </form>
 
         <form class="auth-form" id="forgot-password-form">
             <div class="auth-form__header"><h2>Recuperar Senha</h2><p>Insira seu e-mail para receber o código.</p></div>
-            <div class="auth-form__group"><i class="fas fa-envelope input-icon"></i><input type="email" id="forgot-email" name="email" required placeholder="seu@email.com"></div>
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
+            </div>
             <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Enviar Código <i class="fas fa-paper-plane"></i></button></div>
             <div class="auth-form__footer"><p>Lembrou a senha? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
         </form>
@@ -221,23 +261,46 @@
         <form class="auth-form" id="reset-password-form">
             <div class="auth-form__header"><h2>Redefinir Senha</h2><p>Insira o código e sua nova senha.</p></div>
             <input type="hidden" id="reset-email" name="email">
-            <div class="auth-form__group"><i class="fas fa-hashtag input-icon"></i><input type="text" id="reset-code" name="token" required placeholder="Código de Redefinição"></div>
-            <div class="auth-form__group"><i class="fas fa-lock input-icon"></i><input type="password" id="reset-password" name="novaSenha" minlength="6" required placeholder="Sua nova senha"></div>
+            <div class="auth-form__group">
+                <i class="fas fa-hashtag input-icon"></i>
+                <input type="text" id="reset-code" name="token" required placeholder="Código de Redefinição">
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-password" name="novaSenha" minlength="6" required placeholder="Sua nova senha">
+                <span class="password-toggle" data-target="reset-password"><i class="fas fa-eye-slash"></i></span>
+            </div>
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required placeholder="Confirme sua nova senha">
+                <span class="password-toggle" data-target="reset-confirm-password"><i class="fas fa-eye-slash"></i></span>
+            </div>
             <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Salvar Nova Senha <i class="fas fa-save"></i></button></div>
             <div class="auth-form__footer"><p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Tente novamente</a>.</p></div>
         </form>
     </div>
 
     <script>
-    // O JAVASCRIPT PERMANECE O MESMO, POIS A LÓGICA É SÓLIDA E INDEPENDENTE DO DESIGN.
     document.addEventListener('DOMContentLoaded', () => {
-        const forms = { login: document.getElementById('login-form'), register: document.getElementById('register-form'), forgotPassword: document.getElementById('forgot-password-form'), resetPassword: document.getElementById('reset-password-form'), };
+        const forms = { 
+            login: document.getElementById('login-form'), 
+            register: document.getElementById('register-form'), 
+            forgotPassword: document.getElementById('forgot-password-form'), 
+            resetPassword: document.getElementById('reset-password-form'), 
+        };
         const authAlert = document.getElementById('auth-alert');
         const formSwitchLinks = document.querySelectorAll('.form-switch-link');
         const themeToggleButton = document.getElementById('theme-toggle');
 
         const showAlert = (message, type = 'error') => { authAlert.textContent = message; authAlert.className = `auth-alert ${type}`; authAlert.style.display = 'block'; };
-        const switchForm = (targetId) => { document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active-form')); const targetForm = document.getElementById(targetId); if (targetForm) { targetForm.classList.add('active-form'); } authAlert.style.display = 'none'; };
+        const switchForm = (targetId) => { 
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active-form')); 
+            const targetForm = document.getElementById(targetId); 
+            if (targetForm) { 
+                targetForm.classList.add('active-form'); 
+            } 
+            authAlert.style.display = 'none'; 
+        };
 
         formSwitchLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); switchForm(e.target.dataset.target); }); });
 
@@ -249,19 +312,108 @@
             authAlert.style.display = 'none';
             const formData = new FormData(form);
             const body = Object.fromEntries(formData.entries());
+
+            // Validação de senha e confirmação para o registro
+            if (form.id === 'register-form') {
+                const password = body.senha;
+                const confirmPassword = body.confirmarSenha;
+                if (password !== confirmPassword) {
+                    showAlert('As senhas não coincidem.', 'error');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonHTML;
+                    return;
+                }
+                // Remover a confirmação de senha antes de enviar (se o backend não espera)
+                delete body.confirmarSenha; 
+            }
+            
+            // Validação de senha e confirmação para redefinição
+            if (form.id === 'reset-password-form') {
+                const newPassword = body.novaSenha;
+                const confirmNewPassword = body.confirmarNovaSenha;
+                if (newPassword !== confirmNewPassword) {
+                    showAlert('As novas senhas não coincidem.', 'error');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonHTML;
+                    return;
+                }
+                delete body.confirmarNovaSenha;
+            }
+
             try {
-                const response = await fetch(`/auth${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), });
+                const response = await fetch(`/auth${endpoint}`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(body), 
+                });
                 const data = await response.json();
-                if (!response.ok || !data.success) { throw new Error(data.error || 'Ocorreu um erro desconhecido.'); }
-                if (options.onSuccess) { options.onSuccess(data, body); }
-            } catch (error) { showAlert(error.message, 'error'); } 
-            finally { submitButton.disabled = false; submitButton.innerHTML = originalButtonHTML; }
+                if (!response.ok || !data.success) { 
+                    throw new Error(data.error || 'Ocorreu um erro desconhecido.'); 
+                }
+                if (options.onSuccess) { 
+                    options.onSuccess(data, body); 
+                }
+            } catch (error) { 
+                showAlert(error.message, 'error'); 
+            } 
+            finally { 
+                submitButton.disabled = false; 
+                submitButton.innerHTML = originalButtonHTML; 
+            }
         };
 
-        if (forms.login) { forms.login.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.login, '/login', { onSuccess: (data) => { showAlert('Login bem-sucedido! Redirecionando...', 'success'); window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/'; } }); }); }
-        if (forms.register) { forms.register.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.register, '/registrar', { onSuccess: (data, body) => { showAlert(data.message, 'success'); setTimeout(() => { switchForm('login-form'); if(forms.login) { forms.login.querySelector('#login-email').value = body.email; } }, 2000); } }); }); }
-        if (forms.forgotPassword) { forms.forgotPassword.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.forgotPassword, '/forgot-password', { onSuccess: (data, body) => { showAlert(data.message, 'success'); document.getElementById('reset-email').value = body.email; switchForm('reset-password-form'); } }); }); }
-        if (forms.resetPassword) { forms.resetPassword.addEventListener('submit', e => { e.preventDefault(); handleFormSubmit(forms.resetPassword, '/reset-password', { onSuccess: (data) => { showAlert(data.message, 'success'); setTimeout(() => { switchForm('login-form'); }, 2000); } }); }); }
+        if (forms.login) { 
+            forms.login.addEventListener('submit', e => { 
+                e.preventDefault(); 
+                handleFormSubmit(forms.login, '/login', { 
+                    onSuccess: (data) => { 
+                        showAlert('Login bem-sucedido! Redirecionando...', 'success'); 
+                        window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/'; 
+                    } 
+                }); 
+            }); 
+        }
+        if (forms.register) { 
+            forms.register.addEventListener('submit', e => { 
+                e.preventDefault(); 
+                handleFormSubmit(forms.register, '/registrar', { 
+                    onSuccess: (data, body) => { 
+                        showAlert(data.message, 'success'); 
+                        setTimeout(() => { 
+                            switchForm('login-form'); 
+                            if(forms.login) { 
+                                forms.login.querySelector('#login-email').value = body.email; 
+                            } 
+                        }, 2000); 
+                    } 
+                }); 
+            }); 
+        }
+        if (forms.forgotPassword) { 
+            forms.forgotPassword.addEventListener('submit', e => { 
+                e.preventDefault(); 
+                handleFormSubmit(forms.forgotPassword, '/forgot-password', { 
+                    onSuccess: (data, body) => { 
+                        showAlert(data.message, 'success'); 
+                        document.getElementById('reset-email').value = body.email; 
+                        switchForm('reset-password-form'); 
+                    } 
+                }); 
+            }); 
+        }
+        if (forms.resetPassword) { 
+            forms.resetPassword.addEventListener('submit', e => { 
+                e.preventDefault(); 
+                handleFormSubmit(forms.resetPassword, '/reset-password', { 
+                    onSuccess: (data) => { 
+                        showAlert(data.message, 'success'); 
+                        setTimeout(() => { 
+                            switchForm('login-form'); 
+                        }, 2000); 
+                    } 
+                }); 
+            }); 
+        }
         
         const params = new URLSearchParams(window.location.search);
         const sucessoUrl = params.get('sucesso');
@@ -281,6 +433,25 @@
 
         // Aplica o tema salvo ou o padrão 'dark'
         applyTheme(localStorage.getItem('theme') || 'dark');
+
+        // Lógica para alternar visibilidade da senha
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const targetId = toggle.dataset.target;
+                const passwordInput = document.getElementById(targetId);
+                const icon = toggle.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        });
     });
     </script>
 </body>
