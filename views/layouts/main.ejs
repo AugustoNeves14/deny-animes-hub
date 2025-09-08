@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-1346896143567817">
     <title><%= locals.titulo || 'DenyAnimeHub' %> | O seu universo Otaku</title>
 
     <!-- Fontes e Ícones -->
@@ -225,19 +226,9 @@
     </main>
 
     <%- include('../partials/footer') %>
-    <!-- No head do seu layout -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= process.env.ADSENSE_CLIENT_ID %>" crossorigin="anonymous"></script>
-
-    <!-- Exemplo de anúncio no corpo -->
-    <ins class="adsbygoogle"
-        style="display:block"
-        data-ad-client="<%= process.env.ADSENSE_CLIENT_ID %>"
-        data-ad-slot="your_ad_slot_id"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <% if (process.env.ADSENSE_CLIENT_ID && process.env.ADSENSE_CLIENT_ID !== 'your_adsense_client_id_here') { %>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= process.env.ADSENSE_CLIENT_ID %>" crossorigin="anonymous"></script>
+    <% } %>
     <!-- [CORREÇÃO] JAVASCRIPT UNIFICADO E ROBUSTO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {

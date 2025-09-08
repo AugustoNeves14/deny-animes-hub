@@ -149,3 +149,24 @@
     console.log("Módulo de Proteção Akatsuki Nível Kage: Ativado.");
 
 })();
+
+// Antes de fazer a requisição, verifique se a URL está correta
+const sendSecurityAlert = async (eventData) => {
+    try {
+        if (!window.location.origin) return;
+        
+        const response = await fetch(`${window.location.origin}/api/security/log-event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(eventData)
+        });
+        
+        if (!response.ok) {
+            console.warn('Falha ao enviar alerta de segurança');
+        }
+    } catch (error) {
+        console.warn('Erro ao enviar alerta de segurança:', error);
+    }
+};

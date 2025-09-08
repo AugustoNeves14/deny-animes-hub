@@ -23,11 +23,30 @@ try {
 }
 
 // Configurar cliente OAuth2 do Google
-const googleClient = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.APP_URL || 'http://localhost:3000'}/auth/google/callback`
-);
+    const googleClient = new OAuth2Client(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        `${process.env.APP_URL || 'http://localhost:3000'}/auth/google/callback`
+    );
+
+    // No método googleLogin:
+    exports.googleLogin = async (req, res) => {
+        try {
+            const authorizeUrl = googleClient.generateAuthUrl({
+                access_type: 'offline',
+                scope: ['profile', 'email'],
+                prompt: 'consent',
+                // Adicione isso para desenvolvimento local
+                redirect_uri: `${process.env.APP_URL || 'http://localhost:3000'}/auth/google/callback`
+            });
+
+            res.json({ success: true, authorizeUrl });
+
+        } catch (error) {
+            console.error('❌ Erro no login com Google:', error);
+            res.status(500).json({ success: false, error: 'Erro ao iniciar login com Google.' });
+        }
+    };
 
 // Configuração do Nodemailer - CORREÇÃO AQUI: createTransport (singular)
 const createTransporter = () => {
@@ -321,18 +340,21 @@ exports.googleCallback = async (req, res) => {
 };
 
 /**
- * Enviar OTP por telefone (usando Firebase)
+ * Enviar OTP por telefone (usando Firebase ou simulação em dev)
  */
 exports.sendPhoneOtp = async (req, res) => {
     const { phoneNumber } = req.body;
-    
+
     if (!phoneNumber) {
-        return res.status(400).json({ success: false, error: 'Por favor, forneça um número de telefone.' });
+        return res.status(400).json({
+            success: false,
+            error: 'Por favor, forneça um número de telefone.'
+        });
     }
 
     try {
         // Formatar número para padrão internacional (+244 para Angola)
-        let formattedNumber = phoneNumber;
+        let formattedNumber = phoneNumber.trim();
         if (!formattedNumber.startsWith('+')) {
             if (formattedNumber.startsWith('244')) {
                 formattedNumber = '+' + formattedNumber;
@@ -343,35 +365,37 @@ exports.sendPhoneOtp = async (req, res) => {
             }
         }
 
-        if (!firebaseInitialized) {
-            // Modo de desenvolvimento - simular envio
+        // Se o Firebase não estiver inicializado, simula envio (modo DEV)
+        if (typeof firebaseInitialized === 'undefined' || !firebaseInitialized) {
             console.log(`📱 Simulando envio de OTP para: ${formattedNumber}`);
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            return res.status(200).json({ 
-                success: true, 
-                message: 'Código OTP enviado para seu telefone!',
-                developmentOtp: otp,
+
+            return res.status(200).json({
+                success: true,
+                message: 'Código OTP (simulado) enviado para seu telefone!',
+                developmentOtp: otp, // Apenas em dev
                 phoneNumber: formattedNumber
             });
         }
 
-        // Firebase Auth - enviar OTP real
-        // Nota: A API do Firebase Admin é diferente no lado do servidor
-        // Para envio de OTP, geralmente é feito no cliente
-        console.log(`📱 Firebase OTP para: ${formattedNumber}`);
-        
-        res.status(200).json({ 
-            success: true, 
+        // Firebase Auth - envio real (lado do cliente geralmente faz o fluxo completo)
+        console.log(`📱 Firebase OTP enviado para: ${formattedNumber}`);
+
+        return res.status(200).json({
+            success: true,
             message: 'Código OTP enviado para seu telefone! (Firebase)',
             phoneNumber: formattedNumber
         });
 
     } catch (error) {
         console.error('❌ Erro ao enviar OTP:', error);
-        res.status(500).json({ success: false, error: 'Erro ao enviar código OTP.' });
+        return res.status(500).json({
+            success: false,
+            error: 'Erro ao enviar código OTP. Tente novamente mais tarde.'
+        });
     }
 };
+
 
 /**
  * Verificar OTP do telefone

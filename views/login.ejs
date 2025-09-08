@@ -365,19 +365,36 @@
         </form>
 
         <!-- NOVO FORMULÁRIO: Login/Cadastro por Telefone - Verificar OTP -->
+        <!-- Enviar OTP -->
+<form action="/auth/phone-login-send-otp" method="POST">
+  <input type="text" name="phoneNumber" placeholder="Telefone (+244...)" required>
+  <button type="submit">Receber OTP</button>
+</form>
+
+<!-- Verificar OTP -->
+<form action="/auth/phone-login-verify-otp" method="POST">
+  <input type="text" name="phoneNumber" placeholder="Telefone (+244...)" required>
+  <input type="text" name="otp" placeholder="Código OTP" required>
+  <button type="submit">Entrar</button>
+</form>
         <form class="auth-form" id="phone-login-verify-otp-form">
-            <div class="auth-form__header"><h2>Verificar Código</h2><p>Insira o código que enviamos para seu telefone.</p></div>
+            <div class="auth-form__header"><h2>Verificar Código</h2><p>Insira o código enviado para seu telefone.</p></div>
             <input type="hidden" id="verified-phone-number" name="phoneNumber">
             <div class="auth-form__group">
                 <i class="fas fa-hashtag input-icon"></i>
-                <input type="text" id="otp-input" name="otp" required placeholder="Código de 6 dígitos">
+                <input type="text" id="otp-code" name="otp" required placeholder="Código OTP">
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Verificar e Entrar <i class="fas fa-check-circle"></i></button></div>
-            <div class="auth-form__footer"><p>Não recebeu o código? <a class="resend-otp-link">Reenviar</a></p><p>Voltar para <a class="form-switch-link" data-target="phone-login-send-otp-form">Telefone</a>.</p></div>
-        </form>
+            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Verificar e Entrar <i class="fas fa-check"></i></button></div>
+            <div class="auth-form__footer"><p>Voltar para <a class="form-switch-link" data-target="login-form">Login</a> ou <a href="#" class="resend-otp-link">Reenviar Código</a>.</p></div>
 
     </div>
-
+        <script>
+    // Quando enviar o número, copia para o hidden input
+    document.getElementById("otpForm").addEventListener("submit", function () {
+        const number = document.getElementById("phoneNumber").value;
+        document.getElementById("verifyPhoneNumber").value = number;
+    });
+    </script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const forms = { 
