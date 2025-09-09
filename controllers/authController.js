@@ -23,30 +23,30 @@ try {
 }
 
 // Configurar cliente OAuth2 do Google
-    const googleClient = new OAuth2Client(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        `${process.env.APP_URL || 'https://deny-animes-hub.onrender.com'}/auth/google/callback`
-    );
+const googleClient = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    "https://deny-animes-hub.onrender.com/auth/google/callback"
+);
 
-    // No método googleLogin:
-    exports.googleLogin = async (req, res) => {
-        try {
-            const authorizeUrl = googleClient.generateAuthUrl({
-                access_type: 'offline',
-                scope: ['profile', 'email'],
-                prompt: 'consent',
-                // Adicione isso para desenvolvimento local
-                redirect_uri: `${process.env.APP_URL || 'http://localhost:3000'}/auth/google/callback`
-            });
+// No método googleLogin:
+exports.googleLogin = async (req, res) => {
+    try {
+        const authorizeUrl = googleClient.generateAuthUrl({
+            access_type: 'offline',
+            scope: ['profile', 'email'],
+            prompt: 'consent'
+            // ❌ Não precisa colocar redirect_uri aqui
+        });
 
-            res.json({ success: true, authorizeUrl });
+        res.json({ success: true, authorizeUrl });
 
-        } catch (error) {
-            console.error('❌ Erro no login com Google:', error);
-            res.status(500).json({ success: false, error: 'Erro ao iniciar login com Google.' });
-        }
-    };
+    } catch (error) {
+        console.error('❌ Erro no login com Google:', error);
+        res.status(500).json({ success: false, error: 'Erro ao iniciar login com Google.' });
+    }
+};
+
 
 // Configuração do Nodemailer - CORREÇÃO AQUI: createTransport (singular)
 const createTransporter = () => {
@@ -304,8 +304,12 @@ exports.googleCallback = async (req, res) => {
             return res.redirect('/login?erro=Código de autorização não fornecido');
         }
 
-        // Trocar código por tokens
-        const { tokens } = await googleClient.getToken(code);
+        // Trocar código por tokens (já usa redirect_uri do construtor)
+        const { tokens } = await googleClient.getToken({
+            code,
+            redirect_uri: "https://deny-animes-hub.onrender.com/auth/google/callback"
+        });
+
         googleClient.setCredentials(tokens);
 
         // Obter informações do usuário
@@ -338,6 +342,7 @@ exports.googleCallback = async (req, res) => {
         res.redirect('/login?erro=Falha no login com Google');
     }
 };
+
 
 /**
  * Enviar OTP por telefone (usando Firebase ou simulação em dev)
