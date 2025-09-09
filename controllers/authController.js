@@ -82,33 +82,36 @@ const sendEmail = async (to, subject, htmlContent) => {
 
 const enviarTokenResponse = (user, statusCode, res) => {
     try {
-        // Gera o token JWT
         const token = jwt.sign(
-            { id: user.id, role: user.role }, 
-            process.env.JWT_SECRET, 
+            { id: user.id, role: user.role },
+            process.env.JWT_SECRET,
             { expiresIn: '30d' }
         );
 
-        // Configura o cookie
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 dias
+            sameSite: 'lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000
         };
 
         res.cookie('token', token, cookieOptions);
 
-        // ✅ Redireciona para a aba correta
-        if (user.role === 'admin') {
-            return res.redirect('/admin/dashboard');
-        } else {
-            return res.redirect('/home'); // ou '/' se preferir
-        }
+        // Sempre responder JSON (API mode)
+        return res.status(statusCode).json({
+            success: true,
+            token,
+            user: {
+                id: user.id,
+                nome: user.nome,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (error) {
         console.error("❌ Erro ao gerar token:", error);
-        res.redirect('/login?erro=Falha na autenticação');
+        return res.status(500).json({ success: false, error: 'Falha na autenticação' });
     }
 };
 
@@ -298,12 +301,10 @@ exports.googleLogin = async (req, res) => {
 exports.googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
-
         if (!code) {
-            return res.redirect('/login?erro=Código de autorização não fornecido');
+            return res.status(400).json({ success: false, error: "Código de autorização não fornecido" });
         }
 
-        // Trocar código por tokens (já usa redirect_uri do construtor)
         const { tokens } = await googleClient.getToken({
             code,
             redirect_uri: "https://deny-animes-hub.onrender.com/auth/google/callback"
@@ -311,7 +312,6 @@ exports.googleCallback = async (req, res) => {
 
         googleClient.setCredentials(tokens);
 
-        // Obter informações do usuário
         const ticket = await googleClient.verifyIdToken({
             idToken: tokens.id_token,
             audience: process.env.GOOGLE_CLIENT_ID
@@ -320,11 +320,8 @@ exports.googleCallback = async (req, res) => {
         const payload = ticket.getPayload();
         const { email, name, picture } = payload;
 
-        // Verificar se usuário já existe
         let user = await User.findOne({ where: { email } });
-        
         if (!user) {
-            // Criar novo usuário
             user = await User.create({
                 nome: name,
                 email: email,
@@ -333,14 +330,15 @@ exports.googleCallback = async (req, res) => {
             });
         }
 
-        // Logar usuário
+        // 🔑 Retorna JSON com token + user
         enviarTokenResponse(user, 200, res);
 
     } catch (error) {
         console.error('❌ Erro no callback do Google:', error);
-        res.redirect('/login?erro=Falha no login com Google');
+        res.status(500).json({ success: false, error: 'Falha no login com Google' });
     }
 };
+
 
 
 /**
