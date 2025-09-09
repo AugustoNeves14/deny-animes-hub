@@ -5,221 +5,410 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= locals.titulo || 'Login' %> | DenyAnimeHub</title>
     
-    <!-- FONTE POPPINS - CONFORME SOLICITADO -->
+    <!-- FONTE POPPINS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="icon" href="/images/1.ico" type="image/ico">
     
     <style>
         /* ================================================================================================== */
-        /*      ESTILIZAÇÃO CSS MODERNA, LIMPA E SOFISTICADA - FOCO EM UI/UX                                  */
+        /*      ESTILIZAÇÃO CSS MODERNA E SOFISTICADA - DESIGN PREMIUM                                        */
         /* ================================================================================================== */
         :root {
             /* TEMA ESCURO (PADRÃO) */
-            --bg-primary: #121212;
-            --bg-secondary: #1E1E1E;
-            --bg-secondary-rgb: 30, 30, 30;
-            --bg-input: #2a2a2a;
-            --text-primary: #EAEAEA;
-            --text-secondary: #A0A0A0;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent-primary: #D32F2F; /* Vermelho mais sóbrio e elegante */
-            --accent-primary-rgb: 211, 47, 47;
-            --accent-primary-hover: #E53935;
-            --success: #10B981;
-            --error: #EF5350;
-            --shadow-color: rgba(0, 0, 0, 0.5);
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-secondary-rgb: 21, 21, 21;
+            --bg-input: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-primary: #ff2e4d;
+            --accent-primary-rgb: 255, 46, 77;
+            --accent-primary-hover: #ff4d68;
+            --accent-gradient: linear-gradient(135deg, #ff2e4d, #ff6b6b);
+            --success: #00d26a;
+            --error: #ff4757;
+            --warning: #ff9f43;
+            --shadow-color: rgba(0, 0, 0, 0.6);
             --font-family: 'Poppins', sans-serif;
-            --google-btn-bg: #4285F4; /* Cor do Google */
+            --google-btn-bg: #4285F4;
             --google-btn-hover: #357ae8;
+            --phone-btn-bg: #25D366;
+            --phone-btn-hover: #128C7E;
+            --backdrop-blur: blur(20px);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body.light-theme {
-            /* TEMA CLARO */
-            --bg-primary: #F4F6F8;
-            --bg-secondary: #FFFFFF;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
             --bg-secondary-rgb: 255, 255, 255;
-            --bg-input: #F0F2F5;
-            --text-primary: #1a202c;
-            --text-secondary: #5A6474;
+            --bg-input: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
             --border-color: rgba(0, 0, 0, 0.1);
-            --accent-primary: #C62828;
-            --accent-primary-rgb: 198, 40, 40;
-            --accent-primary-hover: #D32F2F;
+            --accent-primary: #ff2e4d;
+            --accent-primary-hover: #e62e4a;
             --shadow-color: rgba(0, 0, 0, 0.1);
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANIMAÇÕES */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px) scale(0.95); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
 
-        /* FUNDO SUTIL COM PADRÃO DE RUÍDO PARA UMA TEXTURA PREMIUM */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ESTILOS GERAIS */
         body.login-page {
             font-family: var(--font-family);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background-color: var(--bg-primary);
+            background: var(--bg-primary);
             background-image: 
-                linear-gradient(rgba(18, 18, 18, 0) 0%, var(--bg-primary) 90%),
-                radial-gradient(ellipse at top, transparent, var(--bg-primary)),
-                url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-opacity="0.02"%3E%3Crect fill="%23FFFFFF" width="100" height="100"/%3E%3C/g%3E%3C/svg%3E');
+                radial-gradient(circle at 15% 50%, rgba(255, 46, 77, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(66, 133, 244, 0.1) 0%, transparent 25%),
+                linear-gradient(135deg, var(--bg-primary) 0%, #1a1a1a 100%);
             padding: 1.5rem;
-            transition: background-color 0.4s ease;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23ff2e4d" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E');
+            opacity: 0.3;
+            pointer-events: none;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             position: relative;
+            z-index: 10;
         }
 
         .theme-toggle-container {
             position: absolute;
-            top: -55px;
+            top: -60px;
             right: 0;
+            z-index: 100;
         }
+
         .theme-toggle-btn {
-            background-color: var(--bg-secondary);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            width: 42px; height: 42px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            transition: var(--transition-smooth);
+            backdrop-filter: var(--backdrop-blur);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
-        .theme-toggle-btn:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+
+        .theme-toggle-btn:hover {
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: rotate(15deg) scale(1.1);
+            box-shadow: 0 12px 40px rgba(255, 46, 77, 0.3);
+        }
+
         .theme-toggle-btn .fa-sun { display: none; }
         .light-theme .theme-toggle-btn .fa-sun { display: block; }
         .light-theme .theme-toggle-btn .fa-moon { display: none; }
-        
+
+        .auth-alert {
+            display: none;
+            padding: 1.2rem;
+            margin-bottom: 1.8rem;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.95rem;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid transparent;
+            backdrop-filter: var(--backdrop-blur);
+            background: rgba(var(--bg-secondary-rgb), 0.9);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-alert.error {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--error);
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        .auth-alert.success {
+            background: rgba(0, 210, 106, 0.15);
+            color: var(--success);
+            border-color: rgba(0, 210, 106, 0.3);
+        }
+
+        .auth-alert.warning {
+            background: rgba(255, 159, 67, 0.15);
+            color: var(--warning);
+            border-color: rgba(255, 159, 67, 0.3);
+        }
+
         .auth-form {
             display: flex;
             flex-direction: column;
-            background-color: rgba(var(--bg-secondary-rgb), 0.85);
-            backdrop-filter: blur(10px);
-            padding: 3rem;
-            border-radius: 16px;
+            background: rgba(var(--bg-secondary-rgb), 0.85);
+            backdrop-filter: var(--backdrop-blur);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 35px var(--shadow-color);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             position: absolute;
             width: 100%;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
             opacity: 0;
             visibility: hidden;
-            transform: scale(0.98);
-            transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+            transform: translateY(20px) scale(0.98);
+            transition: var(--transition-smooth);
         }
+
         .auth-form.active-form {
             opacity: 1;
             visibility: visible;
-            transform: scale(1);
+            transform: translateY(0) scale(1);
             position: relative;
         }
-        
-        .auth-form__header { margin-bottom: 2.5rem; text-align: center; }
-        .auth-form__header h2 { color: var(--text-primary); font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .auth-form__header p { color: var(--text-secondary); font-size: 1rem; }
-        
-        .auth-form__group { margin-bottom: 1.5rem; position: relative; }
-        .auth-form__group .input-icon { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); color: var(--text-secondary); transition: color 0.3s ease; }
-        
+
+        .auth-form__header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .auth-form__header h2 {
+            color: var(--text-primary);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .auth-form__header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .auth-form__group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .auth-form__group .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 1.2rem;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+            font-size: 1.1rem;
+        }
+
         .auth-form input {
             width: 100%;
-            padding: 0.9rem 1rem 0.9rem 3rem;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 1.1rem 1.2rem 1.1rem 3.5rem;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 14px;
             color: var(--text-primary);
             font-size: 1rem;
             font-family: var(--font-family);
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .auth-form input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
         .auth-form input:focus {
             outline: none;
             border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.2);
+            background: var(--bg-input);
+            box-shadow: 
+                0 0 0 4px rgba(var(--accent-primary-rgb), 0.15),
+                inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
-        .auth-form input:focus + .input-icon { color: var(--accent-primary); }
 
-        /* Estilos para o ícone de toggle de senha */
+        .auth-form input:focus + .input-icon {
+            color: var(--accent-primary);
+            transform: translateY(-50%) scale(1.2);
+        }
+
         .password-toggle {
             position: absolute;
             top: 50%;
-            right: 1rem;
+            right: 1.2rem;
             transform: translateY(-50%);
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1rem;
-            transition: color 0.3s ease;
-            z-index: 10; /* Garante que o ícone seja clicável */
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+            z-index: 10;
+            background: rgba(var(--bg-secondary-rgb), 0.8);
+            padding: 0.5rem;
+            border-radius: 8px;
         }
+
         .password-toggle:hover {
             color: var(--accent-primary);
+            background: rgba(var(--accent-primary-rgb), 0.1);
+            transform: translateY(-50%) scale(1.1);
         }
-        
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; cursor: pointer; font-weight: 600; transition: all 0.3s ease; border: none; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-family);
+            transition: var(--transition-smooth);
+            border: none;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
         .btn--primary {
             width: 100%;
-            padding: 0.9rem;
-            font-size: 1rem;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
-            background: var(--accent-primary);
+            background: var(--accent-gradient);
             color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.2);
+            box-shadow: 
+                0 8px 32px rgba(255, 46, 77, 0.3),
+                0 4px 16px rgba(255, 46, 77, 0.2);
         }
+
         .btn--primary:hover:not(:disabled) {
-            background: var(--accent-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 40px rgba(255, 46, 77, 0.4),
+                0 6px 20px rgba(255, 46, 77, 0.3);
         }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-        
-        /* Botões de provedores sociais */
+
+        .btn--primary:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         .social-login {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 1.2rem;
+            margin: 2.5rem 0;
         }
 
         .btn--social {
             width: 100%;
-            padding: 0.9rem;
+            padding: 1.1rem 2rem;
             font-size: 1rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            font-weight: 500;
+            border-radius: 14px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border: 2px solid transparent;
         }
 
         .btn--google {
-            background-color: var(--google-btn-bg);
+            background: var(--google-btn-bg);
             color: white;
         }
+
         .btn--google:hover {
-            background-color: var(--google-btn-hover);
+            background: var(--google-btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(66, 133, 244, 0.4);
         }
 
         .btn--phone {
-            background-color: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            background: var(--phone-btn-bg);
+            color: white;
         }
+
         .btn--phone:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
+            background: var(--phone-btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
         }
 
         .divider {
@@ -227,33 +416,144 @@
             align-items: center;
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin: 2rem 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 2.5rem 0;
         }
+
         .divider::before,
         .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .divider:not(:empty)::before {
-            margin-right: .75em;
-        }
-        .divider:not(:empty)::after {
-            margin-left: .75em;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .auth-form__footer { margin-top: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-secondary); }
-        .auth-form__footer p { margin-bottom: 0.75rem; }
-        .auth-form__footer a { font-weight: 500; color: var(--accent-primary); cursor: pointer; text-decoration: none; }
-        .auth-form__footer a:hover { text-decoration: underline; }
-        
-        .home-link { display: block; text-align: center; margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.8; color: var(--text-secondary); text-decoration: none; }
-        .home-link:hover { text-decoration: underline; }
-        
-        .auth-alert { display: none; padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; text-align: center; font-weight: 500; font-size: 0.95rem; animation: fadeIn 0.3s ease; border: 1px solid transparent; }
-        .auth-alert.error { background-color: rgba(var(--error), 0.15); color: var(--error); border-color: rgba(var(--error), 0.3); }
-        .auth-alert.success { background-color: rgba(var(--success), 0.15); color: var(--success); border-color: rgba(var(--success), 0.3); }
+        .divider:not(:empty)::before {
+            margin-right: 1rem;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: 1rem;
+        }
+
+        .auth-form__footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-form__footer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .auth-form__footer a {
+            font-weight: 600;
+            color: var(--accent-primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .auth-form__footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .auth-form__footer a:hover::after {
+            width: 100%;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            opacity: 0.8;
+        }
+
+        .home-link:hover {
+            opacity: 1;
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Estilos específicos para formulário de telefone */
+        .phone-input-container {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .country-code {
+            flex: 0 0 auto;
+            padding: 1.1rem 1rem;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .phone-input {
+            flex: 1;
+            padding-left: 3.5rem !important;
+        }
+
+        .country-code:focus {
+            border-color: var(--accent-primary);
+            background: var(--bg-input);
+        }
+
+        /* Loading spinner personalizado */
+        .btn--loading .btn-spinner {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .auth-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .auth-form__header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .phone-input-container {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .country-code {
+                width: 100%;
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body class="login-page">
@@ -266,410 +566,626 @@
         </div>
         <div id="auth-alert" class="auth-alert"></div>
 
+        <!-- Formulário Principal de Login -->
         <form class="auth-form active-form" id="login-form">
-            <div class="auth-form__header"><h2>Bem-vindo de Volta</h2><p>Acesse sua conta para continuar.</p></div>
+            <div class="auth-form__header">
+                <h2>Bem-vindo de Volta</h2>
+                <p>Acesse sua conta para continuar sua jornada anime</p>
+            </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-envelope input-icon"></i>
                 <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
             </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-lock input-icon"></i>
                 <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
-                <span class="password-toggle" data-target="login-password"><i class="fas fa-eye-slash"></i></span>
+                <span class="password-toggle" data-target="login-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
             </div>
+            
             <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">Entrar <i class="fas fa-arrow-right"></i></button>
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Entrar</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
+            
             <div class="auth-form__footer">
-                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a>.</p>
+                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a></p>
                 <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
             </div>
 
-            <div class="divider">ou</div>
+            <div class="divider">ou continue com</div>
 
             <div class="social-login">
                 <button type="button" class="btn btn--social btn--google" id="google-login-btn">
-                    <i class="fab fa-google"></i> Continuar com Google
+                    <i class="fab fa-google"></i>
+                    <span>Google</span>
                 </button>
+                
                 <button type="button" class="btn btn--social btn--phone" id="phone-login-btn">
-                    <i class="fas fa-phone-alt"></i> Continuar com Telefone
+                    <i class="fas fa-phone-alt"></i>
+                    <span>Telefone</span>
                 </button>
             </div>
-            <a href="/" class="home-link">Voltar ao Início</a>
+            
+            <a href="/" class="home-link">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Início
+            </a>
         </form>
 
+        <!-- Formulário de Registro -->
         <form class="auth-form" id="register-form">
-            <div class="auth-form__header"><h2>Crie sua Conta</h2><p>Junte-se à comunidade DenyAnimeHub.</p></div>
+            <div class="auth-form__header">
+                <h2>Crie sua Conta</h2>
+                <p>Junte-se à comunidade DenyAnimeHub</p>
+            </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-user input-icon"></i>
-                <input type="text" id="register-username" name="nome" required placeholder="Seu nome de usuário">
+                <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
             </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="register-email" name="email" required placeholder="Um e-mail válido">
+                <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
             </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="register-password" name="senha" minlength="6" required placeholder="Crie uma senha (mín. 6 caracteres)">
-                <span class="password-toggle" data-target="register-password"><i class="fas fa-eye-slash"></i></span>
+                <input type="password" id="register-password" name="senha" minlength="6" required 
+                       placeholder="Crie uma senha segura (mín. 6 caracteres)">
+                <span class="password-toggle" data-target="register-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
             </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required placeholder="Confirme sua senha">
-                <span class="password-toggle" data-target="register-confirm-password"><i class="fas fa-eye-slash"></i></span>
+                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
+                       placeholder="Confirme sua senha">
+                <span class="password-toggle" data-target="register-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Registrar <i class="fas fa-user-plus"></i></button></div>
-            <div class="auth-form__footer"><p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Criar Conta</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
+            </div>
         </form>
 
+        <!-- Formulário de Recuperação de Senha -->
         <form class="auth-form" id="forgot-password-form">
-            <div class="auth-form__header"><h2>Recuperar Senha</h2><p>Insira seu e-mail para receber o código.</p></div>
+            <div class="auth-form__header">
+                <h2>Recuperar Senha</h2>
+                <p>Enviaremos um código para seu email</p>
+            </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-envelope input-icon"></i>
                 <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Enviar Código <i class="fas fa-paper-plane"></i></button></div>
-            <div class="auth-form__footer"><p>Lembrou a senha? <a class="form-switch-link" data-target="login-form">Faça o login</a>.</p></div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Enviar Código</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
+            </div>
         </form>
 
+        <!-- Formulário de Redefinição de Senha -->
         <form class="auth-form" id="reset-password-form">
-            <div class="auth-form__header"><h2>Redefinir Senha</h2><p>Insira o código e sua nova senha.</p></div>
+            <div class="auth-form__header">
+                <h2>Nova Senha</h2>
+                <p>Digite o código recebido e sua nova senha</p>
+            </div>
+            
             <input type="hidden" id="reset-email" name="email">
+            
             <div class="auth-form__group">
-                <i class="fas fa-hashtag input-icon"></i>
-                <input type="text" id="reset-code" name="token" required placeholder="Código de Redefinição">
+                <i class="fas fa-key input-icon"></i>
+                <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
             </div>
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="reset-password" name="novaSenha" minlength="6" required placeholder="Sua nova senha">
-                <span class="password-toggle" data-target="reset-password"><i class="fas fa-eye-slash"></i></span>
-            </div>
+            
             <div class="auth-form__group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required placeholder="Confirme sua nova senha">
-                <span class="password-toggle" data-target="reset-confirm-password"><i class="fas fa-eye-slash"></i></span>
+                <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
+                       placeholder="Nova senha">
+                <span class="password-toggle" data-target="reset-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Salvar Nova Senha <i class="fas fa-save"></i></button></div>
-            <div class="auth-form__footer"><p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Tente novamente</a>.</p></div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
+                       placeholder="Confirmar nova senha">
+                <span class="password-toggle" data-target="reset-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Redefinir Senha</span>
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
+            </div>
         </form>
 
-        <!-- NOVO FORMULÁRIO: Login/Cadastro por Telefone - Solicitar OTP -->
-        <form class="auth-form" id="phone-login-send-otp-form">
-            <div class="auth-form__header"><h2>Login/Cadastro por Telefone</h2><p>Insira seu telefone para receber um código.</p></div>
-            <div class="auth-form__group">
-                <i class="fas fa-phone-alt input-icon"></i>
-                <input type="tel" id="phone-number-input" name="phoneNumber" required placeholder="(XX) XXXXX-XXXX" pattern="^\(\d{2}\)\s\d{5}-\d{4}$">
+        <!-- Formulário Universal de Telefone -->
+        <form class="auth-form" id="phone-login-form">
+            <div class="auth-form__header">
+                <h2>Login por Telefone</h2>
+                <p>Digite seu número para receber um código de acesso</p>
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Enviar Código <i class="fas fa-sms"></i></button></div>
-            <div class="auth-form__footer"><p>Voltar para <a class="form-switch-link" data-target="login-form">Login</a>.</p></div>
+            
+            <div class="auth-form__group">
+                <div class="phone-input-container">
+                    <select id="country-code-select" class="country-code" name="countryCode">
+                        <option value="+244">+244 (AO)</option>
+                        <option value="+55">+55 (BR)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+33">+33 (FR)</option>
+                        <option value="+34">+34 (ES)</option>
+                        <option value="+49">+49 (DE)</option>
+                        <option value="+39">+39 (IT)</option>
+                        <option value="+7">+7 (RU)</option>
+                        <option value="+81">+81 (JP)</option>
+                        <option value="+86">+86 (CN)</option>
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+27">+27 (ZA)</option>
+                        <option value="+234">+234 (NG)</option>
+                        <option value="+254">+254 (KE)</option>
+                        <!-- Adicione mais códigos conforme necessário -->
+                    </select>
+                    <input type="tel" id="phone-number" name="phoneNumber" required 
+                           placeholder="Número do telefone" class="phone-input"
+                           pattern="[0-9]{8,15}" title="Digite apenas números (8-15 dígitos)">
+                </div>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Receber Código</span>
+                    <i class="fas fa-sms"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Voltar para <a class="form-switch-link" data-target="login-form">login tradicional</a></p>
+            </div>
         </form>
 
-        <!-- NOVO FORMULÁRIO: Login/Cadastro por Telefone - Verificar OTP -->
-        <!-- Enviar OTP -->
-<form action="/auth/phone-login-send-otp" method="POST">
-  <input type="text" name="phoneNumber" placeholder="Telefone (+244...)" required>
-  <button type="submit">Receber OTP</button>
-</form>
-
-<!-- Verificar OTP -->
-<form action="/auth/phone-login-verify-otp" method="POST">
-  <input type="text" name="phoneNumber" placeholder="Telefone (+244...)" required>
-  <input type="text" name="otp" placeholder="Código OTP" required>
-  <button type="submit">Entrar</button>
-</form>
-        <form class="auth-form" id="phone-login-verify-otp-form">
-            <div class="auth-form__header"><h2>Verificar Código</h2><p>Insira o código enviado para seu telefone.</p></div>
-            <input type="hidden" id="verified-phone-number" name="phoneNumber">
-            <div class="auth-form__group">
-                <i class="fas fa-hashtag input-icon"></i>
-                <input type="text" id="otp-code" name="otp" required placeholder="Código OTP">
+        <!-- Formulário de Verificação de OTP -->
+        <form class="auth-form" id="phone-verify-form">
+            <div class="auth-form__header">
+                <h2>Verificar Código</h2>
+                <p>Digite o código de 6 dígitos enviado para seu telefone</p>
             </div>
-            <div class="auth-form__actions"><button type="submit" class="btn btn--primary">Verificar e Entrar <i class="fas fa-check"></i></button></div>
-            <div class="auth-form__footer"><p>Voltar para <a class="form-switch-link" data-target="login-form">Login</a> ou <a href="#" class="resend-otp-link">Reenviar Código</a>.</p></div>
-
+            
+            <input type="hidden" id="verify-phone-number" name="phoneNumber">
+            
+            <div class="auth-form__group">
+                <i class="fas fa-shield-alt input-icon"></i>
+                <input type="text" id="otp-code" name="otp" required 
+                       placeholder="Código de 6 dígitos" pattern="[0-9]{6}" 
+                       title="Digite o código de 6 dígitos" maxlength="6">
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Verificar e Entrar</span>
+                    <i class="fas fa-check-circle"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Não recebeu? <a href="#" id="resend-otp-link">Reenviar código</a></p>
+                <p>Voltar para <a class="form-switch-link" data-target="phone-login-form">alterar número</a></p>
+            </div>
+        </form>
     </div>
-        <script>
-    // Quando enviar o número, copia para o hidden input
-    document.getElementById("otpForm").addEventListener("submit", function () {
-        const number = document.getElementById("phoneNumber").value;
-        document.getElementById("verifyPhoneNumber").value = number;
-    });
-    </script>
+
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const forms = { 
-            login: document.getElementById('login-form'), 
-            register: document.getElementById('register-form'), 
-            forgotPassword: document.getElementById('forgot-password-form'), 
-            resetPassword: document.getElementById('reset-password-form'), 
-            phoneLoginSendOtp: document.getElementById('phone-login-send-otp-form'), // Novo
-            phoneLoginVerifyOtp: document.getElementById('phone-login-verify-otp-form'), // Novo
-        };
-        const authAlert = document.getElementById('auth-alert');
-        const formSwitchLinks = document.querySelectorAll('.form-switch-link');
-        const themeToggleButton = document.getElementById('theme-toggle');
-        const googleLoginBtn = document.getElementById('google-login-btn'); // Novo
-        const phoneLoginBtn = document.getElementById('phone-login-btn'); // Novo
-        const resendOtpLink = document.querySelector('.resend-otp-link'); // Novo
-
-        const showAlert = (message, type = 'error') => { authAlert.textContent = message; authAlert.className = `auth-alert ${type}`; authAlert.style.display = 'block'; };
-        const switchForm = (targetId) => { 
-            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active-form')); 
-            const targetForm = document.getElementById(targetId); 
-            if (targetForm) { 
-                targetForm.classList.add('active-form'); 
-            } 
-            authAlert.style.display = 'none'; 
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Inicializando DenyAnimeHub Auth System...');
+        
+        // Elementos da DOM
+        const elements = {
+            forms: {
+                login: document.getElementById('login-form'),
+                register: document.getElementById('register-form'),
+                forgotPassword: document.getElementById('forgot-password-form'),
+                resetPassword: document.getElementById('reset-password-form'),
+                phoneLogin: document.getElementById('phone-login-form'),
+                phoneVerify: document.getElementById('phone-verify-form')
+            },
+            authAlert: document.getElementById('auth-alert'),
+            formSwitchLinks: document.querySelectorAll('.form-switch-link'),
+            themeToggle: document.getElementById('theme-toggle'),
+            googleLoginBtn: document.getElementById('google-login-btn'),
+            phoneLoginBtn: document.getElementById('phone-login-btn'),
+            resendOtpLink: document.getElementById('resend-otp-link'),
+            countryCodeSelect: document.getElementById('country-code-select'),
+            phoneNumberInput: document.getElementById('phone-number'),
+            verifyPhoneInput: document.getElementById('verify-phone-number')
         };
 
-        formSwitchLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); switchForm(e.target.dataset.target); }); });
+        // Estados da aplicação
+        let currentPhoneNumber = '';
+        let otpResendTimer = null;
+        let otpResendTime = 60;
 
-        const handleFormSubmit = async (form, endpoint, options = {}) => {
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalButtonHTML = submitButton.innerHTML;
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
-            authAlert.style.display = 'none';
-            const formData = new FormData(form);
-            const body = Object.fromEntries(formData.entries());
+        // Funções utilitárias
+        const showAlert = (message, type = 'error', duration = 5000) => {
+            if (!elements.authAlert) return;
+            
+            elements.authAlert.textContent = message;
+            elements.authAlert.className = `auth-alert ${type}`;
+            elements.authAlert.style.display = 'block';
+            
+            if (duration > 0) {
+                setTimeout(() => {
+                    elements.authAlert.style.display = 'none';
+                }, duration);
+            }
+        };
 
-            // Validação de senha e confirmação para o registro
-            if (form.id === 'register-form') {
-                const password = body.senha;
-                const confirmPassword = body.confirmarSenha;
-                if (password !== confirmPassword) {
-                    showAlert('As senhas não coincidem.', 'error');
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonHTML;
-                    return;
-                }
-                delete body.confirmarSenha; 
+        const switchForm = (targetId) => {
+            // Esconder todos os formulários
+            Object.values(elements.forms).forEach(form => {
+                if (form) form.classList.remove('active-form');
+            });
+            
+            // Mostrar formulário alvo
+            const targetForm = elements.forms[targetId.replace('-form', '')] || 
+                              document.getElementById(targetId);
+            if (targetForm) {
+                targetForm.classList.add('active-form');
             }
             
-            // Validação de senha e confirmação para redefinição
-            if (form.id === 'reset-password-form') {
-                const newPassword = body.novaSenha;
-                const confirmNewPassword = body.confirmarNovaSenha;
-                if (newPassword !== confirmNewPassword) {
-                    showAlert('As novas senhas não coincidem.', 'error');
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonHTML;
-                    return;
-                }
-                delete body.confirmarNovaSenha;
+            // Esconder alertas
+            if (elements.authAlert) {
+                elements.authAlert.style.display = 'none';
             }
+        };
 
+        const setButtonLoading = (button, isLoading) => {
+            if (!button) return;
+            
+            const btnText = button.querySelector('.btn-text');
+            if (isLoading) {
+                button.disabled = true;
+                if (btnText) {
+                    btnText.innerHTML = '<span class="btn-spinner"></span> Processando...';
+                }
+            } else {
+                button.disabled = false;
+                // Restaurar texto original baseado no tipo de botão
+                if (btnText) {
+                    const originalText = button.classList.contains('btn--primary') ? 
+                        button.querySelector('.fa-arrow-right') ? 'Entrar' :
+                        button.querySelector('.fa-user-plus') ? 'Criar Conta' :
+                        button.querySelector('.fa-paper-plane') ? 'Enviar Código' :
+                        button.querySelector('.fa-save') ? 'Redefinir Senha' :
+                        button.querySelector('.fa-sms') ? 'Receber Código' :
+                        button.querySelector('.fa-check-circle') ? 'Verificar e Entrar' : 'Continuar' : 'Continuar';
+                    btnText.textContent = originalText;
+                }
+            }
+        };
+
+        const formatPhoneNumber = (phoneNumber, countryCode) => {
+            // Remover todos os caracteres não numéricos
+            const cleaned = phoneNumber.replace(/\D/g, '');
+            
+            // Retornar número formatado com código do país
+            return countryCode + cleaned;
+        };
+
+        const validatePhoneNumber = (phoneNumber) => {
+            // Validação básica - pelo menos 8 dígitos após o código do país
+            const digitsOnly = phoneNumber.replace(/\D/g, '');
+            return digitsOnly.length >= 8;
+        };
+
+        const startOtpResendTimer = () => {
+            if (otpResendTimer) clearInterval(otpResendTimer);
+            
+            otpResendTime = 60;
+            if (elements.resendOtpLink) {
+                elements.resendOtpLink.style.opacity = '0.5';
+                elements.resendOtpLink.style.pointerEvents = 'none';
+                elements.resendOtpLink.textContent = `Reenviar (${otpResendTime}s)`;
+            }
+            
+            otpResendTimer = setInterval(() => {
+                otpResendTime--;
+                
+                if (elements.resendOtpLink) {
+                    elements.resendOtpLink.textContent = `Reenviar (${otpResendTime}s)`;
+                }
+                
+                if (otpResendTime <= 0) {
+                    clearInterval(otpResendTimer);
+                    if (elements.resendOtpLink) {
+                        elements.resendOtpLink.style.opacity = '1';
+                        elements.resendOtpLink.style.pointerEvents = 'auto';
+                        elements.resendOtpLink.textContent = 'Reenviar código';
+                    }
+                }
+            }, 1000);
+        };
+
+        // Manipuladores de formulários
+        const handleFormSubmit = async (form, endpoint, options = {}) => {
+            const submitButton = form.querySelector('button[type="submit"]');
+            setButtonLoading(submitButton, true);
+            
             try {
-                const response = await fetch(`/auth${endpoint}`, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(body), 
+                const formData = new FormData(form);
+                const body = Object.fromEntries(formData.entries());
+                
+                // Validações específicas
+                if (form.id === 'register-form' || form.id === 'reset-password-form') {
+                    const passwordField = form.id === 'register-form' ? 'senha' : 'novaSenha';
+                    const confirmField = form.id === 'register-form' ? 'confirmarSenha' : 'confirmarNovaSenha';
+                    
+                    if (body[passwordField] !== body[confirmField]) {
+                        throw new Error('As senhas não coincidem');
+                    }
+                    delete body[confirmField];
+                }
+                
+                // Validação de telefone
+                if (form.id === 'phone-login-form') {
+                    const fullNumber = formatPhoneNumber(body.phoneNumber, body.countryCode);
+                    if (!validatePhoneNumber(fullNumber)) {
+                        throw new Error('Número de telefone inválido');
+                    }
+                    body.phoneNumber = fullNumber;
+                    delete body.countryCode;
+                    currentPhoneNumber = fullNumber;
+                }
+                
+                if (form.id === 'phone-verify-form') {
+                    body.phoneNumber = currentPhoneNumber;
+                }
+                
+                const response = await fetch(`/auth${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
                 });
+                
                 const data = await response.json();
-                if (!response.ok || !data.success) { 
-                    throw new Error(data.error || 'Ocorreu um erro desconhecido.'); 
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Erro desconhecido');
                 }
-                if (options.onSuccess) { 
-                    options.onSuccess(data, body); 
+                
+                if (options.onSuccess) {
+                    options.onSuccess(data, body);
                 }
-            } catch (error) { 
-                showAlert(error.message, 'error'); 
-            } 
-            finally { 
-                submitButton.disabled = false; 
-                submitButton.innerHTML = originalButtonHTML; 
+                
+            } catch (error) {
+                console.error('Erro no formulário:', error);
+                showAlert(error.message, 'error');
+            } finally {
+                setButtonLoading(submitButton, false);
             }
         };
 
-        // --- Event Listeners para os formulários existentes ---
-        if (forms.login) { 
-            forms.login.addEventListener('submit', e => { 
-                e.preventDefault(); 
-                handleFormSubmit(forms.login, '/login', { 
-                    onSuccess: (data) => { 
-                        showAlert('Login bem-sucedido! Redirecionando...', 'success'); 
-                        window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/'; 
-                    } 
-                }); 
-            }); 
-        }
-        if (forms.register) { 
-            forms.register.addEventListener('submit', e => { 
-                e.preventDefault(); 
-                handleFormSubmit(forms.register, '/registrar', { 
-                    onSuccess: (data, body) => { 
-                        showAlert(data.message, 'success'); 
-                        setTimeout(() => { 
-                            switchForm('login-form'); 
-                            if(forms.login) { 
-                                forms.login.querySelector('#login-email').value = body.email; 
-                            } 
-                        }, 2000); 
-                    } 
-                }); 
-            }); 
-        }
-        if (forms.forgotPassword) { 
-            forms.forgotPassword.addEventListener('submit', e => { 
-                e.preventDefault(); 
-                handleFormSubmit(forms.forgotPassword, '/forgot-password', { 
-                    onSuccess: (data, body) => { 
-                        showAlert(data.message, 'success'); 
-                        document.getElementById('reset-email').value = body.email; 
-                        switchForm('reset-password-form'); 
-                    } 
-                }); 
-            }); 
-        }
-        if (forms.resetPassword) { 
-            forms.resetPassword.addEventListener('submit', e => { 
-                e.preventDefault(); 
-                handleFormSubmit(forms.resetPassword, '/reset-password', { 
-                    onSuccess: (data) => { 
-                        showAlert(data.message, 'success'); 
-                        setTimeout(() => { 
-                            switchForm('login-form'); 
-                        }, 2000); 
-                    } 
-                }); 
-            }); 
-        }
-        
-        // --- Novos Event Listeners para Login Social e Telefone ---
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', async () => {
-                showAlert('Redirecionando para login com Google...', 'success');
-                try {
-                    const response = await fetch('/auth/google');
-                    const data = await response.json();
-                    if (data.success && data.authorizeUrl) {
-                        window.location.href = data.authorizeUrl; // Redireciona para o Google OAuth
-                    } else {
-                        throw new Error(data.error || 'Falha ao iniciar login com Google.');
-                    }
-                } catch (error) {
-                    showAlert(error.message, 'error');
-                }
+        // Configurar event listeners
+        const setupEventListeners = () => {
+            // Alternância de formulários
+            elements.formSwitchLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchForm(link.dataset.target);
+                });
             });
-        }
-
-        if (phoneLoginBtn) {
-            phoneLoginBtn.addEventListener('click', () => {
-                switchForm('phone-login-send-otp-form');
-            });
-        }
-
-        // No seu frontend JavaScript
-        if (forms.phoneLoginSendOtp) {
-            forms.phoneLoginSendOtp.addEventListener('submit', async e => {
-                e.preventDefault();
-                const phoneNumberInput = document.getElementById('phone-number-input');
-                
-                // Formatar número para Angola (+244)
-                let rawPhoneNumber = phoneNumberInput.value.replace(/\D/g, '');
-                
-                // Se começar com 9 (celular angolano), adicionar +244
-                if (rawPhoneNumber.startsWith('9')) {
-                    rawPhoneNumber = '244' + rawPhoneNumber;
-                }
-                // Se começar com 244, apenas adicionar o +
-                else if (rawPhoneNumber.startsWith('244')) {
-                    rawPhoneNumber = rawPhoneNumber;
-                }
-                // Se for número local (sem código país), assumir Angola
-                else if (rawPhoneNumber.length === 9 && rawPhoneNumber.startsWith('9')) {
-                    rawPhoneNumber = '244' + rawPhoneNumber;
-                }
-                
-                const formattedPhoneNumber = '+' + rawPhoneNumber;
-
-                handleFormSubmit(forms.phoneLoginSendOtp, '/auth/send-phone-otp', {
-                    onSuccess: (data) => {
-                        showAlert(data.message, 'success');
-                        document.getElementById('verified-phone-number').value = formattedPhoneNumber;
-                        // Se estiver em desenvolvimento, mostrar o OTP
-                        if (data.developmentOtp) {
-                            showAlert(`OTP de desenvolvimento: ${data.developmentOtp}`, 'success');
+            
+            // Toggle de tema
+            if (elements.themeToggle) {
+                elements.themeToggle.addEventListener('click', () => {
+                    const isDark = document.body.classList.contains('dark-theme');
+                    document.body.className = `login-page ${isDark ? 'light' : 'dark'}-theme`;
+                    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                });
+            }
+            
+            // Login com Google
+            if (elements.googleLoginBtn) {
+                elements.googleLoginBtn.addEventListener('click', async () => {
+                    showAlert('Redirecionando para Google...', 'success');
+                    try {
+                        const response = await fetch('/auth/google');
+                        const data = await response.json();
+                        if (data.success && data.authorizeUrl) {
+                            window.location.href = data.authorizeUrl;
+                        } else {
+                            throw new Error(data.error || 'Falha no login com Google');
                         }
-                        switchForm('phone-login-verify-otp-form');
+                    } catch (error) {
+                        showAlert(error.message, 'error');
+                    }
+                });
+            }
+            
+            // Login com telefone
+            if (elements.phoneLoginBtn) {
+                elements.phoneLoginBtn.addEventListener('click', () => {
+                    switchForm('phone-login-form');
+                });
+            }
+            
+            // Reenviar OTP
+            if (elements.resendOtpLink) {
+                elements.resendOtpLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (otpResendTime > 0) return;
+                    
+                    showAlert('Reenviando código...', 'success');
+                    try {
+                        const response = await fetch('/auth/send-phone-otp', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ phoneNumber: currentPhoneNumber })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            showAlert('Código reenviado!', 'success');
+                            startOtpResendTimer();
+                        } else {
+                            throw new Error(data.error || 'Falha ao reenviar');
+                        }
+                    } catch (error) {
+                        showAlert(error.message, 'error');
+                    }
+                });
+            }
+            
+            // Toggle de visibilidade de senha
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const targetId = toggle.dataset.target;
+                    const input = document.getElementById(targetId);
+                    const icon = toggle.querySelector('i');
+                    
+                    if (input && icon) {
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.replace('fa-eye-slash', 'fa-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.replace('fa-eye', 'fa-eye-slash');
+                        }
                     }
                 });
             });
-        }
-        if (forms.phoneLoginVerifyOtp) {
-            forms.phoneLoginVerifyOtp.addEventListener('submit', e => {
-                e.preventDefault();
-                handleFormSubmit(forms.phoneLoginVerifyOtp, '/verify-phone-otp', {
-                    onSuccess: (data) => {
-                        showAlert('Login por telefone bem-sucedido! Redirecionando...', 'success');
-                        window.location.href = data.user.role === 'admin' ? '/admin/dashboard' : '/';
+            
+            // Formulários principais
+            const formConfigs = {
+                'login-form': { endpoint: '/login', onSuccess: (data) => {
+                    showAlert('Login realizado! Redirecionando...', 'success');
+                    setTimeout(() => {
+                        window.location.href = data.user?.role === 'admin' ? 
+                            '/admin/dashboard' : '/';
+                    }, 1500);
+                }},
+                'register-form': { endpoint: '/registrar', onSuccess: (data, body) => {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => {
+                        switchForm('login-form');
+                        const emailInput = elements.forms.login?.querySelector('#login-email');
+                        if (emailInput) emailInput.value = body.email;
+                    }, 2000);
+                }},
+                'forgot-password-form': { endpoint: '/forgot-password', onSuccess: (data, body) => {
+                    showAlert(data.message, 'success');
+                    document.getElementById('reset-email').value = body.email;
+                    setTimeout(() => switchForm('reset-password-form'), 1500);
+                }},
+                'reset-password-form': { endpoint: '/reset-password', onSuccess: (data) => {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => switchForm('login-form'), 2000);
+                }},
+                'phone-login-form': { endpoint: '/send-phone-otp', onSuccess: (data) => {
+                    showAlert(data.message, 'success');
+                    if (elements.verifyPhoneInput) {
+                        elements.verifyPhoneInput.value = currentPhoneNumber;
                     }
-                });
-            });
-        }
-
-        if (resendOtpLink) {
-            resendOtpLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const phoneNumber = document.getElementById('verified-phone-number').value;
-                if (!phoneNumber) {
-                    showAlert('Número de telefone não encontrado para reenviar o código.', 'error');
-                    return;
-                }
-                showAlert('Reenviando código OTP...', 'success');
-                try {
-                    const response = await fetch('/auth/send-phone-otp', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ phoneNumber }),
+                    if (data.developmentOtp) {
+                        showAlert(`Código de desenvolvimento: ${data.developmentOtp}`, 'warning', 10000);
+                    }
+                    startOtpResendTimer();
+                    setTimeout(() => switchForm('phone-verify-form'), 1000);
+                }},
+                'phone-verify-form': { endpoint: '/verify-phone-otp', onSuccess: (data) => {
+                    showAlert('Login realizado com sucesso!', 'success');
+                    setTimeout(() => {
+                        window.location.href = data.user?.role === 'admin' ? 
+                            '/admin/dashboard' : '/';
+                    }, 1500);
+                }}
+            };
+            
+            // Configurar submit handlers
+            Object.entries(formConfigs).forEach(([formId, config]) => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        handleFormSubmit(form, config.endpoint, config);
                     });
-                    const data = await response.json();
-                    if (data.success) {
-                        showAlert(data.message, 'success');
-                    } else {
-                        throw new Error(data.error || 'Falha ao reenviar o código OTP.');
-                    }
-                } catch (error) {
-                    showAlert(error.message, 'error');
                 }
             });
-        }
-        
-        // --- Lógica de Tema e Parâmetros de URL ---
-        const params = new URLSearchParams(window.location.search);
-        const sucessoUrl = params.get('sucesso');
-        const erroUrl = params.get('erro');
-        if (sucessoUrl) showAlert(decodeURIComponent(sucessoUrl), 'success');
-        if (erroUrl) showAlert(decodeURIComponent(erroUrl), 'error');
-
-        const applyTheme = (theme) => {
-            document.body.className = `login-page ${theme}-theme`;
-            localStorage.setItem('theme', theme);
+            
+            // Auto-seleção de código de país baseado no IP (simulação)
+            const simulateCountryDetection = () => {
+                // Em produção, usar uma API de geolocalização
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                if (timezone.includes('Africa')) {
+                    elements.countryCodeSelect.value = '+244';
+                }
+            };
+            
+            if (elements.countryCodeSelect) {
+                simulateCountryDetection();
+            }
         };
-        themeToggleButton.addEventListener('click', () => {
-            const newTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
-            applyTheme(newTheme);
-        });
-        applyTheme(localStorage.getItem('theme') || 'dark');
 
-        // Lógica para alternar visibilidade da senha
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const targetId = toggle.dataset.target;
-                const passwordInput = document.getElementById(targetId);
-                const icon = toggle.querySelector('i');
+        // Inicialização
+        const init = () => {
+            // Aplicar tema salvo
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.className = `login-page ${savedTheme}-theme`;
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Verificar parâmetros da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('sucesso');
+            const errorParam = urlParams.get('erro');
+            
+            if (successParam) {
+                showAlert(decodeURIComponent(successParam), 'success', 5000);
+            }
+            
+            if (errorParam) {
+                showAlert(decodeURIComponent(errorParam), 'error', 5000);
+            }
+            
+            console.log('✅ Sistema de autenticação inicializado');
+        };
 
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            });
-        });
+        // Iniciar a aplicação
+        init();
     });
     </script>
 </body>
