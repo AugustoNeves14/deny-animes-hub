@@ -15,7 +15,7 @@
     
     <style>
         /* ================================================================================================== */
-        /*      ESTILIZAÇÃO CSS MODERNA E SOFISTICADA - DESIGN PREMIUM                                        */
+        /*      ESTILIZAÇÃO CSS MODERNA E SOFISTICADA - DESIGN PREMIUM COM AKATSUKI                           */
         /* ================================================================================================== */
         :root {
             /* TEMA ESCURO (PADRÃO) */
@@ -83,6 +83,28 @@
             100% { background-position: 200% 0; }
         }
 
+        @keyframes rain {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 20% 100%; }
+        }
+
+        @keyframes bloodMoon {
+            0%, 100% { 
+                opacity: 0.6;
+                box-shadow: 0 0 80px 20px rgba(255, 46, 77, 0.5);
+            }
+            50% { 
+                opacity: 0.8;
+                box-shadow: 0 0 100px 30px rgba(255, 46, 77, 0.7);
+            }
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(0) translateY(-10px); }
+            100% { transform: translateX(100px) translateY(0); }
+        }
+
         /* ESTILOS GERAIS */
         body.login-page {
             font-family: var(--font-family);
@@ -98,12 +120,75 @@
             padding: 1.5rem;
             transition: var(--transition-smooth);
             position: relative;
-            overflow: hidden;
+            overflow: auto;
+        }
+
+        /* Efeito de chuva Akatsuki */
+        .akatsuki-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="5" height="20" viewBox="0 0 5 20"%3E%3Cpath fill="%23ff2e4d" d="M2.5,0 L2.5,20" /%3E%3C/svg%3E');
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+            animation: rain 1s linear infinite;
+            display: none;
+        }
+
+        /* Lua de sangue */
+        .blood-moon {
+            position: fixed;
+            top: 50px;
+            right: 50px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff2e4d, #8b0000);
+            box-shadow: 0 0 80px 20px rgba(255, 46, 77, 0.5);
+            animation: bloodMoon 4s ease-in-out infinite;
+            z-index: 2;
+            display: none;
+        }
+
+        /* Nuvens Akatsuki */
+        .akatsuki-cloud {
+            position: fixed;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60"%3E%3Cpath fill="%23ff2e4d" fill-opacity="0.2" d="M0,40 C20,20 40,10 60,20 C80,30 100,40 120,30 L120,60 L0,60 Z" /%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            width: 120px;
+            height: 60px;
+            opacity: 0.4;
+            z-index: 2;
+            animation: cloudMove 20s linear infinite;
+            display: none;
+        }
+
+        .cloud-1 {
+            top: 10%;
+            left: 5%;
+            animation-duration: 25s;
+        }
+
+        .cloud-2 {
+            top: 25%;
+            right: 10%;
+            animation-duration: 30s;
+            animation-delay: -10s;
+        }
+
+        .cloud-3 {
+            bottom: 15%;
+            left: 15%;
+            animation-duration: 35s;
+            animation-delay: -5s;
         }
 
         body.login-page::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -119,6 +204,7 @@
             max-width: 440px;
             position: relative;
             z-index: 10;
+            margin: 2rem auto;
         }
 
         .theme-toggle-container {
@@ -378,37 +464,47 @@
             margin: 2.5rem 0;
         }
 
-        .btn--social {
-            width: 100%;
-            padding: 1.1rem 2rem;
-            font-size: 1rem;
-            border-radius: 14px;
-            font-weight: 600;
+        /* Botões sociais em miniatura e circulares */
+        .social-buttons-mini {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+        }
+
+        .btn--social-mini {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
             transition: var(--transition-smooth);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             border: 2px solid transparent;
         }
 
-        .btn--google {
+        .btn--google-mini {
             background: var(--google-btn-bg);
             color: white;
         }
 
-        .btn--google:hover {
+        .btn--google-mini:hover {
             background: var(--google-btn-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(66, 133, 244, 0.4);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(66, 133, 244, 0.4);
         }
 
-        .btn--phone {
+        .btn--phone-mini {
             background: var(--phone-btn-bg);
             color: white;
         }
 
-        .btn--phone:hover {
+        .btn--phone-mini:hover {
             background: var(--phone-btn-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.4);
         }
 
         .divider {
@@ -553,10 +649,28 @@
                 width: 100%;
                 min-width: auto;
             }
+            
+            .blood-moon {
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .akatsuki-cloud {
+                transform: scale(0.7);
+            }
         }
     </style>
 </head>
 <body class="login-page">
+    <!-- Elementos do tema Akatsuki -->
+    <div class="akatsuki-rain" id="akatsuki-rain"></div>
+    <div class="blood-moon" id="blood-moon"></div>
+    <div class="akatsuki-cloud cloud-1" id="cloud-1"></div>
+    <div class="akatsuki-cloud cloud-2" id="cloud-2"></div>
+    <div class="akatsuki-cloud cloud-3" id="cloud-3"></div>
+    
     <div class="auth-container">
         <div class="theme-toggle-container">
             <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
@@ -600,15 +714,14 @@
 
             <div class="divider">ou continue com</div>
 
-            <div class="social-login">
-                <button type="button" class="btn btn--social btn--google" id="google-login-btn">
+            <!-- Botões sociais em miniatura -->
+            <div class="social-buttons-mini">
+                <button type="button" class="btn btn--social-mini btn--google-mini" id="google-login-btn" title="Entrar com Google">
                     <i class="fab fa-google"></i>
-                    <span>Google</span>
                 </button>
                 
-                <button type="button" class="btn btn--social btn--phone" id="phone-login-btn">
+                <button type="button" class="btn btn--social-mini btn--phone-mini" id="phone-login-btn" title="Entrar com Telefone">
                     <i class="fas fa-phone-alt"></i>
-                    <span>Telefone</span>
                 </button>
             </div>
             
@@ -830,13 +943,19 @@
             resendOtpLink: document.getElementById('resend-otp-link'),
             countryCodeSelect: document.getElementById('country-code-select'),
             phoneNumberInput: document.getElementById('phone-number'),
-            verifyPhoneInput: document.getElementById('verify-phone-number')
+            verifyPhoneInput: document.getElementById('verify-phone-number'),
+            akatsukiRain: document.getElementById('akatsuki-rain'),
+            bloodMoon: document.getElementById('blood-moon'),
+            cloud1: document.getElementById('cloud-1'),
+            cloud2: document.getElementById('cloud-2'),
+            cloud3: document.getElementById('cloud-3')
         };
 
         // Estados da aplicação
         let currentPhoneNumber = '';
         let otpResendTimer = null;
         let otpResendTime = 60;
+        let akatsukiThemeEnabled = false;
 
         // Funções utilitárias
         const showAlert = (message, type = 'error', duration = 5000) => {
@@ -939,6 +1058,29 @@
             }, 1000);
         };
 
+        // Ativar/desativar tema Akatsuki
+        const toggleAkatsukiTheme = (enable) => {
+            akatsukiThemeEnabled = enable;
+            
+            if (elements.akatsukiRain) {
+                elements.akatsukiRain.style.display = enable ? 'block' : 'none';
+            }
+            
+            if (elements.bloodMoon) {
+                elements.bloodMoon.style.display = enable ? 'block' : 'none';
+            }
+            
+            if (elements.cloud1 && elements.cloud2 && elements.cloud3) {
+                const display = enable ? 'block' : 'none';
+                elements.cloud1.style.display = display;
+                elements.cloud2.style.display = display;
+                elements.cloud3.style.display = display;
+            }
+            
+            // Salvar preferência
+            localStorage.setItem('akatsukiTheme', enable ? 'enabled' : 'disabled');
+        };
+
         // Manipuladores de formulários
         const handleFormSubmit = async (form, endpoint, options = {}) => {
             const submitButton = form.querySelector('button[type="submit"]');
@@ -984,6 +1126,11 @@
                 
                 if (!response.ok || !data.success) {
                     throw new Error(data.error || 'Erro desconhecido');
+                }
+                
+                // Ativar tema Akatsuki após login bem-sucedido
+                if ((form.id === 'login-form' || form.id === 'phone-verify-form') && data.success) {
+                    toggleAkatsukiTheme(true);
                 }
                 
                 if (options.onSuccess) {
@@ -1164,6 +1311,10 @@
             // Aplicar tema salvo
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.className = `login-page ${savedTheme}-theme`;
+            
+            // Verificar se o tema Akatsuki estava ativado
+            const akatsukiTheme = localStorage.getItem('akatsukiTheme') || 'disabled';
+            toggleAkatsukiTheme(akatsukiTheme === 'enabled');
             
             // Configurar event listeners
             setupEventListeners();

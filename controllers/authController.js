@@ -26,7 +26,7 @@ try {
     const googleClient = new OAuth2Client(
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
-        `${process.env.APP_URL || 'http://localhost:3000'}/auth/google/callback`
+        `${process.env.APP_URL || 'https://deny-animes-hub.onrender.com'}/auth/google/callback`
     );
 
     // No método googleLogin:
