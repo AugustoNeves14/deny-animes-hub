@@ -80,39 +80,38 @@ const sendEmail = async (to, subject, htmlContent) => {
     }
 };
 
-/**
- * Gera token JWT e configura cookie
- */
 const enviarTokenResponse = (user, statusCode, res) => {
     try {
+        // Gera o token JWT
         const token = jwt.sign(
             { id: user.id, role: user.role }, 
             process.env.JWT_SECRET, 
             { expiresIn: '30d' }
         );
 
+        // Configura o cookie
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 dias
         };
 
         res.cookie('token', token, cookieOptions);
 
-        const userSemSenha = user.get({ plain: true });
-        delete userSemSenha.senha;
-
-        res.status(statusCode).json({
-            success: true,
-            user: userSemSenha,
-        });
+        // ✅ Redireciona para a aba correta
+        if (user.role === 'admin') {
+            return res.redirect('/admin/dashboard');
+        } else {
+            return res.redirect('/home'); // ou '/' se preferir
+        }
 
     } catch (error) {
         console.error("❌ Erro ao gerar token:", error);
-        res.status(500).json({ success: false, error: "Erro interno ao processar a autenticação." });
+        res.redirect('/login?erro=Falha na autenticação');
     }
 };
+
 
 /**
  * Registro de usuário
