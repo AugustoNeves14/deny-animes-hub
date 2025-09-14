@@ -1,5 +1,6 @@
 // controllers/authController.js
 'use strict';
+
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { User, sequelize } = require('../models');
@@ -7,7 +8,9 @@ const nodemailer = require('nodemailer');
 const admin = require('firebase-admin');
 const { OAuth2Client } = require('google-auth-library');
 
+// =====================================================
 // Inicializar Firebase Admin
+// =====================================================
 let firebaseInitialized = false;
 try {
     if (process.env.FIREBASE_API_KEY) {
@@ -22,33 +25,18 @@ try {
     console.warn('⚠️ Firebase não configurado:', error.message);
 }
 
-// Configurar cliente OAuth2 do Google
+// =====================================================
+// Configuração do cliente OAuth2 do Google
+// =====================================================
 const googleClient = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "https://deny-animes-hub.onrender.com/auth/google/callback"
+    "https://deny-animes-hub.onrender.com/auth/google/callback" // callback do back
 );
 
-// No método googleLogin:
-exports.googleLogin = async (req, res) => {
-    try {
-        const authorizeUrl = googleClient.generateAuthUrl({
-            access_type: 'offline',
-            scope: ['profile', 'email'],
-            prompt: 'consent'
-            // ❌ Não precisa colocar redirect_uri aqui
-        });
-
-        res.json({ success: true, authorizeUrl });
-
-    } catch (error) {
-        console.error('❌ Erro no login com Google:', error);
-        res.status(500).json({ success: false, error: 'Erro ao iniciar login com Google.' });
-    }
-};
-
-
-// Configuração do Nodemailer - CORREÇÃO AQUI: createTransport (singular)
+// =====================================================
+// Configuração do Nodemailer
+// =====================================================
 const createTransporter = () => {
     return nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE || 'gmail',
@@ -61,7 +49,6 @@ const createTransporter = () => {
 
 const transporter = createTransporter();
 
-// Função para enviar e-mails
 const sendEmail = async (to, subject, htmlContent) => {
     try {
         const mailOptions = {
@@ -75,29 +62,34 @@ const sendEmail = async (to, subject, htmlContent) => {
         return true;
     } catch (error) {
         console.error('❌ Erro ao enviar email:', error.message);
-        // Não quebrar o fluxo da aplicação se o email falhar
         return false;
     }
 };
 
+// =====================================================
+// Funções auxiliares para JWT
+// =====================================================
+const gerarToken = (user) => {
+    return jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '30d' }
+    );
+};
+
 const enviarTokenResponse = (user, statusCode, res) => {
     try {
-        const token = jwt.sign(
-            { id: user.id, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '30d' }
-        );
+        const token = gerarToken(user);
 
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 30 * 24 * 60 * 60 * 1000
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 dias
         };
 
         res.cookie('token', token, cookieOptions);
 
-        // Sempre responder JSON (API mode)
         return res.status(statusCode).json({
             success: true,
             token,
@@ -115,14 +107,13 @@ const enviarTokenResponse = (user, statusCode, res) => {
     }
 };
 
-
-/**
- * Registro de usuário
- */
+// =====================================================
+// Registro de usuário
+// =====================================================
 exports.registrar = async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
-        
+
         if (!nome || !email || !senha) {
             return res.status(400).json({ success: false, error: 'Por favor, preencha todos os campos.' });
         }
@@ -146,9 +137,9 @@ exports.registrar = async (req, res) => {
     }
 };
 
-/**
- * Login tradicional
- */
+// =====================================================
+// Login tradicional (e-mail + senha)
+// =====================================================
 exports.login = async (req, res) => {
     try {
         const { email, senha } = req.body;
@@ -170,9 +161,9 @@ exports.login = async (req, res) => {
     }
 };
 
-/**
- * Logout
- */
+// =====================================================
+// Logout
+// =====================================================
 exports.logout = (req, res) => {
     res.cookie('token', 'loggedout', {
         expires: new Date(Date.now() + 5 * 1000),
@@ -183,13 +174,13 @@ exports.logout = (req, res) => {
     res.redirect('/login?sucesso=Você foi desconectado com sucesso!');
 };
 
-/**
- * Esqueci a senha
- */
+// =====================================================
+// Recuperação de senha
+// =====================================================
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        
+
         if (!email) {
             return res.status(400).json({ success: false, error: 'Por favor, informe seu e-mail.' });
         }
@@ -198,13 +189,12 @@ exports.forgotPassword = async (req, res) => {
 
         if (!user) {
             console.warn(`⚠️ Tentativa de redefinição para email não encontrado: ${email}`);
-            return res.status(200).json({ 
-                success: true, 
-                message: 'Se o e-mail estiver registrado, enviaremos um código de redefinição.' 
+            return res.status(200).json({
+                success: true,
+                message: 'Se o e-mail estiver registrado, enviaremos um código de redefinição.'
             });
         }
 
-        // Método local de redefinição
         const resetToken = user.getResetPasswordToken();
         await user.save({ validate: false });
 
@@ -222,10 +212,9 @@ exports.forgotPassword = async (req, res) => {
         if (emailSent) {
             res.status(200).json({ success: true, message: 'E-mail enviado com sucesso! Verifique sua caixa de entrada.' });
         } else {
-            // Fallback para desenvolvimento
-            res.status(200).json({ 
-                success: true, 
-                message: 'Serviço de email temporariamente indisponível. Use este código:',
+            res.status(200).json({
+                success: true,
+                message: 'Serviço de email indisponível. Use este código:',
                 resetToken: resetToken,
                 developmentMode: true
             });
@@ -237,15 +226,15 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-/**
- * Redefinir senha
- */
+// =====================================================
+// Redefinir senha
+// =====================================================
 exports.resetPassword = async (req, res) => {
     try {
         const { email, token, novaSenha } = req.body;
 
         if (!email || !token || !novaSenha) {
-            return res.status(400).json({ success: false, error: "Faltam informações para redefinir a senha."});
+            return res.status(400).json({ success: false, error: "Faltam informações para redefinir a senha." });
         }
 
         const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
@@ -275,12 +264,11 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-/**
- * Login com Google
- */
+// =====================================================
+// Login com Google (gera URL de autorização)
+// =====================================================
 exports.googleLogin = async (req, res) => {
     try {
-        // Gerar URL de autorização do Google
         const authorizeUrl = googleClient.generateAuthUrl({
             access_type: 'offline',
             scope: ['profile', 'email'],
@@ -295,9 +283,9 @@ exports.googleLogin = async (req, res) => {
     }
 };
 
-/**
- * Callback do Google
- */
+// =====================================================
+// Callback do Google (redireciona para o front-end)
+// =====================================================
 exports.googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
@@ -330,8 +318,11 @@ exports.googleCallback = async (req, res) => {
             });
         }
 
-        // 🔑 Retorna JSON com token + user
-        enviarTokenResponse(user, 200, res);
+        // Gera token JWT
+        const token = gerarToken(user);
+
+        // Redireciona para o front-end com token
+        res.redirect(`https://deny-animes-hub.vercel.app/dashboard?token=${token}`);
 
     } catch (error) {
         console.error('❌ Erro no callback do Google:', error);
@@ -339,11 +330,9 @@ exports.googleCallback = async (req, res) => {
     }
 };
 
-
-
-/**
- * Enviar OTP por telefone (usando Firebase ou simulação em dev)
- */
+// =====================================================
+// OTP via telefone (Firebase ou simulação)
+// =====================================================
 exports.sendPhoneOtp = async (req, res) => {
     const { phoneNumber } = req.body;
 
@@ -355,7 +344,6 @@ exports.sendPhoneOtp = async (req, res) => {
     }
 
     try {
-        // Formatar número para padrão internacional (+244 para Angola)
         let formattedNumber = phoneNumber.trim();
         if (!formattedNumber.startsWith('+')) {
             if (formattedNumber.startsWith('244')) {
@@ -367,22 +355,19 @@ exports.sendPhoneOtp = async (req, res) => {
             }
         }
 
-        // Se o Firebase não estiver inicializado, simula envio (modo DEV)
-        if (typeof firebaseInitialized === 'undefined' || !firebaseInitialized) {
+        if (!firebaseInitialized) {
             console.log(`📱 Simulando envio de OTP para: ${formattedNumber}`);
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
             return res.status(200).json({
                 success: true,
                 message: 'Código OTP (simulado) enviado para seu telefone!',
-                developmentOtp: otp, // Apenas em dev
+                developmentOtp: otp,
                 phoneNumber: formattedNumber
             });
         }
 
-        // Firebase Auth - envio real (lado do cliente geralmente faz o fluxo completo)
         console.log(`📱 Firebase OTP enviado para: ${formattedNumber}`);
-
         return res.status(200).json({
             success: true,
             message: 'Código OTP enviado para seu telefone! (Firebase)',
@@ -398,26 +383,23 @@ exports.sendPhoneOtp = async (req, res) => {
     }
 };
 
-
-/**
- * Verificar OTP do telefone
- */
+// =====================================================
+// Verificação do OTP via telefone
+// =====================================================
 exports.verifyPhoneOtp = async (req, res) => {
     const { phoneNumber, otp } = req.body;
-    
+
     if (!phoneNumber || !otp) {
         return res.status(400).json({ success: false, error: 'Número e código OTP são obrigatórios.' });
     }
 
     try {
         let user;
-        
+
         if (!firebaseInitialized) {
-            // Modo desenvolvimento - verificação simulada
             console.log(`📱 Verificando OTP: ${phoneNumber} - ${otp}`);
-            
             user = await User.findOne({ where: { telefone: phoneNumber } });
-            
+
             if (!user) {
                 user = await User.create({
                     nome: `Usuário ${phoneNumber}`,
@@ -426,11 +408,9 @@ exports.verifyPhoneOtp = async (req, res) => {
                 });
             }
         } else {
-            // Firebase Auth - verificação (simplificada para servidor)
             console.log(`📱 Verificando OTP Firebase: ${phoneNumber}`);
-            
             user = await User.findOne({ where: { telefone: phoneNumber } });
-            
+
             if (!user) {
                 user = await User.create({
                     nome: `Usuário ${phoneNumber}`,
