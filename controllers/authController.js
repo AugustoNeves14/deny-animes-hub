@@ -10,7 +10,7 @@ const { OAuth2Client } = require('google-auth-library');
 // Inicializar Firebase Admin
 let firebaseInitialized = false;
 try {
-    if (process.env.FIREBASE_API_KEY) {
+    if (process.env.FIREBASE_PROJECT_ID) {
         admin.initializeApp({
             credential: admin.credential.applicationDefault(),
             databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
@@ -86,7 +86,9 @@ const enviarTokenResponse = (user, statusCode, res) => {
                 id: user.id,
                 nome: user.nome,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                telefone: user.telefone,
+                avatar: user.avatar
             }
         });
 
@@ -100,29 +102,65 @@ const enviarTokenResponse = (user, statusCode, res) => {
  * Registro de usuário
  */
 exports.registrar = async (req, res) => {
+    const transaction = await sequelize.transaction();
+    
     try {
-        const { nome, email, senha } = req.body;
+        const { nome, email, senha, telefone } = req.body;
         
         if (!nome || !email || !senha) {
-            return res.status(400).json({ success: false, error: 'Por favor, preencha todos os campos.' });
+            await transaction.rollback();
+            return res.status(400).json({ success: false, error: 'Por favor, preencha todos os campos obrigatórios.' });
         }
+        
         if (senha.length < 6) {
+            await transaction.rollback();
             return res.status(400).json({ success: false, error: 'A senha deve ter no mínimo 6 caracteres.' });
         }
 
-        await User.create({ nome, email, senha });
+        // Verificar se email já existe
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+            await transaction.rollback();
+            return res.status(400).json({ success: false, error: 'Este e-mail já está em uso.' });
+        }
+
+        // Criar usuário
+        const user = await User.create({ 
+            nome, 
+            email, 
+            senha,
+            telefone: telefone || null 
+        }, { transaction });
+
+        await transaction.commit();
 
         res.status(201).json({
             success: true,
-            message: 'Conta criada com sucesso! Faça o login para continuar.'
+            message: 'Conta criada com sucesso! Faça o login para continuar.',
+            user: {
+                id: user.id,
+                nome: user.nome,
+                email: user.email
+            }
         });
 
     } catch (error) {
+        await transaction.rollback();
+        
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(400).json({ success: false, error: 'Este e-mail já está em uso.' });
         }
+        
+        if (error.name === 'SequelizeValidationError') {
+            const errors = error.errors.map(err => err.message);
+            return res.status(400).json({ success: false, error: errors.join(', ') });
+        }
+        
         console.error("❌ Erro no registro:", error);
-        res.status(500).json({ success: false, error: 'Ocorreu um erro no servidor ao tentar registrar sua conta.' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Ocorreu um erro no servidor ao tentar registrar sua conta.' 
+        });
     }
 };
 
@@ -132,21 +170,39 @@ exports.registrar = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, senha } = req.body;
+        
         if (!email || !senha) {
-            return res.status(400).json({ success: false, error: 'Por favor, forneça seu e-mail e senha.' });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Por favor, forneça seu e-mail e senha.' 
+            });
         }
 
         const user = await User.scope('comSenha').findOne({ where: { email } });
 
-        if (!user || !(await user.compararSenha(senha))) {
-            return res.status(401).json({ success: false, error: 'E-mail ou senha inválidos.' });
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'E-mail ou senha inválidos.' 
+            });
+        }
+
+        const isPasswordValid = await user.compararSenha(senha);
+        if (!isPasswordValid) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'E-mail ou senha inválidos.' 
+            });
         }
 
         enviarTokenResponse(user, 200, res);
 
     } catch (error) {
         console.error("❌ Erro no login:", error);
-        res.status(500).json({ success: false, error: 'Ocorreu um erro no servidor durante o login.' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Ocorreu um erro no servidor durante o login.' 
+        });
     }
 };
 
@@ -154,55 +210,118 @@ exports.login = async (req, res) => {
  * Logout
  */
 exports.logout = (req, res) => {
-    res.cookie('token', 'loggedout', {
-        expires: new Date(Date.now() + 5 * 1000),
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-    });
-    res.redirect('/login?sucesso=Você foi desconectado com sucesso!');
+    try {
+        res.cookie('token', 'loggedout', {
+            expires: new Date(Date.now() + 5 * 1000),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        
+        // Responder tanto para API quanto para redirecionamento
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(200).json({
+                success: true,
+                message: 'Logout realizado com sucesso.'
+            });
+        } else {
+            return res.redirect('/login?sucesso=Você foi desconectado com sucesso!');
+        }
+    } catch (error) {
+        console.error("❌ Erro no logout:", error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erro durante o logout.' 
+        });
+    }
 };
 
 /**
- * Esqueci a senha
+ * Esqueci a senha - Versão Corrigida
  */
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
         
         if (!email) {
-            return res.status(400).json({ success: false, error: 'Por favor, informe seu e-mail.' });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Por favor, informe seu e-mail.' 
+            });
         }
 
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
             console.warn(`⚠️ Tentativa de redefinição para email não encontrado: ${email}`);
+            // Por segurança, não revelamos se o email existe ou não
             return res.status(200).json({ 
                 success: true, 
                 message: 'Se o e-mail estiver registrado, enviaremos um código de redefinição.' 
             });
         }
 
-        // Método local de redefinição
-        const resetToken = user.getResetPasswordToken();
+        // Gerar token de redefinição
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        
+        // Hash do token para armazenamento seguro
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+
+        // Definir expiração (10 minutos)
+        const resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+        // Atualizar usuário com token e expiração
+        user.resetPasswordToken = resetPasswordToken;
+        user.resetPasswordExpire = resetPasswordExpire;
         await user.save({ validate: false });
 
         const messageToUser = `
-            <h1>Redefinição de Senha - DenyAnimeHub</h1>
-            <p>Use o seguinte código para redefinir sua senha (válido por 10 minutos):</p>
-            <h2 style="font-size: 24px; letter-spacing: 2px; background: #f0f0f0; padding: 10px; border-radius: 5px;">
-                ${resetToken}
-            </h2>
-            <p>Se você não solicitou isso, ignore este e-mail.</p>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+                    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .header { background: linear-gradient(135deg, #ff2e4d, #ff6b6b); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .code { font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; letter-spacing: 2px; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>DenyAnimeHub - Redefinição de Senha</h1>
+                    </div>
+                    <p>Olá <strong>${user.nome}</strong>,</p>
+                    <p>Recebemos uma solicitação para redefinir sua senha. Use o código abaixo para continuar:</p>
+                    <div class="code">${resetToken}</div>
+                    <p>Este código é válido por <strong>10 minutos</strong>.</p>
+                    <p>Se você não solicitou esta redefinição, ignore este e-mail.</p>
+                    <div class="footer">
+                        <p>Equipe DenyAnimeHub</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         `;
 
-        const emailSent = await sendEmail(user.email, 'Redefinição de Senha - DenyAnimeHub', messageToUser);
+        const emailSent = await sendEmail(
+            user.email, 
+            'Redefinição de Senha - DenyAnimeHub', 
+            messageToUser
+        );
 
         if (emailSent) {
-            res.status(200).json({ success: true, message: 'E-mail enviado com sucesso! Verifique sua caixa de entrada.' });
+            res.status(200).json({ 
+                success: true, 
+                message: 'E-mail enviado com sucesso! Verifique sua caixa de entrada.' 
+            });
         } else {
             // Fallback para desenvolvimento
+            console.log(`🔑 Token de desenvolvimento para ${email}: ${resetToken}`);
             res.status(200).json({ 
                 success: true, 
                 message: 'Serviço de email temporariamente indisponível. Use este código:',
@@ -213,22 +332,46 @@ exports.forgotPassword = async (req, res) => {
 
     } catch (error) {
         console.error("❌ Erro em forgotPassword:", error);
-        res.status(500).json({ success: false, error: 'Erro interno no servidor.' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erro interno no servidor. Tente novamente mais tarde.' 
+        });
     }
 };
 
 /**
- * Redefinir senha
+ * Redefinir senha - Versão Corrigida
  */
 exports.resetPassword = async (req, res) => {
     try {
-        const { email, token, novaSenha } = req.body;
+        const { email, token, novaSenha, confirmarNovaSenha } = req.body;
 
-        if (!email || !token || !novaSenha) {
-            return res.status(400).json({ success: false, error: "Faltam informações para redefinir a senha."});
+        if (!email || !token || !novaSenha || !confirmarNovaSenha) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Todos os campos são obrigatórios."
+            });
         }
 
-        const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+        if (novaSenha !== confirmarNovaSenha) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "As senhas não coincidem." 
+            });
+        }
+
+        if (novaSenha.length < 6) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "A senha deve ter no mínimo 6 caracteres." 
+            });
+        }
+
+        // Hash do token recebido para comparação
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
 
         const user = await User.scope('comSenha').findOne({
             where: {
@@ -239,23 +382,66 @@ exports.resetPassword = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).json({ success: false, error: 'Código inválido ou expirado.' });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Código inválido ou expirado. Solicite um novo código.' 
+            });
         }
 
+        // Atualizar senha
         user.senha = novaSenha;
         user.resetPasswordToken = null;
         user.resetPasswordExpire = null;
         await user.save();
 
+        // Enviar confirmação por email
+        const confirmationMessage = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+                    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .header { background: linear-gradient(135deg, #00d26a, #00b359); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Senha Alterada com Sucesso!</h1>
+                    </div>
+                    <p>Olá <strong>${user.nome}</strong>,</p>
+                    <p>Sua senha foi alterada com sucesso em <strong>${new Date().toLocaleString('pt-BR')}</strong>.</p>
+                    <p>Se você não realizou esta alteração, entre em contato conosco imediatamente.</p>
+                    <div class="footer">
+                        <p>Equipe DenyAnimeHub</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        await sendEmail(
+            user.email, 
+            'Senha Alterada - DenyAnimeHub', 
+            confirmationMessage
+        );
+
         enviarTokenResponse(user, 200, res);
 
     } catch (error) {
         console.error("❌ Erro em resetPassword:", error);
-        res.status(500).json({ success: false, error: 'Erro ao redefinir senha.' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erro ao redefinir senha. Tente novamente.' 
+        });
     }
 };
 
-// Adicione esta função para gerar a URL de autorização do Google
+/**
+ * Login com Google - Gerar URL de autorização
+ */
 exports.googleLogin = async (req, res) => {
     try {
         const authorizeUrl = googleClient.generateAuthUrl({
@@ -265,7 +451,6 @@ exports.googleLogin = async (req, res) => {
             include_granted_scopes: true
         });
 
-        // Retorna JSON com a URL para o frontend
         res.json({
             success: true,
             authorizeUrl: authorizeUrl
@@ -280,7 +465,9 @@ exports.googleLogin = async (req, res) => {
     }
 };
 
-// Mantenha o callback do Google existente, mas adicione tratamento melhor
+/**
+ * Callback do Google OAuth
+ */
 exports.googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
@@ -367,6 +554,7 @@ exports.googleCallback = async (req, res) => {
         res.redirect(`/login?erro=${errorMessage}`);
     }
 };
+
 /**
  * Enviar OTP por telefone (usando Firebase ou simulação em dev)
  */
@@ -431,7 +619,10 @@ exports.verifyPhoneOtp = async (req, res) => {
     const { phoneNumber, otp } = req.body;
     
     if (!phoneNumber || !otp) {
-        return res.status(400).json({ success: false, error: 'Número e código OTP são obrigatórios.' });
+        return res.status(400).json({ 
+            success: false, 
+            error: 'Número de telefone e código OTP são obrigatórios.' 
+        });
     }
 
     try {
@@ -447,8 +638,10 @@ exports.verifyPhoneOtp = async (req, res) => {
                 user = await User.create({
                     nome: `Usuário ${phoneNumber}`,
                     telefone: phoneNumber,
-                    senha: crypto.randomBytes(20).toString('hex')
+                    senha: crypto.randomBytes(20).toString('hex'),
+                    emailVerificado: true
                 });
+                console.log(`✅ Novo usuário criado via OTP: ${phoneNumber}`);
             }
         } else {
             // Firebase Auth - verificação (simplificada para servidor)
@@ -460,8 +653,10 @@ exports.verifyPhoneOtp = async (req, res) => {
                 user = await User.create({
                     nome: `Usuário ${phoneNumber}`,
                     telefone: phoneNumber,
-                    senha: crypto.randomBytes(20).toString('hex')
+                    senha: crypto.randomBytes(20).toString('hex'),
+                    emailVerificado: true
                 });
+                console.log(`✅ Novo usuário criado via Firebase OTP: ${phoneNumber}`);
             }
         }
 
@@ -469,7 +664,94 @@ exports.verifyPhoneOtp = async (req, res) => {
 
     } catch (error) {
         console.error('❌ Erro ao verificar OTP:', error);
-        res.status(401).json({ success: false, error: 'Código OTP inválido ou expirado.' });
+        res.status(401).json({ 
+            success: false, 
+            error: 'Código OTP inválido ou expirado.' 
+        });
     }
 };
 
+/**
+ * Verificar token atual (para manter sessão)
+ */
+exports.verifyToken = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id, {
+            attributes: { exclude: ['senha', 'resetPasswordToken', 'resetPasswordExpire'] }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado.'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: {
+                id: user.id,
+                nome: user.nome,
+                email: user.email,
+                role: user.role,
+                telefone: user.telefone,
+                avatar: user.avatar,
+                emailVerificado: user.emailVerificado
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erro ao verificar token:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao verificar autenticação.'
+        });
+    }
+};
+
+/**
+ * Atualizar perfil do usuário
+ */
+exports.updateProfile = async (req, res) => {
+    try {
+        const { nome, telefone, avatar } = req.body;
+        const userId = req.user.id;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuário não encontrado.'
+            });
+        }
+
+        // Atualizar campos permitidos
+        if (nome) user.nome = nome;
+        if (telefone) user.telefone = telefone;
+        if (avatar) user.avatar = avatar;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Perfil atualizado com sucesso!',
+            user: {
+                id: user.id,
+                nome: user.nome,
+                email: user.email,
+                telefone: user.telefone,
+                avatar: user.avatar,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erro ao atualizar perfil:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao atualizar perfil.'
+        });
+    }
+};
+
+module.exports = exports;

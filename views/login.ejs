@@ -13,14 +13,11 @@
     <!-- FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <!-- SWIPER JS (Para Carrosséis) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    
     <link rel="icon" href="/images/1.ico" type="image/ico">
     
     <style>
         /* ================================================================================================== */
-        /*      DESIGN PREMIUM AKATSUKI - LAYOUT MODERNO COM CARROSSÉIS                                     */
+        /*      DESIGN PREMIUM AKATSUKI - LAYOUT MODERNO COM FUNDO DE NUVENS                                 */
         /* ================================================================================================== */
         :root {
             /* TEMA ESCURO AKATSUKI */
@@ -89,16 +86,6 @@
             100% { background-position: 200% 0; }
         }
 
-        @keyframes slideInFromLeft {
-            from { transform: translateX(-100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideInFromRight {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         @keyframes neonPulse {
             0%, 100% { box-shadow: 0 0 5px var(--accent-primary), 0 0 10px var(--accent-primary), 0 0 15px var(--accent-primary); }
             50% { box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary); }
@@ -109,11 +96,15 @@
             50% { text-shadow: 0 0 15px currentColor, 0 0 20px currentColor; }
         }
 
+        @keyframes cloudMove {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(0) translateY(-10px); }
+            100% { transform: translateX(100px) translateY(0); }
+        }
+
         /* ESTILOS GERAIS */
         body.login-page {
             font-family: var(--font-family);
-            display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
             min-height: 100vh;
             background: var(--bg-primary);
             background-image: 
@@ -122,10 +113,15 @@
                 linear-gradient(135deg, var(--bg-primary) 0%, #1a1a1a 100%);
             transition: var(--transition-smooth);
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
 
-        /* Efeitos de Fundo Premium */
+        /* Efeitos de Fundo Premium - Nuvens Akatsuki */
         .background-effects {
             position: fixed;
             top: 0;
@@ -134,138 +130,46 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+            overflow: hidden;
         }
+
+        .akatsuki-cloud {
+            position: absolute;
+            opacity: 0.1;
+            color: #ff2e4d;
+            font-size: 8rem;
+            animation: float 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .cloud-1 { top: 10%; left: 5%; animation-delay: 0s; animation-duration: 12s; }
+        .cloud-2 { top: 60%; left: 8%; animation-delay: 2s; animation-duration: 10s; }
+        .cloud-3 { top: 30%; right: 5%; animation-delay: 4s; animation-duration: 14s; }
+        .cloud-4 { top: 80%; right: 8%; animation-delay: 1s; animation-duration: 11s; }
+        .cloud-5 { top: 20%; left: 50%; animation-delay: 3s; animation-duration: 13s; }
+        .cloud-6 { top: 70%; left: 30%; animation-delay: 5s; animation-duration: 9s; }
 
         .floating-ninja {
             position: absolute;
             font-size: 3rem;
-            opacity: 0.1;
+            opacity: 0.05;
             animation: float 6s ease-in-out infinite;
             color: var(--accent-primary);
+            z-index: 1;
         }
 
-        .ninja-1 { top: 10%; left: 5%; animation-delay: 0s; }
-        .ninja-2 { top: 60%; left: 8%; animation-delay: 2s; }
-        .ninja-3 { top: 30%; right: 5%; animation-delay: 4s; }
-        .ninja-4 { top: 80%; right: 8%; animation-delay: 1s; }
+        .ninja-1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .ninja-2 { top: 65%; left: 12%; animation-delay: 2s; }
+        .ninja-3 { top: 35%; right: 7%; animation-delay: 4s; }
+        .ninja-4 { top: 85%; right: 10%; animation-delay: 1s; }
 
-        /* PAINÉIS LATERAIS */
-        .side-panel {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        .left-panel {
-            align-items: flex-start;
-        }
-
-        .right-panel {
-            align-items: flex-end;
-        }
-
-        /* CARROSSÉIS LATERAIS */
-        .carousel-container {
-            width: 100%;
-            max-width: 400px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: var(--glass-bg);
-            backdrop-filter: var(--backdrop-blur);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--neon-glow);
-            animation: slideInFromLeft 1s ease-out;
-        }
-
-        .right-panel .carousel-container {
-            animation: slideInFromRight 1s ease-out;
-        }
-
-        .carousel-header {
-            padding: 1.5rem;
-            text-align: center;
-            background: var(--accent-gradient);
-            color: white;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .swiper {
-            width: 100%;
-            height: 300px;
-            border-radius: 0 0 20px 20px;
-        }
-
-        .swiper-slide {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0;
-        }
-
-        .slide-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .slide-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 1.5rem;
-            color: white;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .swiper-slide:hover .slide-image {
-            transform: scale(1.1);
-        }
-
-        .swiper-slide:hover .slide-overlay {
-            transform: translateY(0);
-        }
-
-        .slide-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .slide-info {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .slide-rating {
-            color: #ffd700;
-        }
-
-        /* PAINEL CENTRAL (FORMULÁRIOS) */
-        .center-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-            z-index: 20;
-        }
-
-        .auth-container {
+        /* CONTAINER PRINCIPAL */
+        .main-container {
             width: 100%;
             max-width: 480px;
             position: relative;
+            z-index: 20;
+            margin: 2rem auto;
         }
 
         .theme-toggle-container {
@@ -656,84 +560,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* RESPONSIVIDADE */
-        @media (max-width: 1200px) {
-            body.login-page {
-                grid-template-columns: 1fr 1.5fr 1fr;
-            }
-            
-            .side-panel {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 992px) {
-            body.login-page {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-            }
-            
-            .side-panel {
-                display: none;
-            }
-            
-            .center-panel {
-                padding: 1rem;
-            }
-            
-            .auth-form {
-                padding: 2rem 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .auth-form {
-                padding: 1.5rem 1rem;
-            }
-            
-            .auth-form__header h2 {
-                font-size: 2rem;
-            }
-            
-            .theme-toggle-container {
-                top: -60px;
-            }
-            
-            .theme-toggle-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-            }
-        }
-
-        /* ESTILOS ESPECÍFICOS PARA CARROSSÉIS */
-        .trending-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--accent-gradient);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            z-index: 3;
-            animation: pulse 2s infinite;
-        }
-
-        .new-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--success);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            z-index: 3;
-        }
-
         /* LOGO AKATSUKI PERSONALIZADA */
         .akatsuki-logo {
             text-align: center;
@@ -760,236 +586,252 @@
             color: var(--accent-primary);
             opacity: 0.7;
         }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            body.login-page {
+                padding: 1rem;
+            }
+            
+            .auth-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .auth-form__header h2 {
+                font-size: 2rem;
+            }
+            
+            .theme-toggle-container {
+                top: -60px;
+            }
+            
+            .theme-toggle-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .akatsuki-cloud {
+                font-size: 5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-form {
+                padding: 1.5rem 1rem;
+            }
+            
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .akatsuki-cloud {
+                font-size: 4rem;
+            }
+        }
     </style>
 </head>
 <body class="login-page">
-    <!-- Efeitos de Fundo -->
+
+    <!-- Efeitos de Fundo - Nuvens Akatsuki -->
     <div class="background-effects">
+        <div class="akatsuki-cloud cloud-1">☁️</div>
+        <div class="akatsuki-cloud cloud-2">☁️</div>
+        <div class="akatsuki-cloud cloud-3">☁️</div>
+        <div class="akatsuki-cloud cloud-4">☁️</div>
+        <div class="akatsuki-cloud cloud-5">☁️</div>
+        <div class="akatsuki-cloud cloud-6">☁️</div>
+        
         <div class="floating-ninja ninja-1">🗡️</div>
-        <div class="floating-ninja ninja-2">👺</div>
-        <div class="floating-ninja ninja-3">⚔️</div>
-        <div class="floating-ninja ninja-4">🎌</div>
+        <div class="floating-ninja ninja-2">⚔️</div>
+        <div class="floating-ninja ninja-3">🌀</div>
+        <div class="floating-ninja ninja-4">👁️</div>
     </div>
 
-    <!-- PAINEL ESQUERDO - CARROSSÉL DE ANIMES EM ALTA -->
-    <div class="side-panel left-panel">
-        <div class="carousel-container">
-            <div class="carousel-header">
-                <i class="fas fa-fire"></i> Animes em Alta
-            </div>
-            <div class="swiper swiper-left">
-                <div class="swiper-wrapper">
-                    <!-- Slides serão preenchidos via JavaScript -->
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="main-container">
+        <div class="akatsuki-logo">
+            <div class="logo-text">DENYANIMEHUB</div>
         </div>
-    </div>
 
-    <!-- PAINEL CENTRAL - FORMULÁRIOS -->
-    <div class="center-panel">
-        <div class="auth-container">
-            <div class="akatsuki-logo">
-                <div class="logo-text">DENYANIMEHUB</div>
+        <div class="theme-toggle-container">
+            <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+
+        <div id="auth-alert" class="auth-alert"></div>
+
+        <!-- Formulário Principal de Login -->
+        <form class="auth-form active-form" id="login-form">
+            <div class="auth-form__header">
+                <h2>Bem-vindo de Volta</h2>
+                <p>Acesse sua conta para continuar sua jornada anime</p>
             </div>
-
-            <div class="theme-toggle-container">
-                <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
-                    <i class="fas fa-moon"></i>
-                    <i class="fas fa-sun"></i>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
+                <span class="password-toggle" data-target="login-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Entrar na Akatsuki</span>
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
 
-            <div id="auth-alert" class="auth-alert"></div>
+            <div class="divider">ou entre com</div>
 
-            <!-- Formulário Principal de Login -->
-            <form class="auth-form active-form" id="login-form">
-                <div class="auth-form__header">
-                    <h2>Bem-vindo de Volta</h2>
-                    <p>Acesse sua conta para continuar sua jornada anime</p>
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
-                    <span class="password-toggle" data-target="login-password">
-                        <i class="fas fa-eye-slash"></i>
-                    </span>
-                </div>
-                
-                <div class="auth-form__actions">
-                    <button type="submit" class="btn btn--primary">
-                        <span class="btn-text">Entrar na Akatsuki</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-
-                <div class="divider">ou entre com</div>
-
-                <!-- Botão Google Premium -->
-                <button type="button" class="btn--google-premium" id="google-login-btn">
-                    <i class="fab fa-google"></i>
-                    Continuar com Google
-                </button>
-                
-                <div class="auth-form__footer">
-                    <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Junte-se a nós</a></p>
-                    <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
-                </div>
-
-                <a href="/" class="home-link">
-                    <i class="fas fa-arrow-left"></i>
-                    Voltar ao Início
-                </a>
-            </form>
-
-            <!-- Formulário de Registro -->
-            <form class="auth-form" id="register-form">
-                <div class="auth-form__header">
-                    <h2>Junte-se a Nós</h2>
-                    <p>Crie sua conta na comunidade DenyAnimeHub</p>
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="register-password" name="senha" minlength="6" required 
-                           placeholder="Crie uma senha segura (mín. 6 caracteres)">
-                    <span class="password-toggle" data-target="register-password">
-                        <i class="fas fa-eye-slash"></i>
-                    </span>
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
-                           placeholder="Confirme sua senha">
-                    <span class="password-toggle" data-target="register-confirm-password">
-                        <i class="fas fa-eye-slash"></i>
-                    </span>
-                </div>
-                
-                <div class="auth-form__actions">
-                    <button type="submit" class="btn btn--primary">
-                        <span class="btn-text">Criar Conta Akatsuki</span>
-                        <i class="fas fa-user-plus"></i>
-                    </button>
-                </div>
-
-                <div class="divider">ou cadastre-se com</div>
-
-                <!-- Botão Google Premium -->
-                <button type="button" class="btn--google-premium" id="google-register-btn">
-                    <i class="fab fa-google"></i>
-                    Cadastrar com Google
-                </button>
-                
-                <div class="auth-form__footer">
-                    <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
-                </div>
-            </form>
-
-            <!-- Formulário de Recuperação de Senha -->
-            <form class="auth-form" id="forgot-password-form">
-                <div class="auth-form__header">
-                    <h2>Recuperar Senha</h2>
-                    <p>Enviaremos um código para seu email</p>
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
-                </div>
-                
-                <div class="auth-form__actions">
-                    <button type="submit" class="btn btn--primary">
-                        <span class="btn-text">Enviar Código de Recuperação</span>
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-                
-                <div class="auth-form__footer">
-                    <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
-                </div>
-            </form>
-
-            <!-- Formulário de Redefinição de Senha -->
-            <form class="auth-form" id="reset-password-form">
-                <div class="auth-form__header">
-                    <h2>Nova Senha</h2>
-                    <p>Digite o código recebido e sua nova senha</p>
-                </div>
-                
-                <input type="hidden" id="reset-email" name="email">
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-key input-icon"></i>
-                    <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
-                           placeholder="Nova senha">
-                    <span class="password-toggle" data-target="reset-password">
-                        <i class="fas fa-eye-slash"></i>
-                    </span>
-                </div>
-                
-                <div class="auth-form__group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
-                           placeholder="Confirmar nova senha">
-                    <span class="password-toggle" data-target="reset-confirm-password">
-                        <i class="fas fa-eye-slash"></i>
-                    </span>
-                </div>
-                
-                <div class="auth-form__actions">
-                    <button type="submit" class="btn btn--primary">
-                        <span class="btn-text">Redefinir Senha</span>
-                        <i class="fas fa-save"></i>
-                    </button>
-                </div>
-                
-                <div class="auth-form__footer">
-                    <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- PAINEL DIREITO - CARROSSÉL DE NOVOS LANÇAMENTOS -->
-    <div class="side-panel right-panel">
-        <div class="carousel-container">
-            <div class="carousel-header">
-                <i class="fas fa-rocket"></i> Novos Lançamentos
+            <!-- Botão Google Premium -->
+            <button type="button" class="btn--google-premium" id="google-login-btn">
+                <i class="fab fa-google"></i>
+                Continuar com Google
+            </button>
+            
+            <div class="auth-form__footer">
+                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Junte-se a nós</a></p>
+                <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
             </div>
-            <div class="swiper swiper-right">
-                <div class="swiper-wrapper">
-                    <!-- Slides serão preenchidos via JavaScript -->
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- SWIPER JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+            <a href="/" class="home-link">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Início
+            </a>
+        </form>
+
+        <!-- Formulário de Registro -->
+        <form class="auth-form" id="register-form">
+            <div class="auth-form__header">
+                <h2>Junte-se a Nós</h2>
+                <p>Crie sua conta na comunidade DenyAnimeHub</p>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-password" name="senha" minlength="6" required 
+                       placeholder="Crie uma senha segura (mín. 6 caracteres)">
+                <span class="password-toggle" data-target="register-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
+                       placeholder="Confirme sua senha">
+                <span class="password-toggle" data-target="register-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Criar Conta Akatsuki</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </div>
+
+            <div class="divider">ou cadastre-se com</div>
+
+            <!-- Botão Google Premium -->
+            <button type="button" class="btn--google-premium" id="google-register-btn">
+                <i class="fab fa-google"></i>
+                Cadastrar com Google
+            </button>
+            
+            <div class="auth-form__footer">
+                <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
+            </div>
+        </form>
+
+        <!-- Formulário de Recuperação de Senha -->
+        <form class="auth-form" id="forgot-password-form">
+            <div class="auth-form__header">
+                <h2>Recuperar Senha</h2>
+                <p>Enviaremos um código para seu email</p>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Enviar Código de Recuperação</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
+            </div>
+        </form>
+
+        <!-- Formulário de Redefinição de Senha -->
+        <form class="auth-form" id="reset-password-form">
+            <div class="auth-form__header">
+                <h2>Nova Senha</h2>
+                <p>Digite o código recebido e sua nova senha</p>
+            </div>
+            
+            <input type="hidden" id="reset-email" name="email">
+            
+            <div class="auth-form__group">
+                <i class="fas fa-key input-icon"></i>
+                <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
+                       placeholder="Nova senha">
+                <span class="password-toggle" data-target="reset-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
+                       placeholder="Confirmar nova senha">
+                <span class="password-toggle" data-target="reset-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Redefinir Senha</span>
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
+            </div>
+        </form>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1007,87 +849,7 @@
             formSwitchLinks: document.querySelectorAll('.form-switch-link'),
             themeToggle: document.getElementById('theme-toggle'),
             googleLoginBtn: document.getElementById('google-login-btn'),
-            googleRegisterBtn: document.getElementById('google-register-btn'),
-            swiperLeft: document.querySelector('.swiper-left'),
-            swiperRight: document.querySelector('.swiper-right')
-        };
-
-        // Dados de exemplo para os carrosséis
-        const carouselData = {
-            trending: [
-                {
-                    image: '/images/placeholder-trending-1.jpg',
-                    title: 'Demon Slayer: Kimetsu no Yaiba',
-                    info: 'Ação • Sobrenatural',
-                    rating: '9.8',
-                    badge: 'trending'
-                },
-                {
-                    image: '/images/placeholder-trending-2.jpg',
-                    title: 'Jujutsu Kaisen',
-                    info: 'Ação • Terror',
-                    rating: '9.7',
-                    badge: 'trending'
-                },
-                {
-                    image: '/images/placeholder-trending-3.jpg',
-                    title: 'Attack on Titan',
-                    info: 'Ação • Drama',
-                    rating: '9.9',
-                    badge: 'trending'
-                },
-                {
-                    image: '/images/placeholder-trending-4.jpg',
-                    title: 'One Piece',
-                    info: 'Aventura • Comédia',
-                    rating: '9.6',
-                    badge: 'trending'
-                },
-                {
-                    image: '/images/placeholder-trending-5.jpg',
-                    title: 'My Hero Academia',
-                    info: 'Ação • Escola',
-                    rating: '9.5',
-                    badge: 'trending'
-                }
-            ],
-            newReleases: [
-                {
-                    image: '/images/placeholder-new-1.jpg',
-                    title: 'Solo Leveling',
-                    info: 'Ação • Fantasia',
-                    rating: '9.8',
-                    badge: 'new'
-                },
-                {
-                    image: '/images/placeholder-new-2.jpg',
-                    title: 'Chainsaw Man',
-                    info: 'Ação • Horror',
-                    rating: '9.7',
-                    badge: 'new'
-                },
-                {
-                    image: '/images/placeholder-new-3.jpg',
-                    title: 'Spy x Family',
-                    info: 'Comédia • Ação',
-                    rating: '9.6',
-                    badge: 'new'
-                },
-                {
-                    image: '/images/placeholder-new-4.jpg',
-                    title: 'Blue Lock',
-                    info: 'Esporte • Drama',
-                    rating: '9.4',
-                    badge: 'new'
-                },
-                {
-                    image: '/images/placeholder-new-5.jpg',
-                    title: 'Tokyo Revengers',
-                    info: 'Ação • Drama',
-                    rating: '9.3',
-                    badge: 'new'
-                }
-            ]
+            googleRegisterBtn: document.getElementById('google-register-btn')
         };
 
         // Funções utilitárias
@@ -1144,86 +906,6 @@
                         button.querySelector('.fa-save') ? 'Redefinir Senha' : 'Continuar' : 'Continuar';
                     btnText.textContent = originalText;
                 }
-            }
-        };
-
-        // Inicializar Carrosséis
-        const initializeCarousels = () => {
-            // Preencher slides do carrossel esquerdo (Trending)
-            const leftWrapper = elements.swiperLeft?.querySelector('.swiper-wrapper');
-            if (leftWrapper) {
-                carouselData.trending.forEach((item, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'swiper-slide';
-                    slide.innerHTML = `
-                        ${item.badge === 'trending' ? '<div class="trending-badge"><i class="fas fa-fire"></i> Em Alta</div>' : ''}
-                                                <img src="${item.image}" alt="${item.title}" class="slide-image" 
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWUxZTFmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRFTllBTklNRUhVQjwvdGV4dD48L3N2Zz4='">
-                        <div class="slide-overlay">
-                            <div class="slide-title">${item.title}</div>
-                            <div class="slide-info">
-                                <span>${item.info}</span>
-                                <span class="slide-rating"><i class="fas fa-star"></i> ${item.rating}</span>
-                            </div>
-                        </div>
-                    `;
-                    leftWrapper.appendChild(slide);
-                });
-            }
-
-            // Preencher slides do carrossel direito (New Releases)
-            const rightWrapper = elements.swiperRight?.querySelector('.swiper-wrapper');
-            if (rightWrapper) {
-                carouselData.newReleases.forEach((item, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'swiper-slide';
-                    slide.innerHTML = `
-                        ${item.badge === 'new' ? '<div class="new-badge"><i class="fas fa-bolt"></i> Novo</div>' : ''}
-                        <img src="${item.image}" alt="${item.title}" class="slide-image"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWUxZTFmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRFTllBTklNRUhVQjwvdGV4dD48L3N2Zz4='">
-                        <div class="slide-overlay">
-                            <div class="slide-title">${item.title}</div>
-                            <div class="slide-info">
-                                <span>${item.info}</span>
-                                <span class="slide-rating"><i class="fas fa-star"></i> ${item.rating}</span>
-                            </div>
-                        </div>
-                    `;
-                    rightWrapper.appendChild(slide);
-                });
-            }
-
-            // Inicializar Swipers
-            if (elements.swiperLeft) {
-                new Swiper(elements.swiperLeft, {
-                    loop: true,
-                    autoplay: {
-                        delay: 4000,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    effect: 'slide',
-                    speed: 800,
-                });
-            }
-
-            if (elements.swiperRight) {
-                new Swiper(elements.swiperRight, {
-                    loop: true,
-                    autoplay: {
-                        delay: 3500,
-                        disableOnInteraction: false,
-                    },
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    effect: 'slide',
-                    speed: 800,
-                });
             }
         };
 
@@ -1399,9 +1081,6 @@
             // Aplicar tema salvo
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.className = `login-page ${savedTheme}-theme`;
-            
-            // Inicializar carrosséis
-            initializeCarousels();
             
             // Configurar event listeners
             setupEventListeners();
