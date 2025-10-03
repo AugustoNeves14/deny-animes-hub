@@ -255,59 +255,83 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-/**
- * Login com Google
- */
+// Adicione esta função para gerar a URL de autorização do Google
 exports.googleLogin = async (req, res) => {
     try {
-        // Gerar URL de autorização do Google
         const authorizeUrl = googleClient.generateAuthUrl({
             access_type: 'offline',
             scope: ['profile', 'email'],
-            prompt: 'consent'
+            prompt: 'consent',
+            include_granted_scopes: true
         });
 
-        res.redirect(authorizeUrl);
+        // Retorna JSON com a URL para o frontend
+        res.json({
+            success: true,
+            authorizeUrl: authorizeUrl
+        });
 
     } catch (error) {
         console.error('❌ Erro no login com Google:', error);
-        res.redirect('/login?erro=Erro ao iniciar login com Google');
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erro ao iniciar login com Google' 
+        });
     }
 };
 
-/**
- * Callback do Google - Modificado para redirecionar para a home com token
- */
+// Mantenha o callback do Google existente, mas adicione tratamento melhor
 exports.googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
+        
         if (!code) {
+            console.error('❌ Código de autorização não fornecido');
             return res.redirect('/login?erro=Código de autorização não fornecido');
         }
 
+        // Trocar código por tokens
         const { tokens } = await googleClient.getToken({
-            code,
+            code: code,
             redirect_uri: process.env.GOOGLE_REDIRECT_URI || "https://deny-animes-hub.onrender.com/auth/google/callback"
         });
 
         googleClient.setCredentials(tokens);
 
+        // Verificar token ID
         const ticket = await googleClient.verifyIdToken({
             idToken: tokens.id_token,
             audience: process.env.GOOGLE_CLIENT_ID
         });
 
         const payload = ticket.getPayload();
-        const { email, name, picture } = payload;
+        const { email, name, picture, sub: googleId } = payload;
 
+        if (!email) {
+            throw new Error('Email não disponível na conta Google');
+        }
+
+        // Buscar ou criar usuário
         let user = await User.findOne({ where: { email } });
+        
         if (!user) {
             user = await User.create({
                 nome: name,
                 email: email,
                 senha: crypto.randomBytes(20).toString('hex'),
-                avatar: picture
+                avatar: picture,
+                googleId: googleId,
+                emailVerificado: true
             });
+            console.log(`✅ Novo usuário criado via Google: ${email}`);
+        } else {
+            // Atualizar informações do Google se necessário
+            if (!user.googleId) {
+                user.googleId = googleId;
+                user.avatar = picture || user.avatar;
+                await user.save();
+            }
+            console.log(`✅ Usuário existente logado via Google: ${email}`);
         }
 
         // Gerar token JWT
@@ -317,7 +341,7 @@ exports.googleCallback = async (req, res) => {
             { expiresIn: '30d' }
         );
 
-        // Configurar cookie com o token
+        // Configurar cookie
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -332,10 +356,17 @@ exports.googleCallback = async (req, res) => {
 
     } catch (error) {
         console.error('❌ Erro no callback do Google:', error);
-        res.redirect('/login?erro=Falha no login com Google');
+        
+        // Redirecionar com mensagem de erro
+        const errorMessage = encodeURIComponent(
+            error.message.includes('email') ? 
+            'Email não disponível na conta Google' : 
+            'Falha na autenticação com Google'
+        );
+        
+        res.redirect(`/login?erro=${errorMessage}`);
     }
 };
-
 /**
  * Enviar OTP por telefone (usando Firebase ou simulação em dev)
  */
@@ -441,3 +472,4 @@ exports.verifyPhoneOtp = async (req, res) => {
         res.status(401).json({ success: false, error: 'Código OTP inválido ou expirado.' });
     }
 };
+

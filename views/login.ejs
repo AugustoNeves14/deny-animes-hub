@@ -8,17 +8,22 @@
     <!-- FONTE POPPINS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- SWIPER JS (Para Carrosséis) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
     <link rel="icon" href="/images/1.ico" type="image/ico">
     
     <style>
         /* ================================================================================================== */
-        /*      ESTILIZAÇÃO CSS MODERNA E SOFISTICADA - DESIGN PREMIUM COM AKATSUKI                           */
+        /*      DESIGN PREMIUM AKATSUKI - LAYOUT MODERNO COM CARROSSÉIS                                     */
         /* ================================================================================================== */
         :root {
-            /* TEMA ESCURO (PADRÃO) */
+            /* TEMA ESCURO AKATSUKI */
             --bg-primary: #0a0a0a;
             --bg-secondary: #151515;
             --bg-secondary-rgb: 21, 21, 21;
@@ -30,17 +35,16 @@
             --accent-primary-rgb: 255, 46, 77;
             --accent-primary-hover: #ff4d68;
             --accent-gradient: linear-gradient(135deg, #ff2e4d, #ff6b6b);
+            --google-gradient: linear-gradient(135deg, #4285F4, #34A853, #FBBC05, #EA4335);
             --success: #00d26a;
             --error: #ff4757;
             --warning: #ff9f43;
             --shadow-color: rgba(0, 0, 0, 0.6);
             --font-family: 'Poppins', sans-serif;
-            --google-btn-bg: #4285F4;
-            --google-btn-hover: #357ae8;
-            --phone-btn-bg: #25D366;
-            --phone-btn-hover: #128C7E;
             --backdrop-blur: blur(20px);
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --glass-bg: rgba(21, 21, 21, 0.7);
+            --neon-glow: 0 0 20px rgba(255, 46, 77, 0.4);
         }
 
         body.light-theme {
@@ -54,6 +58,8 @@
             --accent-primary: #ff2e4d;
             --accent-primary-hover: #e62e4a;
             --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --neon-glow: 0 0 20px rgba(255, 46, 77, 0.2);
         }
         
         * { 
@@ -62,20 +68,20 @@
             box-sizing: border-box; 
         }
 
-        /* ANIMAÇÕES */
+        /* ANIMAÇÕES PREMIUM */
         @keyframes fadeIn { 
             from { opacity: 0; transform: translateY(20px) scale(0.95); } 
             to { opacity: 1; transform: translateY(0) scale(1); } 
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
         }
 
         @keyframes shimmer {
@@ -83,159 +89,214 @@
             100% { background-position: 200% 0; }
         }
 
-        @keyframes rain {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 20% 100%; }
+        @keyframes slideInFromLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes bloodMoon {
-            0%, 100% { 
-                opacity: 0.6;
-                box-shadow: 0 0 80px 20px rgba(255, 46, 77, 0.5);
-            }
-            50% { 
-                opacity: 0.8;
-                box-shadow: 0 0 100px 30px rgba(255, 46, 77, 0.7);
-            }
+        @keyframes slideInFromRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes cloudMove {
-            0% { transform: translateX(-100px) translateY(0); }
-            50% { transform: translateX(0) translateY(-10px); }
-            100% { transform: translateX(100px) translateY(0); }
+        @keyframes neonPulse {
+            0%, 100% { box-shadow: 0 0 5px var(--accent-primary), 0 0 10px var(--accent-primary), 0 0 15px var(--accent-primary); }
+            50% { box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 5px currentColor; }
+            50% { text-shadow: 0 0 15px currentColor, 0 0 20px currentColor; }
         }
 
         /* ESTILOS GERAIS */
         body.login-page {
             font-family: var(--font-family);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
             min-height: 100vh;
             background: var(--bg-primary);
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(255, 46, 77, 0.15) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(66, 133, 244, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 10% 20%, rgba(255, 46, 77, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(66, 133, 244, 0.1) 0%, transparent 30%),
                 linear-gradient(135deg, var(--bg-primary) 0%, #1a1a1a 100%);
-            padding: 1.5rem;
             transition: var(--transition-smooth);
             position: relative;
-            overflow: auto;
+            overflow: hidden;
         }
 
-        /* Efeito de chuva Akatsuki */
-        .akatsuki-rain {
+        /* Efeitos de Fundo Premium */
+        .background-effects {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="5" height="20" viewBox="0 0 5 20"%3E%3Cpath fill="%23ff2e4d" d="M2.5,0 L2.5,20" /%3E%3C/svg%3E');
-            opacity: 0.3;
             pointer-events: none;
             z-index: 1;
-            animation: rain 1s linear infinite;
-            display: none;
         }
 
-        /* Lua de sangue */
-        .blood-moon {
-            position: fixed;
-            top: 50px;
-            right: 50px;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #ff2e4d, #8b0000);
-            box-shadow: 0 0 80px 20px rgba(255, 46, 77, 0.5);
-            animation: bloodMoon 4s ease-in-out infinite;
-            z-index: 2;
-            display: none;
+        .floating-ninja {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+            color: var(--accent-primary);
         }
 
-        /* Nuvens Akatsuki */
-        .akatsuki-cloud {
-            position: fixed;
-            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60"%3E%3Cpath fill="%23ff2e4d" fill-opacity="0.2" d="M0,40 C20,20 40,10 60,20 C80,30 100,40 120,30 L120,60 L0,60 Z" /%3E%3C/svg%3E');
-            background-repeat: no-repeat;
-            width: 120px;
-            height: 60px;
-            opacity: 0.4;
-            z-index: 2;
-            animation: cloudMove 20s linear infinite;
-            display: none;
+        .ninja-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .ninja-2 { top: 60%; left: 8%; animation-delay: 2s; }
+        .ninja-3 { top: 30%; right: 5%; animation-delay: 4s; }
+        .ninja-4 { top: 80%; right: 8%; animation-delay: 1s; }
+
+        /* PAINÉIS LATERAIS */
+        .side-panel {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
         }
 
-        .cloud-1 {
-            top: 10%;
-            left: 5%;
-            animation-duration: 25s;
+        .left-panel {
+            align-items: flex-start;
         }
 
-        .cloud-2 {
-            top: 25%;
-            right: 10%;
-            animation-duration: 30s;
-            animation-delay: -10s;
+        .right-panel {
+            align-items: flex-end;
         }
 
-        .cloud-3 {
-            bottom: 15%;
-            left: 15%;
-            animation-duration: 35s;
-            animation-delay: -5s;
+        /* CARROSSÉIS LATERAIS */
+        .carousel-container {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--neon-glow);
+            animation: slideInFromLeft 1s ease-out;
         }
 
-        body.login-page::before {
-            content: '';
-            position: fixed;
-            top: 0;
+        .right-panel .carousel-container {
+            animation: slideInFromRight 1s ease-out;
+        }
+
+        .carousel-header {
+            padding: 1.5rem;
+            text-align: center;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .swiper {
+            width: 100%;
+            height: 300px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .swiper-slide {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+        }
+
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: 
-                url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23ff2e4d" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E');
-            opacity: 0.3;
-            pointer-events: none;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 1.5rem;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .swiper-slide:hover .slide-image {
+            transform: scale(1.1);
+        }
+
+        .swiper-slide:hover .slide-overlay {
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .slide-info {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .slide-rating {
+            color: #ffd700;
+        }
+
+        /* PAINEL CENTRAL (FORMULÁRIOS) */
+        .center-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 20;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 440px;
+            max-width: 480px;
             position: relative;
-            z-index: 10;
-            margin: 2rem auto;
         }
 
         .theme-toggle-container {
             position: absolute;
-            top: -60px;
+            top: -70px;
             right: 0;
             z-index: 100;
         }
 
         .theme-toggle-btn {
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            width: 46px;
-            height: 46px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             transition: var(--transition-smooth);
-            backdrop-filter: var(--backdrop-blur);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--neon-glow);
         }
 
         .theme-toggle-btn:hover {
             color: var(--accent-primary);
             border-color: var(--accent-primary);
-            transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 12px 40px rgba(255, 46, 77, 0.3);
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 46, 77, 0.6);
         }
 
         .theme-toggle-btn .fa-sun { display: none; }
@@ -253,7 +314,7 @@
             animation: fadeIn 0.5s ease;
             border: 1px solid transparent;
             backdrop-filter: var(--backdrop-blur);
-            background: rgba(var(--bg-secondary-rgb), 0.9);
+            background: var(--glass-bg);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
@@ -278,13 +339,14 @@
         .auth-form {
             display: flex;
             flex-direction: column;
-            background: rgba(var(--bg-secondary-rgb), 0.85);
+            background: var(--glass-bg);
             backdrop-filter: var(--backdrop-blur);
             padding: 3rem 2.5rem;
             border-radius: 24px;
             border: 1px solid var(--border-color);
             box-shadow: 
                 0 25px 50px rgba(0, 0, 0, 0.3),
+                var(--neon-glow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             position: absolute;
             width: 100%;
@@ -310,14 +372,15 @@
 
         .auth-form__header h2 {
             color: var(--text-primary);
-            font-size: 2.2rem;
-            font-weight: 700;
+            font-size: 2.4rem;
+            font-weight: 800;
             margin-bottom: 0.8rem;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: pulse 3s ease-in-out infinite;
+            letter-spacing: -0.5px;
         }
 
         .auth-form__header p {
@@ -340,6 +403,7 @@
             color: var(--text-secondary);
             transition: var(--transition-smooth);
             font-size: 1.1rem;
+            z-index: 2;
         }
 
         .auth-form input {
@@ -354,6 +418,8 @@
             font-weight: 500;
             transition: var(--transition-smooth);
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .auth-form input::placeholder {
@@ -374,6 +440,7 @@
         .auth-form input:focus + .input-icon {
             color: var(--accent-primary);
             transform: translateY(-50%) scale(1.2);
+            animation: textGlow 1s ease-in-out infinite;
         }
 
         .password-toggle {
@@ -451,60 +518,49 @@
             transform: translateY(-1px) scale(1);
         }
 
+        /* BOTÃO GOOGLE PREMIUM */
+        .btn--google-premium {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: var(--google-gradient);
+            background-size: 300% 300%;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3);
+            animation: shimmer 3s infinite linear;
+        }
+
+        .btn--google-premium:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 40px rgba(66, 133, 244, 0.4),
+                0 6px 20px rgba(66, 133, 244, 0.3);
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        .btn--google-premium:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        .btn--google-premium i {
+            font-size: 1.3rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            color: #4285F4;
+        }
+
         .btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none !important;
-        }
-
-        .social-login {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            margin: 2.5rem 0;
-        }
-
-        /* Botões sociais em miniatura e circulares */
-        .social-buttons-mini {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 2.5rem 0;
-        }
-
-        .btn--social-mini {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: var(--transition-smooth);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            border: 2px solid transparent;
-        }
-
-        .btn--google-mini {
-            background: var(--google-btn-bg);
-            color: white;
-        }
-
-        .btn--google-mini:hover {
-            background: var(--google-btn-hover);
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 12px 30px rgba(66, 133, 244, 0.4);
-        }
-
-        .btn--phone-mini {
-            background: var(--phone-btn-bg);
-            color: white;
-        }
-
-        .btn--phone-mini:hover {
-            background: var(--phone-btn-hover);
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.4);
         }
 
         .divider {
@@ -585,36 +641,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos específicos para formulário de telefone */
-        .phone-input-container {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-        }
-
-        .country-code {
-            flex: 0 0 auto;
-            padding: 1.1rem 1rem;
-            background: var(--bg-input);
-            border: 2px solid transparent;
-            border-radius: 14px;
-            color: var(--text-primary);
-            font-weight: 600;
-            min-width: 80px;
-            text-align: center;
-            transition: var(--transition-smooth);
-        }
-
-        .phone-input {
-            flex: 1;
-            padding-left: 3.5rem !important;
-        }
-
-        .country-code:focus {
-            border-color: var(--accent-primary);
-            background: var(--bg-input);
-        }
-
         /* Loading spinner personalizado */
         .btn--loading .btn-spinner {
             display: inline-block;
@@ -630,300 +656,344 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Responsividade */
-        @media (max-width: 480px) {
+        /* RESPONSIVIDADE */
+        @media (max-width: 1200px) {
+            body.login-page {
+                grid-template-columns: 1fr 1.5fr 1fr;
+            }
+            
+            .side-panel {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            body.login-page {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            
+            .side-panel {
+                display: none;
+            }
+            
+            .center-panel {
+                padding: 1rem;
+            }
+            
             .auth-form {
                 padding: 2rem 1.5rem;
             }
+        }
+
+        @media (max-width: 480px) {
+            .auth-form {
+                padding: 1.5rem 1rem;
+            }
             
             .auth-form__header h2 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
-            .phone-input-container {
-                flex-direction: column;
-                gap: 0.8rem;
+            .theme-toggle-container {
+                top: -60px;
             }
             
-            .country-code {
-                width: 100%;
-                min-width: auto;
+            .theme-toggle-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
             }
-            
-            .blood-moon {
-                top: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-            }
-            
-            .akatsuki-cloud {
-                transform: scale(0.7);
-            }
+        }
+
+        /* ESTILOS ESPECÍFICOS PARA CARROSSÉIS */
+        .trending-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            z-index: 3;
+            animation: pulse 2s infinite;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            z-index: 3;
+        }
+
+        /* LOGO AKATSUKI PERSONALIZADA */
+        .akatsuki-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .logo-text::after {
+            content: '雲';
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+            opacity: 0.7;
         }
     </style>
 </head>
 <body class="login-page">
-    <!-- Elementos do tema Akatsuki -->
-    <div class="akatsuki-rain" id="akatsuki-rain"></div>
-    <div class="blood-moon" id="blood-moon"></div>
-    <div class="akatsuki-cloud cloud-1" id="cloud-1"></div>
-    <div class="akatsuki-cloud cloud-2" id="cloud-2"></div>
-    <div class="akatsuki-cloud cloud-3" id="cloud-3"></div>
-    
-    <div class="auth-container">
-        <div class="theme-toggle-container">
-            <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
-                <i class="fas fa-moon"></i>
-                <i class="fas fa-sun"></i>
-            </button>
-        </div>
-        <div id="auth-alert" class="auth-alert"></div>
+    <!-- Efeitos de Fundo -->
+    <div class="background-effects">
+        <div class="floating-ninja ninja-1">🗡️</div>
+        <div class="floating-ninja ninja-2">👺</div>
+        <div class="floating-ninja ninja-3">⚔️</div>
+        <div class="floating-ninja ninja-4">🎌</div>
+    </div>
 
-        <!-- Formulário Principal de Login -->
-        <form class="auth-form active-form" id="login-form">
-            <div class="auth-form__header">
-                <h2>Bem-vindo de Volta</h2>
-                <p>Acesse sua conta para continuar sua jornada anime</p>
+    <!-- PAINEL ESQUERDO - CARROSSÉL DE ANIMES EM ALTA -->
+    <div class="side-panel left-panel">
+        <div class="carousel-container">
+            <div class="carousel-header">
+                <i class="fas fa-fire"></i> Animes em Alta
             </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+            <div class="swiper swiper-left">
+                <div class="swiper-wrapper">
+                    <!-- Slides serão preenchidos via JavaScript -->
+                </div>
+                <div class="swiper-pagination"></div>
             </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
-                <span class="password-toggle" data-target="login-password">
-                    <i class="fas fa-eye-slash"></i>
-                </span>
+        </div>
+    </div>
+
+    <!-- PAINEL CENTRAL - FORMULÁRIOS -->
+    <div class="center-panel">
+        <div class="auth-container">
+            <div class="akatsuki-logo">
+                <div class="logo-text">DENYANIMEHUB</div>
             </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Entrar</span>
-                    <i class="fas fa-arrow-right"></i>
+
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
                 </button>
             </div>
-            
-            <div class="auth-form__footer">
-                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Registre-se</a></p>
-                <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
-            </div>
 
-            <div class="divider">ou continue com</div>
+            <div id="auth-alert" class="auth-alert"></div>
 
-            <!-- Botões sociais em miniatura -->
-            <div class="social-buttons-mini">
-                <button type="button" class="btn btn--social-mini btn--google-mini" id="google-login-btn" title="Entrar com Google">
+            <!-- Formulário Principal de Login -->
+            <form class="auth-form active-form" id="login-form">
+                <div class="auth-form__header">
+                    <h2>Bem-vindo de Volta</h2>
+                    <p>Acesse sua conta para continuar sua jornada anime</p>
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
+                    <span class="password-toggle" data-target="login-password">
+                        <i class="fas fa-eye-slash"></i>
+                    </span>
+                </div>
+                
+                <div class="auth-form__actions">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text">Entrar na Akatsuki</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="divider">ou entre com</div>
+
+                <!-- Botão Google Premium -->
+                <button type="button" class="btn--google-premium" id="google-login-btn">
                     <i class="fab fa-google"></i>
+                    Continuar com Google
                 </button>
                 
-                <button type="button" class="btn btn--social-mini btn--phone-mini" id="phone-login-btn" title="Entrar com Telefone">
-                    <i class="fas fa-phone-alt"></i>
-                </button>
-            </div>
-            
-            <a href="/" class="home-link">
-                <i class="fas fa-arrow-left"></i>
-                Voltar ao Início
-            </a>
-        </form>
-
-        <!-- Formulário de Registro -->
-        <form class="auth-form" id="register-form">
-            <div class="auth-form__header">
-                <h2>Crie sua Conta</h2>
-                <p>Junte-se à comunidade DenyAnimeHub</p>
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-user input-icon"></i>
-                <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="register-password" name="senha" minlength="6" required 
-                       placeholder="Crie uma senha segura (mín. 6 caracteres)">
-                <span class="password-toggle" data-target="register-password">
-                    <i class="fas fa-eye-slash"></i>
-                </span>
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
-                       placeholder="Confirme sua senha">
-                <span class="password-toggle" data-target="register-confirm-password">
-                    <i class="fas fa-eye-slash"></i>
-                </span>
-            </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Criar Conta</span>
-                    <i class="fas fa-user-plus"></i>
-                </button>
-            </div>
-            
-            <div class="auth-form__footer">
-                <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
-            </div>
-        </form>
-
-        <!-- Formulário de Recuperação de Senha -->
-        <form class="auth-form" id="forgot-password-form">
-            <div class="auth-form__header">
-                <h2>Recuperar Senha</h2>
-                <p>Enviaremos um código para seu email</p>
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
-            </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Enviar Código</span>
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-            
-            <div class="auth-form__footer">
-                <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
-            </div>
-        </form>
-
-        <!-- Formulário de Redefinição de Senha -->
-        <form class="auth-form" id="reset-password-form">
-            <div class="auth-form__header">
-                <h2>Nova Senha</h2>
-                <p>Digite o código recebido e sua nova senha</p>
-            </div>
-            
-            <input type="hidden" id="reset-email" name="email">
-            
-            <div class="auth-form__group">
-                <i class="fas fa-key input-icon"></i>
-                <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
-                       placeholder="Nova senha">
-                <span class="password-toggle" data-target="reset-password">
-                    <i class="fas fa-eye-slash"></i>
-                </span>
-            </div>
-            
-            <div class="auth-form__group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
-                       placeholder="Confirmar nova senha">
-                <span class="password-toggle" data-target="reset-confirm-password">
-                    <i class="fas fa-eye-slash"></i>
-                </span>
-            </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Redefinir Senha</span>
-                    <i class="fas fa-save"></i>
-                </button>
-            </div>
-            
-            <div class="auth-form__footer">
-                <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
-            </div>
-        </form>
-
-        <!-- Formulário Universal de Telefone -->
-        <form class="auth-form" id="phone-login-form">
-            <div class="auth-form__header">
-                <h2>Login por Telefone</h2>
-                <p>Digite seu número para receber um código de acesso</p>
-            </div>
-            
-            <div class="auth-form__group">
-                <div class="phone-input-container">
-                    <select id="country-code-select" class="country-code" name="countryCode">
-                        <option value="+244">+244 (AO)</option>
-                        <option value="+55">+55 (BR)</option>
-                        <option value="+1">+1 (US)</option>
-                        <option value="+44">+44 (UK)</option>
-                        <option value="+33">+33 (FR)</option>
-                        <option value="+34">+34 (ES)</option>
-                        <option value="+49">+49 (DE)</option>
-                        <option value="+39">+39 (IT)</option>
-                        <option value="+7">+7 (RU)</option>
-                        <option value="+81">+81 (JP)</option>
-                        <option value="+86">+86 (CN)</option>
-                        <option value="+91">+91 (IN)</option>
-                        <option value="+27">+27 (ZA)</option>
-                        <option value="+234">+234 (NG)</option>
-                        <option value="+254">+254 (KE)</option>
-                        <!-- Adicione mais códigos conforme necessário -->
-                    </select>
-                    <input type="tel" id="phone-number" name="phoneNumber" required 
-                           placeholder="Número do telefone" class="phone-input"
-                           pattern="[0-9]{8,15}" title="Digite apenas números (8-15 dígitos)">
+                <div class="auth-form__footer">
+                    <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Junte-se a nós</a></p>
+                    <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
                 </div>
-            </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Receber Código</span>
-                    <i class="fas fa-sms"></i>
-                </button>
-            </div>
-            
-            <div class="auth-form__footer">
-                <p>Voltar para <a class="form-switch-link" data-target="login-form">login tradicional</a></p>
-            </div>
-        </form>
 
-        <!-- Formulário de Verificação de OTP -->
-        <form class="auth-form" id="phone-verify-form">
-            <div class="auth-form__header">
-                <h2>Verificar Código</h2>
-                <p>Digite o código de 6 dígitos enviado para seu telefone</p>
-            </div>
-            
-            <input type="hidden" id="verify-phone-number" name="phoneNumber">
-            
-            <div class="auth-form__group">
-                <i class="fas fa-shield-alt input-icon"></i>
-                <input type="text" id="otp-code" name="otp" required 
-                       placeholder="Código de 6 dígitos" pattern="[0-9]{6}" 
-                       title="Digite o código de 6 dígitos" maxlength="6">
-            </div>
-            
-            <div class="auth-form__actions">
-                <button type="submit" class="btn btn--primary">
-                    <span class="btn-text">Verificar e Entrar</span>
-                    <i class="fas fa-check-circle"></i>
+                <a href="/" class="home-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar ao Início
+                </a>
+            </form>
+
+            <!-- Formulário de Registro -->
+            <form class="auth-form" id="register-form">
+                <div class="auth-form__header">
+                    <h2>Junte-se a Nós</h2>
+                    <p>Crie sua conta na comunidade DenyAnimeHub</p>
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="register-password" name="senha" minlength="6" required 
+                           placeholder="Crie uma senha segura (mín. 6 caracteres)">
+                    <span class="password-toggle" data-target="register-password">
+                        <i class="fas fa-eye-slash"></i>
+                    </span>
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
+                           placeholder="Confirme sua senha">
+                    <span class="password-toggle" data-target="register-confirm-password">
+                        <i class="fas fa-eye-slash"></i>
+                    </span>
+                </div>
+                
+                <div class="auth-form__actions">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text">Criar Conta Akatsuki</span>
+                        <i class="fas fa-user-plus"></i>
+                    </button>
+                </div>
+
+                <div class="divider">ou cadastre-se com</div>
+
+                <!-- Botão Google Premium -->
+                <button type="button" class="btn--google-premium" id="google-register-btn">
+                    <i class="fab fa-google"></i>
+                    Cadastrar com Google
                 </button>
-            </div>
-            
-            <div class="auth-form__footer">
-                <p>Não recebeu? <a href="#" id="resend-otp-link">Reenviar código</a></p>
-                <p>Voltar para <a class="form-switch-link" data-target="phone-login-form">alterar número</a></p>
-            </div>
-        </form>
+                
+                <div class="auth-form__footer">
+                    <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
+                </div>
+            </form>
+
+            <!-- Formulário de Recuperação de Senha -->
+            <form class="auth-form" id="forgot-password-form">
+                <div class="auth-form__header">
+                    <h2>Recuperar Senha</h2>
+                    <p>Enviaremos um código para seu email</p>
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="auth-form__actions">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text">Enviar Código de Recuperação</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="auth-form__footer">
+                    <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
+                </div>
+            </form>
+
+            <!-- Formulário de Redefinição de Senha -->
+            <form class="auth-form" id="reset-password-form">
+                <div class="auth-form__header">
+                    <h2>Nova Senha</h2>
+                    <p>Digite o código recebido e sua nova senha</p>
+                </div>
+                
+                <input type="hidden" id="reset-email" name="email">
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-key input-icon"></i>
+                    <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
+                           placeholder="Nova senha">
+                    <span class="password-toggle" data-target="reset-password">
+                        <i class="fas fa-eye-slash"></i>
+                    </span>
+                </div>
+                
+                <div class="auth-form__group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
+                           placeholder="Confirmar nova senha">
+                    <span class="password-toggle" data-target="reset-confirm-password">
+                        <i class="fas fa-eye-slash"></i>
+                    </span>
+                </div>
+                
+                <div class="auth-form__actions">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text">Redefinir Senha</span>
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+                
+                <div class="auth-form__footer">
+                    <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <!-- PAINEL DIREITO - CARROSSÉL DE NOVOS LANÇAMENTOS -->
+    <div class="side-panel right-panel">
+        <div class="carousel-container">
+            <div class="carousel-header">
+                <i class="fas fa-rocket"></i> Novos Lançamentos
+            </div>
+            <div class="swiper swiper-right">
+                <div class="swiper-wrapper">
+                    <!-- Slides serão preenchidos via JavaScript -->
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SWIPER JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 Inicializando DenyAnimeHub Auth System...');
+        console.log('🚀 Inicializando DenyAnimeHub Premium Auth System...');
         
         // Elementos da DOM
         const elements = {
@@ -931,31 +1001,94 @@
                 login: document.getElementById('login-form'),
                 register: document.getElementById('register-form'),
                 forgotPassword: document.getElementById('forgot-password-form'),
-                resetPassword: document.getElementById('reset-password-form'),
-                phoneLogin: document.getElementById('phone-login-form'),
-                phoneVerify: document.getElementById('phone-verify-form')
+                resetPassword: document.getElementById('reset-password-form')
             },
             authAlert: document.getElementById('auth-alert'),
             formSwitchLinks: document.querySelectorAll('.form-switch-link'),
             themeToggle: document.getElementById('theme-toggle'),
             googleLoginBtn: document.getElementById('google-login-btn'),
-            phoneLoginBtn: document.getElementById('phone-login-btn'),
-            resendOtpLink: document.getElementById('resend-otp-link'),
-            countryCodeSelect: document.getElementById('country-code-select'),
-            phoneNumberInput: document.getElementById('phone-number'),
-            verifyPhoneInput: document.getElementById('verify-phone-number'),
-            akatsukiRain: document.getElementById('akatsuki-rain'),
-            bloodMoon: document.getElementById('blood-moon'),
-            cloud1: document.getElementById('cloud-1'),
-            cloud2: document.getElementById('cloud-2'),
-            cloud3: document.getElementById('cloud-3')
+            googleRegisterBtn: document.getElementById('google-register-btn'),
+            swiperLeft: document.querySelector('.swiper-left'),
+            swiperRight: document.querySelector('.swiper-right')
         };
 
-        // Estados da aplicação
-        let currentPhoneNumber = '';
-        let otpResendTimer = null;
-        let otpResendTime = 60;
-        let akatsukiThemeEnabled = false;
+        // Dados de exemplo para os carrosséis
+        const carouselData = {
+            trending: [
+                {
+                    image: '/images/placeholder-trending-1.jpg',
+                    title: 'Demon Slayer: Kimetsu no Yaiba',
+                    info: 'Ação • Sobrenatural',
+                    rating: '9.8',
+                    badge: 'trending'
+                },
+                {
+                    image: '/images/placeholder-trending-2.jpg',
+                    title: 'Jujutsu Kaisen',
+                    info: 'Ação • Terror',
+                    rating: '9.7',
+                    badge: 'trending'
+                },
+                {
+                    image: '/images/placeholder-trending-3.jpg',
+                    title: 'Attack on Titan',
+                    info: 'Ação • Drama',
+                    rating: '9.9',
+                    badge: 'trending'
+                },
+                {
+                    image: '/images/placeholder-trending-4.jpg',
+                    title: 'One Piece',
+                    info: 'Aventura • Comédia',
+                    rating: '9.6',
+                    badge: 'trending'
+                },
+                {
+                    image: '/images/placeholder-trending-5.jpg',
+                    title: 'My Hero Academia',
+                    info: 'Ação • Escola',
+                    rating: '9.5',
+                    badge: 'trending'
+                }
+            ],
+            newReleases: [
+                {
+                    image: '/images/placeholder-new-1.jpg',
+                    title: 'Solo Leveling',
+                    info: 'Ação • Fantasia',
+                    rating: '9.8',
+                    badge: 'new'
+                },
+                {
+                    image: '/images/placeholder-new-2.jpg',
+                    title: 'Chainsaw Man',
+                    info: 'Ação • Horror',
+                    rating: '9.7',
+                    badge: 'new'
+                },
+                {
+                    image: '/images/placeholder-new-3.jpg',
+                    title: 'Spy x Family',
+                    info: 'Comédia • Ação',
+                    rating: '9.6',
+                    badge: 'new'
+                },
+                {
+                    image: '/images/placeholder-new-4.jpg',
+                    title: 'Blue Lock',
+                    info: 'Esporte • Drama',
+                    rating: '9.4',
+                    badge: 'new'
+                },
+                {
+                    image: '/images/placeholder-new-5.jpg',
+                    title: 'Tokyo Revengers',
+                    info: 'Ação • Drama',
+                    rating: '9.3',
+                    badge: 'new'
+                }
+            ]
+        };
 
         // Funções utilitárias
         const showAlert = (message, type = 'error', duration = 5000) => {
@@ -1005,80 +1138,93 @@
                 // Restaurar texto original baseado no tipo de botão
                 if (btnText) {
                     const originalText = button.classList.contains('btn--primary') ? 
-                        button.querySelector('.fa-arrow-right') ? 'Entrar' :
-                        button.querySelector('.fa-user-plus') ? 'Criar Conta' :
-                        button.querySelector('.fa-paper-plane') ? 'Enviar Código' :
-                        button.querySelector('.fa-save') ? 'Redefinir Senha' :
-                        button.querySelector('.fa-sms') ? 'Receber Código' :
-                        button.querySelector('.fa-check-circle') ? 'Verificar e Entrar' : 'Continuar' : 'Continuar';
+                        button.querySelector('.fa-arrow-right') ? 'Entrar na Akatsuki' :
+                        button.querySelector('.fa-user-plus') ? 'Criar Conta Akatsuki' :
+                        button.querySelector('.fa-paper-plane') ? 'Enviar Código de Recuperação' :
+                        button.querySelector('.fa-save') ? 'Redefinir Senha' : 'Continuar' : 'Continuar';
                     btnText.textContent = originalText;
                 }
             }
         };
 
-        const formatPhoneNumber = (phoneNumber, countryCode) => {
-            // Remover todos os caracteres não numéricos
-            const cleaned = phoneNumber.replace(/\D/g, '');
-            
-            // Retornar número formatado com código do país
-            return countryCode + cleaned;
-        };
+        // Inicializar Carrosséis
+        const initializeCarousels = () => {
+            // Preencher slides do carrossel esquerdo (Trending)
+            const leftWrapper = elements.swiperLeft?.querySelector('.swiper-wrapper');
+            if (leftWrapper) {
+                carouselData.trending.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `
+                        ${item.badge === 'trending' ? '<div class="trending-badge"><i class="fas fa-fire"></i> Em Alta</div>' : ''}
+                                                <img src="${item.image}" alt="${item.title}" class="slide-image" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWUxZTFmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRFTllBTklNRUhVQjwvdGV4dD48L3N2Zz4='">
+                        <div class="slide-overlay">
+                            <div class="slide-title">${item.title}</div>
+                            <div class="slide-info">
+                                <span>${item.info}</span>
+                                <span class="slide-rating"><i class="fas fa-star"></i> ${item.rating}</span>
+                            </div>
+                        </div>
+                    `;
+                    leftWrapper.appendChild(slide);
+                });
+            }
 
-        const validatePhoneNumber = (phoneNumber) => {
-            // Validação básica - pelo menos 8 dígitos após o código do país
-            const digitsOnly = phoneNumber.replace(/\D/g, '');
-            return digitsOnly.length >= 8;
-        };
+            // Preencher slides do carrossel direito (New Releases)
+            const rightWrapper = elements.swiperRight?.querySelector('.swiper-wrapper');
+            if (rightWrapper) {
+                carouselData.newReleases.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `
+                        ${item.badge === 'new' ? '<div class="new-badge"><i class="fas fa-bolt"></i> Novo</div>' : ''}
+                        <img src="${item.image}" alt="${item.title}" class="slide-image"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWUxZTFmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRFTllBTklNRUhVQjwvdGV4dD48L3N2Zz4='">
+                        <div class="slide-overlay">
+                            <div class="slide-title">${item.title}</div>
+                            <div class="slide-info">
+                                <span>${item.info}</span>
+                                <span class="slide-rating"><i class="fas fa-star"></i> ${item.rating}</span>
+                            </div>
+                        </div>
+                    `;
+                    rightWrapper.appendChild(slide);
+                });
+            }
 
-        const startOtpResendTimer = () => {
-            if (otpResendTimer) clearInterval(otpResendTimer);
-            
-            otpResendTime = 60;
-            if (elements.resendOtpLink) {
-                elements.resendOtpLink.style.opacity = '0.5';
-                elements.resendOtpLink.style.pointerEvents = 'none';
-                elements.resendOtpLink.textContent = `Reenviar (${otpResendTime}s)`;
+            // Inicializar Swipers
+            if (elements.swiperLeft) {
+                new Swiper(elements.swiperLeft, {
+                    loop: true,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    effect: 'slide',
+                    speed: 800,
+                });
             }
-            
-            otpResendTimer = setInterval(() => {
-                otpResendTime--;
-                
-                if (elements.resendOtpLink) {
-                    elements.resendOtpLink.textContent = `Reenviar (${otpResendTime}s)`;
-                }
-                
-                if (otpResendTime <= 0) {
-                    clearInterval(otpResendTimer);
-                    if (elements.resendOtpLink) {
-                        elements.resendOtpLink.style.opacity = '1';
-                        elements.resendOtpLink.style.pointerEvents = 'auto';
-                        elements.resendOtpLink.textContent = 'Reenviar código';
-                    }
-                }
-            }, 1000);
-        };
 
-        // Ativar/desativar tema Akatsuki
-        const toggleAkatsukiTheme = (enable) => {
-            akatsukiThemeEnabled = enable;
-            
-            if (elements.akatsukiRain) {
-                elements.akatsukiRain.style.display = enable ? 'block' : 'none';
+            if (elements.swiperRight) {
+                new Swiper(elements.swiperRight, {
+                    loop: true,
+                    autoplay: {
+                        delay: 3500,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    effect: 'slide',
+                    speed: 800,
+                });
             }
-            
-            if (elements.bloodMoon) {
-                elements.bloodMoon.style.display = enable ? 'block' : 'none';
-            }
-            
-            if (elements.cloud1 && elements.cloud2 && elements.cloud3) {
-                const display = enable ? 'block' : 'none';
-                elements.cloud1.style.display = display;
-                elements.cloud2.style.display = display;
-                elements.cloud3.style.display = display;
-            }
-            
-            // Salvar preferência
-            localStorage.setItem('akatsukiTheme', enable ? 'enabled' : 'disabled');
         };
 
         // Manipuladores de formulários
@@ -1098,22 +1244,12 @@
                     if (body[passwordField] !== body[confirmField]) {
                         throw new Error('As senhas não coincidem');
                     }
-                    delete body[confirmField];
-                }
-                
-                // Validação de telefone
-                if (form.id === 'phone-login-form') {
-                    const fullNumber = formatPhoneNumber(body.phoneNumber, body.countryCode);
-                    if (!validatePhoneNumber(fullNumber)) {
-                        throw new Error('Número de telefone inválido');
+                    
+                    if (body[passwordField].length < 6) {
+                        throw new Error('A senha deve ter pelo menos 6 caracteres');
                     }
-                    body.phoneNumber = fullNumber;
-                    delete body.countryCode;
-                    currentPhoneNumber = fullNumber;
-                }
-                
-                if (form.id === 'phone-verify-form') {
-                    body.phoneNumber = currentPhoneNumber;
+                    
+                    delete body[confirmField];
                 }
                 
                 const response = await fetch(`/auth${endpoint}`, {
@@ -1126,11 +1262,6 @@
                 
                 if (!response.ok || !data.success) {
                     throw new Error(data.error || 'Erro desconhecido');
-                }
-                
-                // Ativar tema Akatsuki após login bem-sucedido
-                if ((form.id === 'login-form' || form.id === 'phone-verify-form') && data.success) {
-                    toggleAkatsukiTheme(true);
                 }
                 
                 if (options.onSuccess) {
@@ -1158,62 +1289,38 @@
             // Toggle de tema
             if (elements.themeToggle) {
                 elements.themeToggle.addEventListener('click', () => {
-                    const isDark = document.body.classList.contains('dark-theme');
-                    document.body.className = `login-page ${isDark ? 'light' : 'dark'}-theme`;
-                    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                    const isLight = document.body.classList.contains('light-theme');
+                    document.body.className = `login-page ${isLight ? 'dark' : 'light'}-theme`;
+                    localStorage.setItem('theme', isLight ? 'dark' : 'light');
                 });
             }
             
             // Login com Google
-            if (elements.googleLoginBtn) {
-                elements.googleLoginBtn.addEventListener('click', async () => {
-                    showAlert('Redirecionando para Google...', 'success');
-                    try {
-                        const response = await fetch('/auth/google');
-                        const data = await response.json();
-                        if (data.success && data.authorizeUrl) {
-                            window.location.href = data.authorizeUrl;
-                        } else {
-                            throw new Error(data.error || 'Falha no login com Google');
-                        }
-                    } catch (error) {
-                        showAlert(error.message, 'error');
-                    }
-                });
-            }
-            
-            // Login com telefone
-            if (elements.phoneLoginBtn) {
-                elements.phoneLoginBtn.addEventListener('click', () => {
-                    switchForm('phone-login-form');
-                });
-            }
-            
-            // Reenviar OTP
-            if (elements.resendOtpLink) {
-                elements.resendOtpLink.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    if (otpResendTime > 0) return;
+            const handleGoogleLogin = async () => {
+                showAlert('Conectando com Google...', 'success');
+                try {
+                    // Primeiro, obtenha a URL de autorização do servidor
+                    const response = await fetch('/auth/google');
+                    const data = await response.json();
                     
-                    showAlert('Reenviando código...', 'success');
-                    try {
-                        const response = await fetch('/auth/send-phone-otp', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ phoneNumber: currentPhoneNumber })
-                        });
-                        
-                        const data = await response.json();
-                        if (data.success) {
-                            showAlert('Código reenviado!', 'success');
-                            startOtpResendTimer();
-                        } else {
-                            throw new Error(data.error || 'Falha ao reenviar');
-                        }
-                    } catch (error) {
-                        showAlert(error.message, 'error');
+                    if (data.success && data.authorizeUrl) {
+                        // Redireciona para a URL de autorização do Google
+                        window.location.href = data.authorizeUrl;
+                    } else {
+                        throw new Error(data.error || 'Falha ao iniciar login com Google');
                     }
-                });
+                } catch (error) {
+                    console.error('Erro no login com Google:', error);
+                    showAlert(error.message, 'error');
+                }
+            };
+
+            if (elements.googleLoginBtn) {
+                elements.googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
+
+            if (elements.googleRegisterBtn) {
+                elements.googleRegisterBtn.addEventListener('click', handleGoogleLogin);
             }
             
             // Toggle de visibilidade de senha
@@ -1237,48 +1344,42 @@
             
             // Formulários principais
             const formConfigs = {
-                'login-form': { endpoint: '/login', onSuccess: (data) => {
-                    showAlert('Login realizado! Redirecionando...', 'success');
-                    setTimeout(() => {
-                        window.location.href = data.user?.role === 'admin' ? 
-                            '/admin/dashboard' : '/';
-                    }, 1500);
-                }},
-                'register-form': { endpoint: '/registrar', onSuccess: (data, body) => {
-                    showAlert(data.message, 'success');
-                    setTimeout(() => {
-                        switchForm('login-form');
-                        const emailInput = elements.forms.login?.querySelector('#login-email');
-                        if (emailInput) emailInput.value = body.email;
-                    }, 2000);
-                }},
-                'forgot-password-form': { endpoint: '/forgot-password', onSuccess: (data, body) => {
-                    showAlert(data.message, 'success');
-                    document.getElementById('reset-email').value = body.email;
-                    setTimeout(() => switchForm('reset-password-form'), 1500);
-                }},
-                'reset-password-form': { endpoint: '/reset-password', onSuccess: (data) => {
-                    showAlert(data.message, 'success');
-                    setTimeout(() => switchForm('login-form'), 2000);
-                }},
-                'phone-login-form': { endpoint: '/send-phone-otp', onSuccess: (data) => {
-                    showAlert(data.message, 'success');
-                    if (elements.verifyPhoneInput) {
-                        elements.verifyPhoneInput.value = currentPhoneNumber;
+                'login-form': { 
+                    endpoint: '/login', 
+                    onSuccess: (data) => {
+                        showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                        setTimeout(() => {
+                            window.location.href = data.user?.role === 'admin' ? 
+                                '/admin/dashboard' : '/';
+                        }, 1500);
                     }
-                    if (data.developmentOtp) {
-                        showAlert(`Código de desenvolvimento: ${data.developmentOtp}`, 'warning', 10000);
+                },
+                'register-form': { 
+                    endpoint: '/registrar', 
+                    onSuccess: (data, body) => {
+                        showAlert('Conta criada com sucesso! Faça login para continuar.', 'success');
+                        setTimeout(() => {
+                            switchForm('login-form');
+                            const emailInput = elements.forms.login?.querySelector('#login-email');
+                            if (emailInput) emailInput.value = body.email;
+                        }, 2000);
                     }
-                    startOtpResendTimer();
-                    setTimeout(() => switchForm('phone-verify-form'), 1000);
-                }},
-                'phone-verify-form': { endpoint: '/verify-phone-otp', onSuccess: (data) => {
-                    showAlert('Login realizado com sucesso!', 'success');
-                    setTimeout(() => {
-                        window.location.href = data.user?.role === 'admin' ? 
-                            '/admin/dashboard' : '/';
-                    }, 1500);
-                }}
+                },
+                'forgot-password-form': { 
+                    endpoint: '/forgot-password', 
+                    onSuccess: (data, body) => {
+                        showAlert('Código de recuperação enviado para seu email!', 'success');
+                        document.getElementById('reset-email').value = body.email;
+                        setTimeout(() => switchForm('reset-password-form'), 1500);
+                    }
+                },
+                'reset-password-form': { 
+                    endpoint: '/reset-password', 
+                    onSuccess: (data) => {
+                        showAlert('Senha redefinida com sucesso!', 'success');
+                        setTimeout(() => switchForm('login-form'), 2000);
+                    }
+                }
             };
             
             // Configurar submit handlers
@@ -1291,19 +1392,6 @@
                     });
                 }
             });
-            
-            // Auto-seleção de código de país baseado no IP (simulação)
-            const simulateCountryDetection = () => {
-                // Em produção, usar uma API de geolocalização
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                if (timezone.includes('Africa')) {
-                    elements.countryCodeSelect.value = '+244';
-                }
-            };
-            
-            if (elements.countryCodeSelect) {
-                simulateCountryDetection();
-            }
         };
 
         // Inicialização
@@ -1312,9 +1400,8 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.className = `login-page ${savedTheme}-theme`;
             
-            // Verificar se o tema Akatsuki estava ativado
-            const akatsukiTheme = localStorage.getItem('akatsukiTheme') || 'disabled';
-            toggleAkatsukiTheme(akatsukiTheme === 'enabled');
+            // Inicializar carrosséis
+            initializeCarousels();
             
             // Configurar event listeners
             setupEventListeners();
@@ -1332,7 +1419,7 @@
                 showAlert(decodeURIComponent(errorParam), 'error', 5000);
             }
             
-            console.log('✅ Sistema de autenticação inicializado');
+            console.log('✅ Sistema de autenticação premium inicializado');
         };
 
         // Iniciar a aplicação
