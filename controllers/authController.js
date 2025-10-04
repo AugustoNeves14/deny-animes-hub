@@ -1,4 +1,4 @@
-// controllers/authController.js
+// controllers/authController.js (VERSÃO FINAL COMPLETA E CORRIGIDA)
 'use strict';
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -11,15 +11,24 @@ const { OAuth2Client } = require('google-auth-library');
 let firebaseInitialized = false;
 try {
     if (process.env.FIREBASE_PROJECT_ID) {
-        admin.initializeApp({
-            credential: admin.credential.applicationDefault(),
-            databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
-        });
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId: process.env.FIREBASE_PROJECT_ID,
+                    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+                }),
+                databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
+            });
+        }
         firebaseInitialized = true;
         console.log('✅ Firebase Admin inicializado com sucesso');
+    } else {
+        console.warn('⚠️ Firebase não configurado - FIREBASE_PROJECT_ID não encontrado');
     }
 } catch (error) {
-    console.warn('⚠️ Firebase não configurado:', error.message);
+    console.warn('⚠️ Firebase não inicializado:', error.message);
+    firebaseInitialized = false;
 }
 
 // Configurar cliente OAuth2 do Google
@@ -31,19 +40,34 @@ const googleClient = new OAuth2Client(
 
 // Configuração do Nodemailer
 const createTransporter = () => {
-    return nodemailer.createTransport({
-        service: process.env.EMAIL_SERVICE || 'gmail',
-        auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    });
+    try {
+        if (!process.env.EMAIL_USERNAME || !process.env.EMAIL_PASSWORD) {
+            console.warn('⚠️ Credenciais de email não configuradas');
+            return null;
+        }
+        
+        return nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE || 'gmail',
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+    } catch (error) {
+        console.error('❌ Erro ao criar transporter de email:', error);
+        return null;
+    }
 };
 
 const transporter = createTransporter();
 
 // Função para enviar e-mails
 const sendEmail = async (to, subject, htmlContent) => {
+    if (!transporter) {
+        console.warn('⚠️ Transporter de email não disponível');
+        return false;
+    }
+    
     try {
         const mailOptions = {
             from: process.env.EMAIL_FROM || process.env.EMAIL_USERNAME,
@@ -56,7 +80,6 @@ const sendEmail = async (to, subject, htmlContent) => {
         return true;
     } catch (error) {
         console.error('❌ Erro ao enviar email:', error.message);
-        // Não quebrar o fluxo da aplicação se o email falhar
         return false;
     }
 };
@@ -207,32 +230,65 @@ exports.login = async (req, res) => {
 };
 
 /**
- * Logout
+ * Logout - VERSÃO CORRIGIDA SEM DUPLICAÇÃO
  */
 exports.logout = (req, res) => {
     try {
-        res.cookie('token', 'loggedout', {
+        console.log('🔍 Logout acionado - Método:', req.method);
+        
+        // Limpar cookie de token
+        const cookieOptions = {
             expires: new Date(Date.now() + 5 * 1000),
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
-        
-        // Responder tanto para API quanto para redirecionamento
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            sameSite: 'lax'
+        };
+
+        res.cookie('token', 'loggedout', cookieOptions);
+        res.cookie('session', 'loggedout', cookieOptions);
+
+        // Determinar tipo de requisição
+        const isApiRequest = req.xhr || 
+                           req.headers.accept?.includes('application/json') ||
+                           req.path?.includes('/api/');
+
+        console.log('🔍 Tipo de requisição:', isApiRequest ? 'API' : 'Browser');
+
+        if (isApiRequest) {
+            // Resposta JSON para APIs
             return res.status(200).json({
                 success: true,
-                message: 'Logout realizado com sucesso.'
+                message: 'Logout realizado com sucesso.',
+                redirect: '/login'
             });
         } else {
-            return res.redirect('/login?sucesso=Você foi desconectado com sucesso!');
+            // Redirecionamento para navegadores
+            return res.redirect('/login?sucesso=Logout realizado com sucesso!');
         }
+
     } catch (error) {
-        console.error("❌ Erro no logout:", error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erro durante o logout.' 
+        console.error('❌ Erro crítico no logout:', error);
+        
+        // Fallback absoluto
+        res.cookie('token', 'invalid', {
+            expires: new Date(Date.now() - 1000),
+            httpOnly: true
         });
+
+        // Tentar redirecionar de qualquer maneira
+        if (res.headersSent) return;
+        
+        try {
+            return res.redirect('/login?erro=Erro durante o logout');
+        } catch (redirectError) {
+            // Último recurso - enviar resposta simples
+            return res.status(200).send(`
+                <script>
+                    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = "/login?sucesso=Logout realizado";
+                </script>
+            `);
+        }
     }
 };
 
@@ -582,7 +638,7 @@ exports.sendPhoneOtp = async (req, res) => {
         }
 
         // Se o Firebase não estiver inicializado, simula envio (modo DEV)
-        if (typeof firebaseInitialized === 'undefined' || !firebaseInitialized) {
+        if (!firebaseInitialized) {
             console.log(`📱 Simulando envio de OTP para: ${formattedNumber}`);
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -754,4 +810,17 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-module.exports = exports;
+/**
+ * Logout alternativo (para fallback)
+ */
+exports.logoutAlternativo = (req, res) => {
+    res.cookie('token', 'loggedout', {
+        expires: new Date(Date.now() + 5 * 1000),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+    });
+    res.redirect('/login?sucesso=Sessão encerrada com sucesso!');
+};
+
+// ✅ NÃO ADICIONAR module.exports = exports AQUI - JÁ ESTÁ EXPORTADO CORRETAMENTE

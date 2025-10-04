@@ -1,4 +1,3 @@
-// config/database.js
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
@@ -10,7 +9,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres', // ✅ Mudar para PostgreSQL
+    dialect: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
@@ -27,7 +26,7 @@ const sequelize = new Sequelize(
   }
 );
 
-// Testa a conexão
+// Testa apenas a CONEXÃO, não a estrutura
 const testDbConnection = async () => {
   try {
     await sequelize.authenticate();
