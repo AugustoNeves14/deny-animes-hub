@@ -1,4 +1,3 @@
-// server.js (Versão Final Completa)
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -268,7 +267,7 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
 });
 
 // ====================================================================================
-// ROTAS DE AUTENTICAÇÃO (Implementação das novas rotas)
+// ROTAS DE AUTENTICAÇÃO
 // ====================================================================================
 
 // Rotas de Autenticação (Backend API)
@@ -289,11 +288,6 @@ app.post('/auth/verify-phone-otp', authController.verifyPhoneOtp);
 app.get('/auth/login-page', (req, res) => {
     if (res.locals.userIsLoggedIn) return res.redirect('/');
     res.render('login', { titulo: 'Login/Registro' });
-});
-
-// Rota inicial
-app.get('/', (req, res) => {
-    res.send('Bem-vindo ao DenyAnimeHub! <br><a href="/auth/login-page">Ir para Login/Registro</a>');
 });
 
 // ====================================================================================
@@ -394,15 +388,28 @@ app.use((err, req, res, next) => {
     res.status(500).render('500', { layout: false, titulo: 'Erro no Servidor', error: 'Ocorreu um problema inesperado.' });
 });
 
-// Inicialização do Servidor
-db.sequelize.sync({ alter: true })
-    .then(() => {
-        console.log('✅ Banco de dados sincronizado e pronto.');
-        app.listen(PORT, () => {
-            console.log(`🚀 Servidor Akatsuki no ar em: http://localhost:${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', err);
-        process.exit(1);
+// ====================================================================================
+// INICIALIZAÇÃO DO SERVIDOR - VERSÃO CORRIGIDA
+// ====================================================================================
+
+const initializeServer = async () => {
+  try {
+    console.log('🔄 Iniciando servidor DenyAnimeHub...');
+    
+    // ⚠️ CRÍTICO: APENAS CONECTAR, NÃO SINCRONIZAR
+    await db.sequelize.authenticate();
+    console.log('✅ Conexão com banco de dados estabelecida com sucesso.');
+    console.log('✅ Usando estrutura existente do banco (sem alterações)');
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor DenyAnimeHub rodando na porta ${PORT}`);
+      console.log(`🌐 Acesse: ${process.env.APP_URL || `http://localhost:${PORT}`}`);
     });
+    
+  } catch (error) {
+    console.error('❌ FALHA CRÍTICA AO INICIAR O SERVIDOR:', error.message);
+    process.exit(1);
+  }
+};
+
+initializeServer();

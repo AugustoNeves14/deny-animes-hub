@@ -14,152 +14,692 @@
 
 <style>
     /* ================================================================================================== */
-    /*      ESTILIZAÇÃO CSS COMPLETA - NÍVEL RESTAURAÇÃO COMPLETA (SEM NENHUMA OMISSÃO)                   */
+    /*      ESTILIZAÇÃO CSS COMPLETA - DESIGN MODERNO E CORREÇÃO DE TEMAS                                 */
     /* ================================================================================================== */
 
     /* -------------------------------------------------------------------------------------------------- */
-    /*           DEFINIÇÃO DAS VARIÁVEIS GLOBAIS DE DESIGN (PALETA DE CORES DEFINITIVA)                     */
+    /*           DEFINIÇÃO DAS VARIÁVEIS GLOBAIS DE DESIGN (PALETA DE CORES CORRIGIDA)                    */
     /* -------------------------------------------------------------------------------------------------- */
     :root {
-        /* TEMA ESCURO (AGORA COM FUNDO BRANCO E TEXTO PRETO) */
-        --theme-bg-primary: #f4f7f9;
-        --theme-bg-primary-rgb: 244, 247, 249;
-        --theme-bg-secondary: #ffffff;
-        --theme-bg-tertiary: #e9eef2;
-        --theme-text-primary: #1c1c1c;
-        --theme-text-primary-rgb: 28, 28, 28;
-        --theme-text-secondary: #555555;
-        --theme-accent-primary: #D32F2F;
-        --theme-accent-primary-rgb: 211, 47, 47;
-        --theme-accent-glow: #E53935;
-        --theme-border-color: #d1d8e0;
-        --theme-success: #2E7D32;
-        --theme-success-border: #4CAF50;
-        --theme-success-glow: rgba(76, 175, 80, 0.4);
-        --theme-error: #C62828;
-        --theme-error-border: #F44336;
-        --theme-error-glow: rgba(244, 67, 54, 0.4);
+        /* TEMA CLARO (FUNDO CLARO, TEXTO ESCURO) - CORRIGIDO */
+        --theme-bg-primary: #1d1c1c;
+        --theme-bg-primary-rgb: 248, 250, 252;
+        --theme-bg-secondary: #b01313;
+        --theme-bg-tertiary: #f1f5f9;
+        --theme-bg-card: #971414;
+        --theme-text-primary: #1e293b;
+        --theme-text-primary-rgb: 30, 41, 59;
+        --theme-text-secondary: #64748b;
+        --theme-text-tertiary: #94a3b8;
+        --theme-accent-primary: #dc2626;
+        --theme-accent-primary-rgb: 220, 38, 38;
+        --theme-accent-secondary: #ef4444;
+        --theme-accent-glow: #f87171;
+        --theme-border-color: #084696;
+        --theme-border-light: #f1f5f9;
+        --theme-success: #16a34a;
+        --theme-success-light: #0ee95b;
+        --theme-success-border: #22c55e;
+        --theme-error: #dc2626;
+        --theme-error-light: #f40b0b;
+        --theme-error-border: #ef4444;
         --shadow-color-rgb: 100, 116, 139;
+        --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --shadow-glow: 0 0 20px rgba(220, 38, 38, 0.3);
 
         /* Variáveis de Configuração de Layout */
         --font-primary: 'Poppins', sans-serif;
         --container-width: 1200px;
         --transition-speed: 0.3s;
-        --border-radius: 10px;
-        --border-radius-lg: 16px;
+        --transition-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        --border-radius: 12px;
+        --border-radius-lg: 20px;
+        --border-radius-xl: 28px;
     }
 
-    /* TEMA CLARO (AGORA COM FUNDO PRETO E TEXTO BRANCO) */
-    body.light-theme {
-        --theme-bg-primary: #0A0A0A;
-        --theme-bg-primary-rgb: 10, 10, 10;
-        --theme-bg-secondary: #151515;
-        --theme-bg-tertiary: #242424;
-        --theme-text-primary: #f9f9f9;
-        --theme-text-primary-rgb: 249, 249, 249;
-        --theme-text-secondary: #c5c5c5;
-        --theme-accent-primary: #E50914;
-        --theme-accent-primary-rgb: 229, 9, 20;
-        --theme-accent-glow: #ff2c36;
-        --theme-border-color: #3a3a3a;
+    /* TEMA ESCURO (FUNDO ESCURO, TEXTO CLARO) - CORRIGIDO */
+    body.dark-theme {
+        --theme-bg-primary: #0f172a;
+        --theme-bg-primary-rgb: 15, 23, 42;
+        --theme-bg-secondary: #1e293b;
+        --theme-bg-tertiary: #334155;
+        --theme-bg-card: #1e293b;
+        --theme-text-primary: #f1f5f9;
+        --theme-text-primary-rgb: 241, 245, 249;
+        --theme-text-secondary: #cbd5e1;
+        --theme-text-tertiary: #94a3b8;
+        --theme-accent-primary: #ef4444;
+        --theme-accent-primary-rgb: 239, 68, 68;
+        --theme-accent-secondary: #f87171;
+        --theme-accent-glow: #fca5a5;
+        --theme-border-color: #374151;
+        --theme-border-light: #334155;
+        --theme-success: #22c55e;
+        --theme-success-light: #166534;
+        --theme-success-border: #16a34a;
+        --theme-error: #ef4444;
+        --theme-error-light: #7f1d1d;
+        --theme-error-border: #dc2626;
         --shadow-color-rgb: 0, 0, 0;
+        --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.4);
     }
     
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                                     ESTILOS GLOBAIS E DE RESET                                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
 
     body {
         font-family: var(--font-primary);
         background-color: var(--theme-bg-primary);
         color: var(--theme-text-primary);
-        /* Removido background-image para um visual mais limpo, se desejar, descomente a linha abaixo */
-        /* background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדה/wAARCAAgACADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AL/AFQAAA//Z'); */
+        line-height: 1.6;
         padding: 2rem 1rem;
         transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        min-height: 100vh;
     }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTRUTURA PRINCIPAL DO PAINEL DE EDIÇÃO                                    */
+    /* -------------------------------------------------------------------------------------------------- */
 
     .edit-profile-panel {
         max-width: var(--container-width);
         margin: 2rem auto;
-        background-color: var(--theme-bg-secondary);
-        border-radius: var(--border-radius-lg);
+        background-color: var(--theme-bg-card);
+        border-radius: var(--border-radius-xl);
         border: 1px solid var(--theme-border-color);
-        box-shadow: 0 10px 50px rgba(var(--shadow-color-rgb), 0.2);
+        box-shadow: var(--shadow-large);
         overflow: hidden;
-        transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+        transition: all var(--transition-speed) ease;
     }
 
-    .panel-grid { display: grid; grid-template-columns: 1fr; }
-    @media (min-width: 992px) { .panel-grid { grid-template-columns: 400px 1fr; } }
-    
-    .profile-header { position: relative; background-color: var(--theme-bg-tertiary); }
-    .cover-image-wrapper { width: 100%; height: 200px; position: relative; }
-    .cover-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-wrapper {
-        width: 150px; height: 150px; border-radius: 50%;
-        border: 5px solid var(--theme-bg-secondary); /* Usa variável */
-        position: absolute; bottom: -75px; left: 50%;
-        transform: translateX(-50%); overflow: hidden;
-        box-shadow: 0 5px 20px rgba(var(--shadow-color-rgb), 0.3);
+    .panel-grid { 
+        display: grid; 
+        grid-template-columns: 1fr; 
+        min-height: 600px;
     }
-    .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .upload-buttons { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.75rem; z-index: 5; }
+    
+    @media (min-width: 992px) { 
+        .panel-grid { 
+            grid-template-columns: 400px 1fr; 
+        } 
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         CABEÇALHO DO PERFIL COM FOTO E CAPA                                        */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .profile-header { 
+        position: relative; 
+        background: linear-gradient(135deg, var(--theme-bg-tertiary) 0%, var(--theme-bg-secondary) 100%);
+        overflow: hidden;
+    }
+    
+    .cover-image-wrapper { 
+        width: 100%; 
+        height: 200px; 
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cover-image-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(var(--theme-bg-primary-rgb), 0.7) 100%);
+        z-index: 1;
+    }
+    
+    .cover-image-wrapper img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .cover-image-wrapper:hover img {
+        transform: scale(1.05);
+    }
+    
+    .avatar-section {
+        position: relative;
+        padding: 0 2rem 2rem;
+        text-align: center;
+    }
+    
+    .avatar-wrapper {
+        width: 150px; 
+        height: 150px; 
+        border-radius: 50%;
+        border: 5px solid var(--theme-bg-card);
+        position: relative;
+        margin: -75px auto 1.5rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-medium);
+        background: var(--theme-bg-card);
+        z-index: 2;
+    }
+    
+    .avatar-wrapper img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover;
+        transition: transform var(--transition-speed) ease;
+    }
+    
+    .avatar-wrapper:hover img {
+        transform: scale(1.1);
+    }
+    
+    .upload-buttons { 
+        position: absolute; 
+        top: 1rem; 
+        right: 1rem; 
+        display: flex; 
+        gap: 0.75rem; 
+        z-index: 5; 
+    }
 
     .btn-upload {
-        background-color: rgba(var(--theme-bg-primary-rgb), 0.6);
+        background-color: rgba(var(--theme-bg-primary-rgb), 0.8);
         color: var(--theme-text-primary);
-        border: 1px solid rgba(var(--theme-text-primary-rgb), 0.3);
-        border-radius: 50%; width: 40px; height: 40px;
-        display: inline-flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: all var(--transition-speed) ease;
-        backdrop-filter: blur(5px);
+        border: 1px solid rgba(var(--theme-text-primary-rgb), 0.2);
+        border-radius: 50%; 
+        width: 44px; 
+        height: 44px;
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center;
+        cursor: pointer; 
+        transition: all var(--transition-speed) var(--transition-bounce);
+        backdrop-filter: blur(10px);
+        font-size: 1.1rem;
     }
-    .btn-upload:hover { background-color: var(--theme-accent-primary); color: #fff; transform: scale(1.1); border-color: transparent; }
-    .btn-upload .loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+    
+    .btn-upload:hover { 
+        background-color: var(--theme-accent-primary); 
+        color: #fff; 
+        transform: scale(1.1) rotate(5deg); 
+        border-color: transparent; 
+        box-shadow: var(--shadow-glow);
+    }
+    
+    .btn-upload .loading-spinner { 
+        display: none; 
+        width: 20px; 
+        height: 20px; 
+        border: 2px solid rgba(255,255,255,0.3); 
+        border-top-color: #fff; 
+        border-radius: 50%; 
+        animation: spin 1s linear infinite; 
+    }
+    
     .btn-upload.is-loading .btn-text { display: none; }
     .btn-upload.is-loading .loading-spinner { display: block; }
     
-    .form-content { padding: 1rem; }
-    .profile-info { padding-top: 100px; text-align: center; }
-    .profile-info h1 { font-size: 1.8rem; font-weight: 700; color: var(--theme-text-primary); }
-    .profile-info p { font-size: 1rem; color: var(--theme-text-secondary); margin-bottom: 2.5rem; }
-    @media (min-width: 992px) { .form-content { padding: 2.5rem; } .profile-info { padding-top: 0; text-align: left; } }
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         CONTEÚDO DO FORMULÁRIO                                                     */
+    /* -------------------------------------------------------------------------------------------------- */
     
-    .form-group { margin-bottom: 2rem; position: relative; }
-    .form-label { display: block; margin-bottom: 0.75rem; font-weight: 600; color: var(--theme-text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-    .form-control { width: 100%; padding: 1rem; background-color: var(--theme-bg-tertiary); border: 2px solid var(--theme-border-color); border-radius: var(--border-radius); color: var(--theme-text-primary); font-size: 1rem; font-family: var(--font-primary); transition: all var(--transition-speed) ease; }
-    .form-control:focus { outline: none; border-color: var(--theme-accent-primary); box-shadow: 0 0 0 4px rgba(var(--theme-accent-primary-rgb), 0.3); }
-    .form-control::placeholder { color: var(--theme-text-secondary); opacity: 0.6; }
-    .form-control:disabled { background-color: var(--theme-bg-tertiary); opacity: 0.6; color: var(--theme-text-secondary); cursor: not-allowed; }
-    textarea.form-control { resize: vertical; min-height: 140px; }
-
-    .actions-cell { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; border-top: 1px solid var(--theme-border-color); padding-top: 2rem; }
-    
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.8rem 1.8rem; border-radius: 50px; text-decoration: none; cursor: pointer; font-weight: 700; transition: all var(--transition-speed) ease; border: 2px solid transparent; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
-    .btn--primary { background: var(--theme-accent-primary); color: #fff; box-shadow: 0 4px 15px rgba(var(--theme-accent-primary-rgb), 0.4); }
-    .btn--primary:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(var(--theme-accent-primary-rgb), 0.6); }
-    .btn--secondary { background-color: transparent; color: var(--theme-text-secondary); border-color: var(--theme-border-color); }
-    .btn--secondary:hover { color: var(--theme-text-primary); border-color: var(--theme-accent-primary); }
-    .btn.is-loading { cursor: not-allowed; position: relative; }
-    .btn.is-loading > * { opacity: 0; }
-    .btn.is-loading .loading-spinner { display: inline-block; opacity: 1; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-
-    #notification-bar {
-        position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%);
-        padding: 1rem 2rem; border-radius: var(--border-radius); color: #fff; /* Texto sempre branco para contraste */
-        font-weight: 600; z-index: 10000; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        box-shadow: 0 5px 20px rgba(var(--shadow-color-rgb), 0.4); border-left: 5px solid;
+    .form-content { 
+        padding: 2rem 1.5rem; 
+        display: flex;
+        flex-direction: column;
     }
-    #notification-bar.show { bottom: 3rem; }
-    #notification-bar.success { background-color: var(--theme-success); border-color: var(--theme-success-border); }
-    #notification-bar.error { background-color: var(--theme-error); border-color: var(--theme-error-border); }
+    
+    @media (min-width: 992px) { 
+        .form-content { 
+            padding: 3rem; 
+        } 
+    }
+    
+    .profile-info { 
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+    
+    @media (min-width: 992px) { 
+        .profile-info { 
+            text-align: left;
+        } 
+    }
+    
+    .profile-info h1 { 
+        font-size: 1.8rem; 
+        font-weight: 700; 
+        color: var(--theme-text-primary);
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--theme-text-primary) 0%, var(--theme-accent-primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .profile-info p { 
+        font-size: 1rem; 
+        color: var(--theme-text-secondary); 
+        margin-bottom: 0;
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         FORMULÁRIOS E CONTROLES                                                    */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .form-group { 
+        margin-bottom: 2rem; 
+        position: relative; 
+    }
+    
+    .form-label { 
+        display: block; 
+        margin-bottom: 0.75rem; 
+        font-weight: 600; 
+        color: var(--theme-text-primary); 
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-control { 
+        width: 100%; 
+        padding: 1rem 1.25rem; 
+        background-color: var(--theme-bg-primary); 
+        border: 2px solid var(--theme-border-color); 
+        border-radius: var(--border-radius); 
+        color: var(--theme-text-primary); 
+        font-size: 1rem; 
+        font-family: var(--font-primary); 
+        transition: all var(--transition-speed) ease;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .form-control:focus { 
+        outline: none; 
+        border-color: var(--theme-accent-primary); 
+        box-shadow: 0 0 0 4px rgba(var(--theme-accent-primary-rgb), 0.15);
+        background-color: var(--theme-bg-secondary);
+    }
+    
+    .form-control::placeholder { 
+        color: var(--theme-text-tertiary); 
+    }
+    
+    .form-control:disabled { 
+        background-color: var(--theme-bg-tertiary); 
+        opacity: 0.6; 
+        color: var(--theme-text-secondary); 
+        cursor: not-allowed; 
+    }
+    
+    textarea.form-control { 
+        resize: vertical; 
+        min-height: 140px; 
+        line-height: 1.6;
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         CHECKBOX PERSONALIZADO                                                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1.25rem;
+        background-color: var(--theme-bg-tertiary);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--theme-border-light);
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .checkbox-group:hover {
+        border-color: var(--theme-border-color);
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .checkbox-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+    
+    .checkbox-custom {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--theme-border-color);
+        border-radius: 6px;
+        background-color: var(--theme-bg-primary);
+        position: relative;
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .checkbox-custom::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 12px;
+        height: 12px;
+        background-color: var(--theme-accent-primary);
+        border-radius: 3px;
+        transition: transform var(--transition-speed) var(--transition-bounce);
+    }
+    
+    #receberNotificacoes:checked + .checkbox-custom {
+        border-color: var(--theme-accent-primary);
+        background-color: rgba(var(--theme-accent-primary-rgb), 0.1);
+    }
+    
+    #receberNotificacoes:checked + .checkbox-custom::after {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    #receberNotificacoes {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .checkbox-label {
+        flex: 1;
+        color: var(--theme-text-primary);
+        font-weight: 500;
+        line-height: 1.5;
+        cursor: pointer;
+    }
+    
+    .checkbox-description {
+        display: block;
+        color: var(--theme-text-secondary);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         BOTÕES DE AÇÃO                                                             */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .actions-cell { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        gap: 1rem; 
+        flex-wrap: wrap; 
+        margin-top: auto;
+        padding-top: 2.5rem; 
+        border-top: 1px solid var(--theme-border-color);
+    }
+    
+    .btn { 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 0.75rem; 
+        padding: 0.875rem 2rem; 
+        border-radius: var(--border-radius); 
+        text-decoration: none; 
+        cursor: pointer; 
+        font-weight: 600; 
+        transition: all var(--transition-speed) var(--transition-bounce); 
+        border: 2px solid transparent; 
+        font-size: 0.95rem; 
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .btn:hover::before {
+        left: 100%;
+    }
+    
+    .btn--primary { 
+        background: linear-gradient(135deg, var(--theme-accent-primary) 0%, var(--theme-accent-secondary) 100%); 
+        color: #fff; 
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .btn--primary:hover { 
+        transform: translateY(-3px); 
+        box-shadow: var(--shadow-glow); 
+    }
+    
+    .btn--secondary { 
+        background-color: transparent; 
+        color: var(--theme-text-secondary); 
+        border-color: var(--theme-border-color);
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .btn--secondary:hover { 
+        color: var(--theme-text-primary); 
+        border-color: var(--theme-accent-primary);
+        transform: translateY(-2px);
+    }
+    
+    .btn.is-loading { 
+        cursor: not-allowed; 
+        position: relative; 
+    }
+    
+    .btn.is-loading > * { 
+        opacity: 0; 
+    }
+    
+    .btn.is-loading .loading-spinner { 
+        display: inline-block; 
+        opacity: 1; 
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        width: 20px; 
+        height: 20px; 
+        border: 2px solid rgba(255,255,255,0.3); 
+        border-top-color: #fff; 
+        border-radius: 50%; 
+        animation: spin 1s linear infinite; 
+    }
+    
+    @keyframes spin { 
+        0% { 
+            transform: translate(-50%, -50%) rotate(0deg); 
+        } 
+        100% { 
+            transform: translate(-50%, -50%) rotate(360deg); 
+        } 
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         BARRA DE NOTIFICAÇÃO                                                       */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    #notification-bar {
+        position: fixed; 
+        bottom: -100px; 
+        left: 50%; 
+        transform: translateX(-50%);
+        padding: 1rem 1.5rem; 
+        border-radius: var(--border-radius); 
+        color: #fff;
+        font-weight: 600; 
+        z-index: 10000; 
+        transition: all 0.5s var(--transition-bounce);
+        box-shadow: var(--shadow-large); 
+        border-left: 4px solid;
+        min-width: 300px;
+        max-width: 90%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    #notification-bar.show { 
+        bottom: 2rem; 
+    }
+    
+    #notification-bar.success { 
+        background-color: var(--theme-success); 
+        border-color: var(--theme-success-border); 
+    }
+    
+    #notification-bar.error { 
+        background-color: var(--theme-error); 
+        border-color: var(--theme-error-border); 
+    }
+    
+    #notification-bar i {
+        font-size: 1.2rem;
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         BOTÃO DE ALTERNÂNCIA DE TEMA                                               */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .theme-toggle-container {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+    }
+    
+    .theme-toggle-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--theme-bg-card);
+        border: 2px solid var(--theme-border-color);
+        color: var(--theme-text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--transition-speed) var(--transition-bounce);
+        box-shadow: var(--shadow-medium);
+        font-size: 1.2rem;
+    }
+    
+    .theme-toggle-btn:hover {
+        transform: scale(1.1) rotate(15deg);
+        border-color: var(--theme-accent-primary);
+        color: var(--theme-accent-primary);
+        box-shadow: var(--shadow-glow);
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         RESPONSIVIDADE                                                             */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem 0.5rem;
+        }
+        
+        .edit-profile-panel {
+            margin: 1rem auto;
+            border-radius: var(--border-radius-lg);
+        }
+        
+        .form-content {
+            padding: 1.5rem 1rem;
+        }
+        
+        .avatar-wrapper {
+            width: 120px;
+            height: 120px;
+            margin-top: -60px;
+        }
+        
+        .cover-image-wrapper {
+            height: 160px;
+        }
+        
+        .actions-cell {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .theme-toggle-container {
+            top: 1rem;
+            right: 1rem;
+        }
+        
+        .theme-toggle-btn {
+            width: 44px;
+            height: 44px;
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ANIMAÇÕES ADICIONAIS                                                       */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .edit-profile-panel {
+        animation: fadeInUp 0.6s var(--transition-bounce);
+    }
+    
+    .form-group {
+        animation: fadeInUp 0.6s var(--transition-bounce) both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .checkbox-group { animation-delay: 0.3s; }
+    .actions-cell { animation-delay: 0.4s; }
 </style>
 </head>
-<body class="dark-theme"> <!-- Inicia no modo com fundo branco por padrão -->
+<body class="light-theme"> <!-- Inicia no tema claro por padrão -->
 
 <!-- ====================================================================================== -->
 <!--                  ESTRUTURA HTML COMPLETA E FINAL DA PÁGINA (SEM OMISSÕES)              -->
 <!-- ====================================================================================== -->
+
+<!-- Botão de alternância de tema -->
 
 <div class="edit-profile-panel">
     <div class="panel-grid">
@@ -168,20 +708,25 @@
             <div class="cover-image-wrapper">
                 <img src="<%= user.capaPerfil || '/images/default-cover.png' %>" id="capa-preview" alt="Capa do perfil de <%= user.nome %>">
             </div>
-            <div class="avatar-wrapper">
-                <img src="<%= user.avatar || '/images/default-avatar.png' %>" id="avatar-preview" alt="Avatar de <%= user.nome %>">
-            </div>
-            <div class="upload-buttons">
-                <button type="button" id="capa-btn" class="btn-upload" title="Alterar Capa" onclick="document.getElementById('capa-input').click();">
-                    <span class="btn-text"><i class="fas fa-image"></i></span>
-                    <div class="loading-spinner"></div>
-                </button>
-                <input type="file" id="capa-input" name="capa" accept="image/png, image/jpeg, image/gif" style="display: none;">
-                <button type="button" id="avatar-btn" class="btn-upload" title="Alterar Avatar" onclick="document.getElementById('avatar-input').click();">
-                    <span class="btn-text"><i class="fas fa-camera"></i></span>
-                    <div class="loading-spinner"></div>
-                </button>
-                <input type="file" id="avatar-input" name="avatar" accept="image/png, image/jpeg, image/gif" style="display: none;">
+            
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <img src="<%= user.avatar || '/images/default-avatar.png' %>" id="avatar-preview" alt="Avatar de <%= user.nome %>">
+                </div>
+                
+                <div class="upload-buttons">
+                    <button type="button" id="capa-btn" class="btn-upload" title="Alterar Capa" onclick="document.getElementById('capa-input').click();">
+                        <span class="btn-text"><i class="fas fa-image"></i></span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <input type="file" id="capa-input" name="capa" accept="image/png, image/jpeg, image/gif, image/webp" style="display: none;">
+                    
+                    <button type="button" id="avatar-btn" class="btn-upload" title="Alterar Avatar" onclick="document.getElementById('avatar-input').click();">
+                        <span class="btn-text"><i class="fas fa-camera"></i></span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <input type="file" id="avatar-input" name="avatar" accept="image/png, image/jpeg, image/gif, image/webp" style="display: none;">
+                </div>
             </div>
         </header>
 
@@ -194,27 +739,43 @@
             <form id="profile-info-form" novalidate>
                 <div class="form-group">
                     <label for="nome" class="form-label">Nome de Usuário</label>
-                    <input type="text" id="nome" name="nome" class="form-control" value="<%= user.nome %>" required minlength="3">
+                    <input type="text" id="nome" name="nome" class="form-control" value="<%= user.nome %>" required minlength="3" maxlength="50" placeholder="Seu nome de usuário">
                 </div>
+                
                 <div class="form-group">
-                    <label for="bio" class="form-label">Bio</label>
-                    <textarea id="bio" name="bio" class="form-control" rows="5" placeholder="Fale um pouco sobre você..."><%= user.bio || '' %></textarea>
+                    <label for="bio" class="form-label">Biografia</label>
+                    <textarea id="bio" name="bio" class="form-control" rows="5" placeholder="Conte um pouco sobre você, seus animes favoritos, ou o que quiser compartilhar..." maxlength="500"><%= user.bio || '' %></textarea>
+                    <div class="char-counter" style="text-align: right; margin-top: 0.5rem; font-size: 0.875rem; color: var(--theme-text-tertiary);">
+                        <span id="bio-char-count">0</span>/500 caracteres
+                    </div>
+                </div>
+                
+                <!-- Checkbox de notificações com design moderno -->
+                <div class="checkbox-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="receberNotificacoes" name="receberNotificacoes" <%= user.receberNotificacoes ? 'checked' : '' %>>
+                        <div class="checkbox-custom"></div>
+                    </div>
+                    <label for="receberNotificacoes" class="checkbox-label">
+                        Receber notificações por e-mail
+                        <span class="checkbox-description">Seja notificado sobre novos episódios, animes e atualizações importantes</span>
+                    </label>
                 </div>
                 
                 <div class="actions-cell">
-                    <a href="/perfil" class="btn btn--secondary">Voltar ao Perfil</a>
+                    <a href="/perfil" class="btn btn--secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar ao Perfil
+                    </a>
                     <button type="submit" class="btn btn--primary" id="save-button">
-                        <span class="btn-text"><i class="fas fa-save"></i> Salvar Alterações</span>
+                        <span class="btn-text">
+                            <i class="fas fa-save"></i> 
+                            Salvar Alterações
+                        </span>
                         <div class="loading-spinner"></div>
                     </button>
                 </div>
             </form>
-
-            <!-- Em views/editar-perfil.ejs -->
-            <div class="form-group">
-                <input type="checkbox" id="receberNotificacoes" name="receberNotificacoes" <%= user.receberNotificacoes ? 'checked' : '' %>>
-                <label for="receberNotificacoes">Desejo receber notificações de novos animes e episódios por e-mail.</label>
-            </div>
         </main>
         
     </div>
@@ -223,137 +784,289 @@
 <div id="notification-bar"></div>
 
 <!-- ====================================================================================== -->
-<!--                  SCRIPT JAVASCRIPT COMPLETO E ORIGINAL - RESTAURADO 100%               -->
+<!--                  SCRIPT JAVASCRIPT COMPLETO E FUNCIONAL                                -->
 <!-- ====================================================================================== -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    // LÓGICA ORIGINAL RESTAURADA E INTEGRADA COM O NOVO MÓDULO DE TEMA
-
+    // --------------------------------------------------------------------------
+    // MÓDULO 1: GERENCIAMENTO DE INTERFACE DO USUÁRIO
+    // --------------------------------------------------------------------------
     const ui = {
-        capa: { input: document.getElementById('capa-input'), preview: document.getElementById('capa-preview'), button: document.getElementById('capa-btn') },
-        avatar: { input: document.getElementById('avatar-input'), preview: document.getElementById('avatar-preview'), button: document.getElementById('avatar-btn') },
-        form: { element: document.getElementById('profile-info-form'), nomeInput: document.getElementById('nome'), bioInput: document.getElementById('bio'), saveButton: document.getElementById('save-button') },
+        capa: { 
+            input: document.getElementById('capa-input'), 
+            preview: document.getElementById('capa-preview'), 
+            button: document.getElementById('capa-btn') 
+        },
+        avatar: { 
+            input: document.getElementById('avatar-input'), 
+            preview: document.getElementById('avatar-preview'), 
+            button: document.getElementById('avatar-btn') 
+        },
+        form: { 
+            element: document.getElementById('profile-info-form'), 
+            nomeInput: document.getElementById('nome'), 
+            bioInput: document.getElementById('bio'),
+            bioCharCount: document.getElementById('bio-char-count'),
+            saveButton: document.getElementById('save-button'),
+            notificacoesCheckbox: document.getElementById('receberNotificacoes')
+        },
         notificationBar: document.getElementById('notification-bar'),
-        themeToggleButton: document.getElementById('theme-toggle'), // Assumindo que você tenha um botão com id="theme-toggle" em algum lugar
+        themeToggleButton: document.getElementById('theme-toggle')
     };
 
-    const showNotification = (message, type = 'success') => {
-        ui.notificationBar.textContent = message;
-        ui.notificationBar.className = `show ${type}`;
-        setTimeout(() => {
-            ui.notificationBar.className = ui.notificationBar.className.replace('show', '');
-        }, 5000);
-    };
-    
-    const setButtonLoading = (button, isLoading) => {
-        if(button) {
-            button.disabled = isLoading;
-            button.classList.toggle('is-loading', isLoading);
+    // --------------------------------------------------------------------------
+    // MÓDULO 2: SISTEMA DE NOTIFICAÇÕES
+    // --------------------------------------------------------------------------
+    const notificationModule = {
+        show(message, type = 'success') {
+            ui.notificationBar.textContent = message;
+            ui.notificationBar.className = `${type} show`;
+            ui.notificationBar.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            setTimeout(() => {
+                ui.notificationBar.className = ui.notificationBar.className.replace('show', '');
+            }, 5000);
         }
     };
 
-    const handleImageUpload = async (file, endpoint, previewElement, button) => {
-        if (!file) return;
-        setButtonLoading(button, true);
-        const originalSrc = previewElement.src;
-        previewElement.src = URL.createObjectURL(file);
-        const formData = new FormData();
-        formData.append(endpoint, file);
-        try {
-            const response = await fetch(`/api/user/profile/${endpoint}`, { method: 'POST', body: formData });
-            const result = await response.json();
-            if (!response.ok) { throw new Error(result.message || `Falha no upload.`); }
-            previewElement.src = result.filePath;
-            showNotification(result.message, 'success');
-        } catch (error) {
-            console.error(`Erro no upload da ${endpoint}:`, error);
-            showNotification(error.message, 'error');
-            previewElement.src = originalSrc;
-        } finally {
-            setButtonLoading(button, false);
-        }
-    };
-
-    const handleProfileInfoSubmit = async (event) => {
-        event.preventDefault();
-        setButtonLoading(ui.form.saveButton, true);
-        const body = {
-            nome: ui.form.nomeInput.value,
-            bio: ui.form.bioInput.value,
-        };
-        try {
-            const response = await fetch('/api/user/profile', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            const result = await response.json();
-            if (!response.ok) { throw new Error(result.message || 'Erro ao salvar as informações.'); }
-            showNotification(result.message, 'success');
-            if (result.user) {
-                document.querySelector('.profile-info h1').textContent = result.user.nome;
-                ui.form.nomeInput.value = result.user.nome;
-                ui.form.bioInput.value = result.user.bio;
+    // --------------------------------------------------------------------------
+    // MÓDULO 3: CONTROLE DE ESTADO DOS BOTÕES
+    // --------------------------------------------------------------------------
+    const buttonModule = {
+        setLoading(button, isLoading) {
+            if(button) {
+                button.disabled = isLoading;
+                button.classList.toggle('is-loading', isLoading);
             }
-        } catch (error) {
-            console.error('Erro ao atualizar perfil:', error);
-            showNotification(error.message, 'error');
-        } finally {
-            setButtonLoading(ui.form.saveButton, false);
+        },
+        
+        setUploadLoading(button, isLoading) {
+            if(button) {
+                button.disabled = isLoading;
+                button.classList.toggle('is-loading', isLoading);
+            }
         }
     };
 
-    // MÓDULO DE ALTERNÂNCIA DE TEMA
+    // --------------------------------------------------------------------------
+    // MÓDULO 4: UPLOAD DE IMAGENS
+    // --------------------------------------------------------------------------
+    const imageUploadModule = {
+        async upload(file, endpoint, previewElement, button) {
+            if (!file) return;
+            
+            // Validação do arquivo
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (!validTypes.includes(file.type)) {
+                notificationModule.show('Por favor, selecione uma imagem JPEG, PNG, GIF ou WebP.', 'error');
+                return;
+            }
+            
+            if (file.size > maxSize) {
+                notificationModule.show('A imagem deve ter no máximo 5MB.', 'error');
+                return;
+            }
+            
+            buttonModule.setUploadLoading(button, true);
+            const originalSrc = previewElement.src;
+            previewElement.src = URL.createObjectURL(file);
+            
+            const formData = new FormData();
+            formData.append(endpoint, file);
+            
+            try {
+                const response = await fetch(`/api/user/profile/${endpoint}`, { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) { 
+                    throw new Error(result.message || `Falha no upload da ${endpoint}.`); 
+                }
+                
+                previewElement.src = result.filePath;
+                notificationModule.show(result.message, 'success');
+                
+            } catch (error) {
+                console.error(`Erro no upload da ${endpoint}:`, error);
+                notificationModule.show(error.message, 'error');
+                previewElement.src = originalSrc;
+            } finally {
+                buttonModule.setUploadLoading(button, false);
+            }
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // MÓDULO 5: ATUALIZAÇÃO DO PERFIL
+    // --------------------------------------------------------------------------
+    const profileUpdateModule = {
+        async updateProfile(event) {
+            event.preventDefault();
+            buttonModule.setLoading(ui.form.saveButton, true);
+            
+            const body = {
+                nome: ui.form.nomeInput.value,
+                bio: ui.form.bioInput.value,
+                receberNotificacoes: ui.form.notificacoesCheckbox.checked
+            };
+            
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) { 
+                    throw new Error(result.message || 'Erro ao salvar as informações.'); 
+                }
+                
+                notificationModule.show(result.message, 'success');
+                
+                if (result.user) {
+                    document.querySelector('.profile-info h1').textContent = result.user.nome;
+                    ui.form.nomeInput.value = result.user.nome;
+                    ui.form.bioInput.value = result.user.bio;
+                    ui.form.notificacoesCheckbox.checked = result.user.receberNotificacoes;
+                }
+                
+            } catch (error) {
+                console.error('Erro ao atualizar perfil:', error);
+                notificationModule.show(error.message, 'error');
+            } finally {
+                buttonModule.setLoading(ui.form.saveButton, false);
+            }
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // MÓDULO 6: SISTEMA DE TEMAS (CORRIGIDO)
+    // --------------------------------------------------------------------------
     const themeModule = {
-        // Se você não tiver um botão de toggle, este módulo não fará nada, mas não causará erros.
-        // Se você ADICIONAR um botão com id="theme-toggle", ele funcionará automaticamente.
-        button: ui.themeToggleButton, 
+        button: ui.themeToggleButton,
+        icon: ui.themeToggleButton ? ui.themeToggleButton.querySelector('i') : null,
         
         applyInitialTheme() {
-            // Define o tema inicial baseado no localStorage ou no padrão 'dark' (fundo branco)
-            const savedTheme = localStorage.getItem('profileEditTheme') || 'dark';
-            if (savedTheme === 'light') { // light = fundo preto
+            // Tema padrão é 'light' (fundo claro)
+            const savedTheme = localStorage.getItem('profileEditTheme') || 'light';
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.body.classList.remove('light-theme');
+                this.updateIcon('dark');
+            } else {
                 document.body.classList.add('light-theme');
                 document.body.classList.remove('dark-theme');
-            } else { // dark = fundo branco
+                this.updateIcon('light');
+            }
+        },
+        
+        toggleTheme() {
+            const isDarkTheme = document.body.classList.contains('dark-theme');
+            
+            if (isDarkTheme) {
+                // Muda para tema claro
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+                localStorage.setItem('profileEditTheme', 'light');
+                this.updateIcon('light');
+            } else {
+                // Muda para tema escuro
                 document.body.classList.remove('light-theme');
                 document.body.classList.add('dark-theme');
-            }
-            this.updateIcon();
-        },
-        toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const isLightTheme = document.body.classList.contains('light-theme');
-            document.body.classList.toggle('dark-theme', !isLightTheme);
-            
-            const currentTheme = isLightTheme ? 'light' : 'dark';
-            localStorage.setItem('profileEditTheme', currentTheme);
-            this.updateIcon();
-        },
-        updateIcon() {
-            if (this.button) {
-                const icon = this.button.querySelector('.btn-text i');
-                if (icon) {
-                    const isLightTheme = document.body.classList.contains('light-theme');
-                    icon.className = isLightTheme ? 'fas fa-sun' : 'fas fa-moon';
-                }
+                localStorage.setItem('profileEditTheme', 'dark');
+                this.updateIcon('dark');
             }
         },
+        
+        updateIcon(theme) {
+            if (this.icon) {
+                this.icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        },
+        
         init() {
             if (this.button) {
                 this.button.addEventListener('click', () => this.toggleTheme());
             }
-            // Sempre aplica o tema inicial na carga da página
             this.applyInitialTheme();
         }
     };
 
-    // INICIALIZAÇÃO DE TODOS OS LISTENERS E MÓDULOS
-    ui.capa.input.addEventListener('change', (e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'capa', ui.capa.preview, ui.capa.button));
-    ui.avatar.input.addEventListener('change', (e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'avatar', ui.avatar.preview, ui.avatar.button));
-    ui.form.element.addEventListener('submit', handleProfileInfoSubmit);
+    // --------------------------------------------------------------------------
+    // MÓDULO 7: CONTADOR DE CARACTERES DA BIO
+    // --------------------------------------------------------------------------
+    const bioModule = {
+        updateCharCount() {
+            const count = ui.form.bioInput.value.length;
+            ui.form.bioCharCount.textContent = count;
+            
+            if (count > 450) {
+                ui.form.bioCharCount.style.color = 'var(--theme-error)';
+            } else if (count > 400) {
+                ui.form.bioCharCount.style.color = 'var(--theme-accent-primary)';
+            } else {
+                ui.form.bioCharCount.style.color = 'var(--theme-text-tertiary)';
+            }
+        },
+        
+        init() {
+            this.updateCharCount();
+            ui.form.bioInput.addEventListener('input', () => this.updateCharCount());
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // INICIALIZAÇÃO DE TODOS OS MÓDULOS
+    // --------------------------------------------------------------------------
+    
+    // Event listeners para upload de imagens
+    ui.capa.input.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            imageUploadModule.upload(e.target.files[0], 'capa', ui.capa.preview, ui.capa.button);
+        }
+    });
+    
+    ui.avatar.input.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            imageUploadModule.upload(e.target.files[0], 'avatar', ui.avatar.preview, ui.avatar.button);
+        }
+    });
+    
+    // Event listener para o formulário
+    ui.form.element.addEventListener('submit', profileUpdateModule.updateProfile);
+    
+    // Inicialização dos módulos
     themeModule.init();
+    bioModule.init();
+
+    // Adiciona efeito de digitação no título
+    const profileName = document.querySelector('.profile-info h1');
+    const originalName = profileName.textContent;
+    profileName.textContent = '';
+    
+    let i = 0;
+    const typeWriter = () => {
+        if (i < originalName.length) {
+            profileName.textContent += originalName.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        }
+    };
+    
+    // Inicia a animação de digitação após um breve delay
+    setTimeout(typeWriter, 500);
 
 });
 </script>

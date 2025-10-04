@@ -1,4 +1,3 @@
-// models/index.js
 'use strict';
 
 const fs = require('fs');
@@ -36,5 +35,8 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// ⚠️ REMOVIDO: Qualquer sincronização automática
+// NÃO use db.sequelize.sync() aqui
 
 module.exports = db;
