@@ -1,0 +1,181 @@
+<!-- Script de proteção chamado com 'defer' para não bloquear o carregamento -->
+    <script src="/js/protect.js" defer></script>
+<h1><i class="fas fa-film"></i> Gerenciar Animes</h1>
+<p class="mb-5">Adicione, edite e gerencie os episódios de todos os animes do site.</p>
+
+<div class="mb-5">
+    <button id="show-anime-form-btn" class="btn btn--primary"><i class="fas fa-plus-circle"></i> Adicionar Novo Anime</button>
+</div>
+
+<!-- PAINEL DE FORMULÁRIO DE ANIME -->
+<div id="anime-form-panel" class="admin-form-container" style="display: none;">
+    <h2 id="anime-form-title">Adicionar Novo Anime</h2>
+    <form id="anime-form">
+        <input type="hidden" id="anime-id">
+        <!-- Campos do Anime -->
+        <div class="form-group"><label for="titulo">Título</label><input type="text" id="titulo" class="auth-form input" required></div>
+        <div class="form-group"><label for="sinopse">Sinopse</label><textarea id="sinopse" rows="5" required></textarea></div>
+        <div class="form-group"><label for="anoLancamento">Ano</label><input type="number" id="anoLancamento" class="auth-form input" required></div>
+        <div class="form-group"><label for="generos">Gêneros (separados por vírgula)</label><input type="text" id="generos" class="auth-form input" required></div>
+        <div class="form-group"><label for="imagemCapa">URL da Capa</label><input type="text" id="imagemCapa" class="auth-form input" required></div>
+        <div class="form-group"><label for="trailerUrl">URL do Trailer (Embed)</label><input type="text" id="trailerUrl" class="auth-form input"></div>
+        <div class="form-actions mt-4"><button type="submit" class="btn btn--primary"><i class="fas fa-save"></i> Salvar Anime</button><button type="button" id="cancel-anime-btn" class="btn btn--secondary">Cancelar</button></div>
+    </form>
+</div>
+
+<!-- PAINEL DE GERENCIAMENTO DE EPISÓDIOS -->
+<div id="episode-manager-panel" class="admin-form-container" style="display: none;">
+    <h2 id="episode-manager-title">Gerenciar Episódios</h2>
+    <form id="episode-add-form">
+        <input type="hidden" id="manager-anime-id">
+        <h4>Adicionar Novo Episódio</h4>
+        <div class="form-group"><label for="ep-numero">Número do Episódio</label><input type="number" id="ep-numero" class="auth-form input" required></div>
+        <div class="form-group"><label for="ep-titulo">Título do Episódio</label><input type="text" id="ep-titulo" class="auth-form input" required></div>
+        <div class="form-group"><label for="ep-urlVideo">URL do Vídeo (Link direto ou embed)</label><input type="text" id="ep-urlVideo" class="auth-form input" required></div>
+        <div class="form-group">
+            <label for="ep-tipoVideo">Tipo de Vídeo</label>
+            <select id="ep-tipoVideo" class="auth-form input">
+                <option value="iframe">iFrame/Embed</option>
+                <option value="gdrive">Google Drive</option>
+                <option value="terabox">Terabox</option>
+                <option value="mega">Mega</option>
+                <option value="local">Arquivo Local</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn--primary btn--small">Adicionar Episódio</button>
+    </form>
+    <hr>
+    <h4>Episódios Existentes</h4>
+    <ul id="episode-list" class="episode-manage-list"></ul>
+    <button type="button" id="close-episode-manager-btn" class="btn btn--secondary mt-4">Voltar para a Lista de Animes</button>
+</div>
+
+<!-- TABELA DE ANIMES -->
+<div id="animes-table-panel">
+    <h2>Animes Cadastrados</h2>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr><th>Título</th><th>Ano</th><th>Episódios</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="animes-table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+/* Estilos específicos para esta página */
+.episode-manage-list { list-style: none; padding: 0; }
+.episode-manage-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color); }
+.episode-manage-list li:hover { background-color: var(--bg-tertiary); }
+.episode-manage-list .ep-info { flex-grow: 1; }
+.episode-manage-list .ep-delete-btn { background: none; border: none; color: #f44336; cursor: pointer; font-size: 1.2rem; }
+</style>
+
+<script>
+// Lógica JS "Tudo-em-um" para esta página
+document.addEventListener('DOMContentLoaded', () => {
+    // Seletores de Elementos
+    const showAnimeFormBtn = document.getElementById('show-anime-form-btn');
+    const animeFormPanel = document.getElementById('anime-form-panel');
+    const animesTablePanel = document.getElementById('animes-table-panel');
+    const episodeManagerPanel = document.getElementById('episode-manager-panel');
+    const animeForm = document.getElementById('anime-form');
+    const cancelAnimeBtn = document.getElementById('cancel-anime-btn');
+    const animesTableBody = document.getElementById('animes-table-body');
+    const episodeAddForm = document.getElementById('episode-add-form');
+    const episodeList = document.getElementById('episode-list');
+    const closeEpisodeManagerBtn = document.getElementById('close-episode-manager-btn');
+
+    let isEditingAnime = false;
+    let editingAnimeId = null;
+
+    // Funções de UI
+    const showView = (view) => {
+        animeFormPanel.style.display = 'none';
+        animesTablePanel.style.display = 'none';
+        episodeManagerPanel.style.display = 'none';
+        showAnimeFormBtn.style.display = 'none';
+        view.style.display = 'block';
+        if (view === animesTablePanel) showAnimeFormBtn.style.display = 'inline-flex';
+    };
+    
+    // Funções da API (Anime)
+    const fetchAnimes = async () => {
+        const res = await fetch('/api/animes'); // Precisamos criar essa rota
+        const { data } = await res.json();
+        animesTableBody.innerHTML = '';
+        data.forEach(anime => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${anime.titulo}</td>
+                <td>${anime.anoLancamento}</td>
+                <td>${anime.episodios ? anime.episodios.length : 0}</td>
+                <td class="actions-cell">
+                    <button class="btn btn--small btn-edit" data-id="${anime.id}"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn--small" onclick="openEpisodeManager(${anime.id})"><i class="fas fa-list-ol"></i></button>
+                    <button class="btn btn--small btn-delete" data-id="${anime.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            animesTableBody.appendChild(row);
+        });
+    };
+
+    // Funções da API (Episódios)
+    window.openEpisodeManager = async (animeId) => {
+        const res = await fetch(`/api/animes/${animeId}`);
+        const { data: anime } = await res.json();
+        document.getElementById('manager-anime-id').value = anime.id;
+        document.getElementById('episode-manager-title').innerText = `Gerenciar Episódios de: ${anime.titulo}`;
+        episodeList.innerHTML = '';
+        anime.episodios.forEach(ep => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="ep-info">EP ${ep.numero} - ${ep.titulo}</span><button class="ep-delete-btn" onclick="deleteEpisode(${anime.id}, ${ep.numero})">×</button>`;
+            episodeList.appendChild(li);
+        });
+        showView(episodeManagerPanel);
+    };
+
+    window.deleteEpisode = async (animeId, epNumero) => {
+        if (!confirm(`Tem certeza que quer deletar o episódio ${epNumero}?`)) return;
+        await fetch(`/api/animes/${animeId}/episodes/${epNumero}`, { method: 'DELETE' });
+        openEpisodeManager(animeId); // Recarrega o manager
+    };
+
+    // Event Listeners
+    showAnimeFormBtn.addEventListener('click', () => { animeForm.reset(); isEditingAnime = false; showView(animeFormPanel); });
+    cancelAnimeBtn.addEventListener('click', () => showView(animesTablePanel));
+    closeEpisodeManagerBtn.addEventListener('click', () => showView(animesTablePanel));
+
+    animeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = {
+            titulo: document.getElementById('titulo').value,
+            sinopse: document.getElementById('sinopse').value,
+            // ... coletar outros campos
+        };
+        const url = isEditingAnime ? `/api/animes/${editingAnimeId}` : '/api/animes';
+        const method = isEditingAnime ? 'PUT' : 'POST';
+        await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+        showView(animesTablePanel);
+        fetchAnimes();
+    });
+
+    episodeAddForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const animeId = document.getElementById('manager-anime-id').value;
+        const body = {
+            numero: document.getElementById('ep-numero').value,
+            titulo: document.getElementById('ep-titulo').value,
+            urlVideo: document.getElementById('ep-urlVideo').value,
+            tipoVideo: document.getElementById('ep-tipoVideo').value
+        };
+        await fetch(`/api/animes/${animeId}/episodes`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+        episodeAddForm.reset();
+        openEpisodeManager(animeId); // Recarrega
+    });
+
+    // Inicialização
+    fetchAnimes();
+});
+</script>

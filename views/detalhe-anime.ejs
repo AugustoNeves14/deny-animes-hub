@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= anime.titulo %> - Detalhes do Anime</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* ================================================================================================== */
+    /*      ESTILIZAÇÃO CSS COMPLETA E SOFISTICADA - NÍVEL DEUS (COM CORREÇÃO DE CORES)                     */
+    /* ================================================================================================== */
+
+  :root {
+    /* TEMA ESCURO (PADRÃO AKATSUKI) */
+    --theme-bg-primary: #0A0A0A;
+    --theme-bg-primary-rgb: 10, 10, 10;
+    --theme-bg-secondary: #141414;
+    --theme-bg-secondary-rgb: 20, 20, 20;
+    --theme-bg-tertiary: #222222;
+    --theme-text-primary: #FFFFFF; /* Texto principal sempre branco no modo escuro */
+    --theme-text-secondary: rgba(255, 255, 255, 0.75);
+    --theme-accent-primary: #E50914;
+    --theme-accent-primary-rgb: 229, 9, 20;
+    --theme-accent-glow: #ff1f2b;
+    --theme-border-color: rgba(255, 255, 255, 0.1);
+    --theme-border-accent: rgba(var(--theme-accent-primary-rgb), 0.5);
+    --shadow-glow: 0 0 35px rgba(var(--theme-accent-primary-rgb), 0.6);
+    --font-primary: 'Poppins', sans-serif;
+    --container-width: 1440px;
+    --transition-speed: 0.3s;
+    --border-radius: 10px;
+    --border-radius-lg: 16px;
+}
+
+body.light-theme {
+    /* TEMA CLARO */
+    --theme-bg-primary: #f4f7f9;
+    --theme-bg-primary-rgb: 244, 247, 249;
+    --theme-bg-secondary: #ffffff;
+    --theme-bg-secondary-rgb: 255, 255, 255;
+    --theme-bg-tertiary: #e9eef2;
+    --theme-text-primary: #000000; /* Texto principal sempre preto no modo claro */
+    --theme-text-secondary: #4a4a4a;
+    --theme-accent-primary: #D32F2F;
+    --theme-accent-primary-rgb: 211, 47, 47;
+    --theme-accent-glow: #E53935;
+    --theme-border-color: rgba(0, 0, 0, 0.1);
+}
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: var(--font-primary);
+        background-color: var(--theme-bg-primary);
+        color: var(--theme-text-primary);
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדהדה/wAARCAAgACADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AL/AFQAAA//Z');
+        overflow-x: hidden;
+        transition: background-color var(--transition-speed) ease;
+    }
+
+    .anime-detail-hero {
+        position: fixed; top: 0; left: 0; right: 0; height: 60vh;
+        background-size: cover; background-position: center 20%;
+        filter: blur(12px) brightness(0.4) saturate(1.2);
+        transform: scale(1.1); z-index: 1;
+    }
+    .anime-detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--theme-bg-primary) 15%, transparent 100%); }
+
+    .content-wrapper {
+        width: 100%; max-width: var(--container-width);
+        margin: 25vh auto 5vh; padding: 2rem 1.5rem 3rem;
+        background-color: rgba(var(--theme-bg-secondary-rgb), 0.6);
+        backdrop-filter: blur(18px) saturate(120%);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--theme-border-color);
+        position: relative; z-index: 2;
+        transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    }
+    @media (min-width: 992px) { .content-wrapper { padding: 3rem 4rem; margin-top: 20vh; } }
+
+    .anime-main-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
+    @media (min-width: 992px) { .anime-main-grid { grid-template-columns: 320px 1fr; gap: 4rem; } }
+    
+    .anime-sidebar { grid-row: 1; }
+    @media (min-width: 992px) { .anime-sidebar { grid-row: auto; } }
+    
+    .anime-poster-wrapper { display: block; max-width: 280px; margin: 0 auto; margin-top: -120px; }
+    @media (min-width: 992px) { .anime-poster-wrapper { margin-top: -150px; } }
+    .anime-poster-wrapper img {
+        width: 100%; border-radius: var(--border-radius);
+        border: 4px solid var(--theme-border-color);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8), var(--shadow-glow);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        aspect-ratio: 2 / 3; object-fit: cover;
+    }
+    .anime-poster-wrapper img:hover { transform: scale(1.07) translateY(-10px); border-color: var(--theme-accent-glow); box-shadow: 0 20px 50px rgba(0,0,0,1), 0 0 45px rgba(var(--theme-accent-primary-rgb), 0.8); }
+    
+    .anime-title {
+        font-size: clamp(2.5rem, 7vw, 4.5rem); font-weight: 900; line-height: 1.15;
+        color: var(--theme-text-primary); text-shadow: 0 6px 25px rgba(0,0,0,0.9);
+        text-align: center; margin-top: 2rem;
+    }
+    @media (min-width: 992px) { .anime-title { text-align: left; margin-top: 0; } }
+    
+    .anime-sidebar .info-block { margin-top: 2rem; }
+    .info-block h4 { margin: 0 0 1rem 0; font-size: 1.2rem; color: var(--theme-text-primary); font-weight: 600; border-bottom: 2px solid var(--theme-accent-primary); padding-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; }
+    .info-item { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 0.25rem; border-bottom: 1px solid var(--theme-border-color); font-size: 1rem; }
+    .info-item:last-child { border-bottom: none; }
+    .info-item strong { font-weight: 500; color: var(--theme-text-primary); }
+    .info-item span { color: var(--theme-text-secondary); text-align: right; padding-left: 1rem; }
+    .info-item .fa-star { color: #f5c518; }
+
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; margin-bottom: 1.5rem; padding-left: 1.25rem; border-left: 5px solid var(--theme-accent-primary); text-transform: uppercase; letter-spacing: 1.5px; }
+    .anime-main-content > section { margin-bottom: 4rem; }
+    
+    .synopsis {
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: var(--theme-text-primary);
+        background-color: rgba(var(--theme-bg-primary-rgb), 0.5);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .action-button-wrapper { margin-top: 2.5rem; text-align: center; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.8rem; padding: 0.8rem 1.8rem; border-radius: 50px; text-decoration: none; cursor: pointer; font-weight: 600; transition: all var(--transition-speed) ease-in-out; border: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; }
+    .btn-action-primary { background: var(--theme-accent-primary); color: #fff; border: none; box-shadow: 0 5px 25px rgba(var(--theme-accent-primary-rgb), 0.5); font-size: 1.2rem; }
+    .btn-action-primary:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 40px rgba(var(--theme-accent-primary-rgb), 0.7); }
+    
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: var(--border-radius); box-shadow: 0 5px 30px rgba(0,0,0,0.8); }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+    .season-selector { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .season-btn { background-color: var(--theme-bg-tertiary); border: 1px solid var(--theme-border-color); color: var(--theme-text-secondary); padding: 0.7rem 1.4rem; border-radius: 50px; cursor: pointer; transition: all 0.2s ease-in-out; font-weight: 600; }
+    .season-btn.active, .season-btn:hover { background: var(--theme-accent-primary); color: #fff; border-color: var(--theme-accent-primary); transform: translateY(-3px); box-shadow: 0 5px 20px rgba(var(--theme-accent-primary-rgb), 0.4); }
+
+    .episode-list-season { display: none; }
+    .episode-list-season.active { display: block; animation: fadeInUp 0.5s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* ================================================================================================== */
+    /*      ATUALIZAÇÃO: SCROLL NA LISTA DE EPISÓDIOS                                                     */
+    /* ================================================================================================== */
+    .episode-grid { 
+        list-style: none; padding: 0; margin: 0; 
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+        gap: 1.25rem; 
+        
+        /* Nova regra: Altura máxima antes de rolar */
+        max-height: 500px;
+        /* Nova regra: Ativa o scroll vertical apenas quando necessário */
+        overflow-y: auto;
+        /* Nova regra: Espaçamento para a barra de rolagem não cobrir o conteúdo */
+        padding-right: 1rem;
+    }
+    
+    /* ================================================================================================== */
+    /*      BÔNUS: ESTILIZAÇÃO DA BARRA DE ROLAGEM (PARA NAVEGADORES WEBKIT)                              */
+    /* ================================================================================================== */
+    .episode-grid::-webkit-scrollbar {
+      width: 12px;
+    }
+    .episode-grid::-webkit-scrollbar-track {
+      background: var(--theme-bg-tertiary);
+      border-radius: 10px;
+    }
+    .episode-grid::-webkit-scrollbar-thumb {
+      background-color: var(--theme-accent-primary);
+      border-radius: 10px;
+      border: 3px solid var(--theme-bg-tertiary);
+    }
+    .episode-grid::-webkit-scrollbar-thumb:hover {
+        background-color: var(--theme-accent-glow);
+    }
+
+    .episode-card a { display: block; text-decoration: none; aspect-ratio: 16 / 9; border-radius: var(--border-radius); position: relative; overflow: hidden; background-color: var(--theme-bg-tertiary); border: 1px solid var(--theme-border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: all var(--transition-speed) ease; }
+    .episode-card a:hover { transform: translateY(-8px) scale(1.05); border-color: var(--theme-border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+    .ep-card-thumbnail { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.4s ease; }
+    .episode-card a:hover .ep-card-thumbnail { transform: scale(1.1); }
+    .ep-card-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 0.75rem; background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, transparent 80%); }
+    .episode-card a:hover .ep-card-overlay { background: linear-gradient(to top, rgba(0,0,0,0.95) 5%, rgba(var(--theme-accent-primary-rgb), 0.3) 100%); }
+    .ep-card-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); font-size: 2.5rem; color: rgba(255, 255, 255, 0.7); opacity: 0; transition: all var(--transition-speed) ease; }
+    .episode-card a:hover .ep-card-play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .ep-card-title { font-size: 0.9rem; font-weight: 600; color: #fff; text-shadow: 0 1px 3px black; text-align: center; }
+
+    /* ================================================================ */
+    /*      NOVA ATUALIZAÇÃO: GRADE 4X4 PARA DISPOSITIVOS MÓVEIS      */
+    /* ================================================================ */
+    @media (max-width: 768px) {
+        .episode-grid {
+            /* Força a grade a ter 4 colunas */
+            grid-template-columns: repeat(4, 1fr);
+            /* Reduz o espaçamento para caber mais cards */
+            gap: 0.5rem;
+            /* Diminui o padding para a barra de rolagem em telas menores */
+            padding-right: 0.5rem;
+        }
+
+        .episode-card a {
+            /* Altera a proporção para 1:1 (quadrado) para um visual de miniatura */
+            aspect-ratio: 1 / 1;
+        }
+
+        .ep-card-overlay {
+            /* Centraliza o conteúdo e ajusta o preenchimento */
+            justify-content: center;
+            padding: 0.5rem;
+        }
+        
+        .ep-card-play-icon {
+            /* Diminui o ícone de play */
+            font-size: 1.5rem;
+        }
+
+        .ep-card-title {
+            /* Reduz o tamanho da fonte para evitar quebra de linha excessiva */
+            font-size: 0.7rem;
+            line-height: 1.2;
+            font-weight: 500;
+            /* Esconde o título do episódio se for muito longo (opcional) */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Limita o texto a 2 linhas */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    }
+
+
+    .comments-section { padding-top: 1.5rem; }
+    #comment-form { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 2rem; }
+    .comment-form-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .comment-input-wrapper { flex-grow: 1; }
+    .comment-input-wrapper textarea { width: 100%; background-color: var(--theme-bg-tertiary); border: 1px solid var(--theme-border-color); border-radius: var(--border-radius); padding: 1rem; color: var(--theme-text-primary); min-height: 100px; resize: vertical; transition: all 0.3s; }
+    .comment-input-wrapper textarea:focus { border-color: var(--theme-accent-primary); box-shadow: 0 0 0 3px rgba(var(--theme-accent-primary-rgb), 0.2); }
+    .comment-form-actions { margin-top: 1rem; text-align: right; }
+    .comment-item { display: flex; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid var(--theme-border-color); }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+    .comment-author { font-weight: 600; color: var(--theme-text-primary); }
+    .comment-date { font-size: 0.8rem; color: var(--theme-text-secondary); margin-left: 0.5rem; }
+    .comment-text { margin-top: 0.5rem; color: var(--theme-text-secondary); line-height: 1.6; }
+    .login-prompt { text-align: center; padding: 2rem; background-color: var(--theme-bg-tertiary); border-radius: var(--border-radius); }
+    .login-prompt a { color: var(--theme-accent-primary); font-weight: 600; text-decoration: none; }
+</style>
+</head>
+
+<body class="dark-theme">
+
+<div class="anime-detail-hero" style="background-image: url('<%= anime.imagemCapa %>');">
+    <div class="anime-detail-hero-overlay"></div>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="anime-main-grid">
+        <aside class="anime-sidebar">
+            <div class="anime-poster-wrapper"><img src="<%= anime.imagemCapa %>" alt="Pôster de <%= anime.titulo %>"></div>
+            <div class="info-block">
+                <h4><i class="fas fa-info-circle"></i> Detalhes</h4>
+                <div class="info-item"><strong>Nota:</strong> <span><i class="fas fa-star"></i> <%= anime.classificacao || 'N/A' %></span></div>
+                <div class="info-item"><strong>Ano:</strong> <span><%= anime.anoLancamento %></span></div>
+                <div class="info-item"><strong>Estúdio:</strong> <span><%= anime.estudio || 'N/A' %></span></div>
+                <div class="info-item"><strong>Visualizações:</strong> <span><%= anime.views.toLocaleString('pt-BR') %></span></div>
+                <div class="info-item"><strong>Gêneros:</strong> <span><%= Array.isArray(anime.generos) ? anime.generos.join(', ') : 'N/A' %></span></div>
+            </div>
+        </aside>
+
+        <main class="anime-main-content">
+            <h1 class="anime-title"><%= anime.titulo %></h1>
+            <section>
+                <h2 class="section-title">Sinopse</h2>
+                <p class="synopsis"><%- anime.sinopse.replace(/\n/g, '<br>') %></p>
+                <% if (anime.episodios && anime.episodios.length > 0) { %><div class="action-button-wrapper"><a href="/assistir/<%= anime.slug %>/<%= anime.episodios[0].id %>" class="btn btn-action-primary"><i class="fas fa-play"></i> Assistir Agora</a></div><% } %>
+            </section>
+            
+            <% if(anime.trailerUrl) { %>
+                <section class="trailer-section">
+                    <h2 class="section-title">Trailer Oficial</h2>
+                    <div class="video-container"><iframe src="<%= anime.trailerUrl.replace('watch?v=', 'embed/') %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                </section>
+            <% } %>
+
+            <section>
+                <h2 class="section-title">Episódios</h2>
+                <% if(anime.episodios && anime.episodios.length > 0) {
+                    const temporadas = anime.episodios.reduce((acc, ep) => { const temp = ep.temporada || 1; if (!acc[temp]) acc[temp] = []; acc[temp].push(ep); return acc; }, {}); %>
+                    <div class="season-selector">
+                        <% Object.keys(temporadas).sort((a, b) => a - b).forEach((tempNum, index) => { %><button class="season-btn <%= index === 0 ? 'active' : '' %>" data-season="<%= tempNum %>">Temporada <%= tempNum %></button><% }) %>
+                    </div>
+                    <% Object.keys(temporadas).sort((a, b) => a - b).forEach((tempNum, index) => { %>
+                        <div class="episode-list-season <%= index === 0 ? 'active' : '' %>" id="season-<%= tempNum %>">
+                            <div class="episode-grid">
+                                <% temporadas[tempNum].sort((a,b) => a.numero - b.numero).forEach(ep => { %>
+                                    <div class="episode-card"><a href="/assistir/<%= anime.slug %>/<%= ep.id %>" title="Assistir Episódio <%= ep.numero %>"><div class="ep-card-thumbnail" style="background-image: url('<%= ep.thumbnailUrl || anime.imagemCapa || "/images/default-avatar.png" %>');"></div><div class="ep-card-overlay"><i class="fas fa-play ep-card-play-icon"></i><span class="ep-card-title">Ep. <%= ep.numero %><% if (ep.titulo) { %>: <%= ep.titulo %><% } %></span></div></a></div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>Nenhum episódio cadastrado para este anime ainda.</p>
+                <% } %>
+            </section>
+
+            <section class="comments-section">
+                <h2 class="section-title">Comentários</h2>
+                <% if (locals.user) { %>
+                    <form id="comment-form"><img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="Avatar" class="comment-form-avatar"><div class="comment-input-wrapper"><textarea name="comment" placeholder="Deixe seu comentário, <%= user.nome %>..." required minlength="3"></textarea><div class="comment-form-actions"><button type="submit" class="btn btn-action-primary">Comentar</button></div></div></form>
+                <% } else { %>
+                    <div class="login-prompt"><p><a href="/login?redirect=<%= encodeURIComponent(req.originalUrl) %>">Faça login</a> para comentar.</p></div>
+                <% } %>
+                <div id="comments-list" class="comments-list"></div>
+                <button id="load-more-comments" class="btn btn--secondary" style="display:none; margin: 2rem auto;">Carregar mais</button>
+            </section>
+        </main>
+    </div>
+</div>
+
+<template id="comment-template">
+    <div class="comment-item">
+        <img class="comment-avatar" src="" alt="Avatar do usuário">
+        <div class="comment-content">
+            <div><span class="comment-author"></span><span class="comment-date"></span></div>
+            <p class="comment-text"></p>
+        </div>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // LÓGICA DE TROCA DE TEMPORADAS
+    const seasonButtons = document.querySelectorAll('.season-btn');
+    if (seasonButtons.length > 1) { 
+        seasonButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetSeason = button.dataset.season;
+                document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.episode-list-season').forEach(list => list.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(`season-${targetSeason}`).classList.add('active');
+            });
+        });
+    }
+
+    // LÓGICA DE ALTERNÂNCIA DE TEMA
+    const themeToggleButton = document.getElementById('theme-toggle');
+    if(themeToggleButton){
+        const sunIcon = themeToggleButton.querySelector('.fa-sun');
+        const moonIcon = themeToggleButton.querySelector('.fa-moon');
+        const applyTheme = () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.className = `${savedTheme}-theme`;
+            if(sunIcon && moonIcon){
+                sunIcon.style.display = savedTheme === 'dark' ? 'none' : 'inline-block';
+                moonIcon.style.display = savedTheme === 'dark' ? 'inline-block' : 'none';
+            }
+        };
+        themeToggleButton.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('light-theme');
+            const newTheme = isDark ? 'light' : 'dark';
+            document.body.className = `${newTheme}-theme`;
+            localStorage.setItem('theme', newTheme);
+            applyTheme();
+        });
+        applyTheme();
+    }
+
+    // LÓGICA DE COMENTÁRIOS (FUNCIONAL)
+    const commentsModule = {
+        form: document.getElementById('comment-form'),
+        list: document.getElementById('comments-list'),
+        loadMoreBtn: document.getElementById('load-more-comments'),
+        template: document.getElementById('comment-template'),
+        animeId: "<%= anime.id %>",
+        allComments: [],
+        commentsToShow: 5,
+        init() {
+            if (!this.list) return;
+            if (this.form) { this.form.addEventListener('submit', e => this.handleSubmit(e)); }
+            if (this.loadMoreBtn) { this.loadMoreBtn.addEventListener('click', () => this.loadMore()); }
+            this.fetchComments();
+        },
+        async fetchComments() {
+            try {
+                const response = await fetch(`/api/comments/${this.animeId}`);
+                if (!response.ok) throw new Error('Falha ao carregar comentários');
+                this.allComments = await response.json();
+                this.render();
+            } catch (error) {
+                console.error(error);
+                this.list.innerHTML = '<p>Não foi possível carregar os comentários.</p>';
+            }
+        },
+        render() {
+            this.list.innerHTML = '';
+            const commentsToDisplay = this.allComments.slice(0, this.commentsToShow);
+            commentsToDisplay.forEach(comment => this.addCommentToDOM(comment));
+            this.loadMoreBtn.style.display = this.allComments.length > this.commentsToShow ? 'flex' : 'none';
+        },
+        addCommentToDOM(comment, prepend = false) {
+            const clone = this.template.content.cloneNode(true);
+            clone.querySelector('.comment-avatar').src = comment.author.avatar || '/images/default-avatar.png';
+            clone.querySelector('.comment-author').textContent = comment.author.nome;
+            clone.querySelector('.comment-date').textContent = new Date(comment.createdAt).toLocaleDateString('pt-BR');
+            clone.querySelector('.comment-text').textContent = comment.text;
+            if (prepend) { this.list.prepend(clone); }
+            else { this.list.appendChild(clone); }
+        },
+        async handleSubmit(e) {
+            e.preventDefault();
+            const textarea = this.form.querySelector('textarea');
+            const commentText = textarea.value.trim();
+            const button = this.form.querySelector('button');
+            if (!commentText || button.disabled) return;
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ animeId: this.animeId, text: commentText })
+                });
+                if (!response.ok) { const err = await response.json(); throw new Error(err.error || 'Falha ao enviar comentário'); }
+                const newComment = await response.json();
+                this.allComments.unshift(newComment);
+                this.addCommentToDOM(newComment, true);
+                textarea.value = '';
+            } catch (error) {
+                console.error('Erro ao postar comentário:', error);
+                alert(error.message);
+            } finally {
+                button.disabled = false;
+            }
+        },
+        loadMore() {
+            this.commentsToShow = this.allComments.length;
+            this.render();
+            this.loadMoreBtn.style.display = 'none';
+        }
+    };
+    if ('<%= locals.user ? true : false %>') {
+        commentsModule.init();
+    }
+});
+</script>
+
+</body>
+</html>

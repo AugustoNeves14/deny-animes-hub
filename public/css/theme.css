@@ -1,0 +1,151 @@
+/* ==========================================================================
+   DenyAnimeHub - Sistema de Temas com Body Class (Dark-First)
+   ========================================================================== */
+
+/* 
+  1. DEFINIÇÃO DE TODAS AS VARIÁVEIS DE COR NO :ROOT
+  Isso torna todas as cores disponíveis globalmente.
+*/
+:root {
+  /* --- Cores Light Mode --- */
+  --bg-primary-light: #f4f4f8;
+  --bg-secondary-light: #ffffff;
+  --text-primary-light: #1f1f23;
+  --text-secondary-light: #5a5a63;
+  --accent-primary-light: #d32f2f;
+  --accent-secondary-light: #b71c1c;
+  --border-color-light: #d1d1d9;
+  --shadow-glow-rgb-light: 211, 47, 47;
+  --input-bg-light: #f0f0f5;
+
+  /* --- Cores Dark Mode --- */
+  --bg-primary-dark: #0a0a0c;
+  --bg-secondary-dark: #18181c;
+  --text-primary-dark: #e8e8f0;
+  --text-secondary-dark: #a0a0b0;
+  --accent-primary-dark: #ff3b3b;
+  --accent-secondary-dark: #ff6b6b;
+  --border-color-dark: #3a3a44;
+  --shadow-glow-rgb-dark: 255, 59, 59;
+  --input-bg-dark: #2a2a30;
+  
+  /* --- Variáveis de layout --- */
+  --border-radius: 6px;
+  --transition-speed: 0.3s;
+  --transition-ease: ease;
+}
+
+/* 
+  2. MAPEAMENTO DAS VARIÁVEIS PARA CADA TEMA
+  Aqui, definimos as variáveis genéricas que serão usadas no resto do CSS.
+*/
+
+/* TEMA ESCURO (Padrão) */
+.dark-theme {
+  --bg-primary: var(--bg-primary-dark);
+  --bg-secondary: var(--bg-secondary-dark);
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+  --accent-primary: var(--accent-primary-dark);
+  --accent-secondary: var(--accent-secondary-dark);
+  --border-color: var(--border-color-dark);
+  --shadow-glow-rgb: var(--shadow-glow-rgb-dark);
+  --input-bg: var(--input-bg-dark);
+}
+
+/* TEMA CLARO */
+.light-theme {
+  --bg-primary: var(--bg-primary-light);
+  --bg-secondary: var(--bg-secondary-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --accent-primary: var(--accent-primary-light);
+  --accent-secondary: var(--accent-secondary-light);
+  --border-color: var(--border-color-light);
+  --shadow-glow-rgb: var(--shadow-glow-rgb-light);
+  --input-bg: var(--input-bg-light);
+}
+
+/* 
+  3. APLICAÇÃO DAS VARIÁVEIS GENÉRICAS
+  O resto do CSS não precisa saber qual tema está ativo.
+*/
+
+*, *::before, *::after {
+  transition: background-color var(--transition-speed) var(--transition-ease),
+              color var(--transition-speed) var(--transition-ease),
+              border-color var(--transition-speed) var(--transition-ease);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-secondary);
+}
+
+.card, .navbar, .modal-content, .header, .footer {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-secondary);
+}
+
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 10px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--shadow-glow-rgb), 0.4);
+}
+
+#theme-toggle {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+#theme-toggle:hover {
+    background-color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}

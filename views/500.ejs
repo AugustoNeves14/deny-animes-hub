@@ -1,0 +1,21 @@
+<%- include('partials/header', { page_name: '500', titulo: 'Erro 500' }) %>
+<!-- Script de proteção chamado com 'defer' para não bloquear o carregamento -->
+    <script src="/js/protect.js" defer></script>
+<div class="container" style="text-align: center; padding: 80px 20px;">
+    <h1 style="font-size: 6rem; color: #f44336; margin-bottom: 20px;">500</h1>
+    <h2>Erro Interno do Servidor</h2>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 20px auto;">
+        Opa! Algo quebrou do nosso lado. Nossa equipe de ninjas já foi notificada e está trabalhando para consertar.
+    </p>
+    <a href="/" class="btn btn--primary" style="margin-top: 20px;">
+        <i class="fas fa-home"></i> Voltar para o Início
+    </a>
+    <% if (process.env.NODE_ENV !== 'production' && locals.error) { %>
+        <div style="margin-top: 40px; text-align: left; background: var(--bg-tertiary); padding: 20px; border-radius: 8px; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h4 style="color: var(--accent-primary);">Detalhes do Erro (Modo Desenvolvimento):</h4>
+            <pre style="white-space: pre-wrap; word-wrap: break-word; color: var(--text-primary);"><%= error.message %></pre>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
