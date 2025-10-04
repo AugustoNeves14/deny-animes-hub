@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-// controllers/authController.js (VERSÃO FINAL COMPLETA E CORRIGIDA)
-=======
-// controllers/authController.js (VERSÃO FINAL COMPLETA)
->>>>>>> 40a316de1848ac19c7b09d75da75e086b4481256
 'use strict';
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -15,7 +10,7 @@ const { OAuth2Client } = require('google-auth-library');
 let firebaseInitialized = false;
 try {
     if (process.env.FIREBASE_PROJECT_ID) {
-<<<<<<< HEAD
+
         if (!admin.apps.length) {
             admin.initializeApp({
                 credential: admin.credential.cert({
@@ -26,12 +21,10 @@ try {
                 databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
             });
         }
-=======
         admin.initializeApp({
             credential: admin.credential.applicationDefault(),
             databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
         });
->>>>>>> 40a316de1848ac19c7b09d75da75e086b4481256
         firebaseInitialized = true;
         console.log('✅ Firebase Admin inicializado com sucesso');
     } else {
@@ -241,11 +234,9 @@ exports.login = async (req, res) => {
 };
 
 /**
-<<<<<<< HEAD
  * Logout - VERSÃO CORRIGIDA SEM DUPLICAÇÃO
 =======
  * Logout - VERSÃO CORRIGIDA E ROBUSTA
->>>>>>> 40a316de1848ac19c7b09d75da75e086b4481256
  */
 exports.logout = (req, res) => {
     try {
@@ -837,9 +828,3 @@ exports.logoutAlternativo = (req, res) => {
     });
     res.redirect('/login?sucesso=Sessão encerrada com sucesso!');
 };
-
-<<<<<<< HEAD
-// ✅ NÃO ADICIONAR module.exports = exports AQUI - JÁ ESTÁ EXPORTADO CORRETAMENTE
-=======
-module.exports = exports;
->>>>>>> 40a316de1848ac19c7b09d75da75e086b4481256
