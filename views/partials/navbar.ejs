@@ -1,0 +1,41 @@
+<header class="site-header">
+    <div class="container">
+        <div class="site-header__logo">
+            <a href="/">
+                <img src="/images/1.ico" alt="Logo DenyAnimeHub">
+                <span>DenyAnimeHub</span>
+            </a>
+        </div>
+
+        <!-- Botão do Menu Hambúrguer (só aparece em mobile) -->
+        <button class="hamburger-menu" id="hamburger-menu" aria-label="Abrir menu" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navegação Principal -->
+        <nav class="site-header__nav" id="main-nav">
+            <ul>
+                <li><a href="/" class="<%= locals.page_name === 'index' ? 'active' : '' %>">Início</a></li>
+                <li><a href="/animes" class="<%= ['todos-animes', 'anime-detail'].includes(locals.page_name) ? 'active' : '' %>">Animes</a></li>
+                <li><a href="/noticias" class="<%= ['noticias', 'detalhe-post'].includes(locals.page_name) ? 'active' : '' %>">Notícias</a></li>
+                
+                <% if (userIsLoggedIn) { %>
+                    <li><a href="/perfil" class="<%= ['perfil', 'editar-perfil'].includes(locals.page_name) ? 'active' : '' %>">Perfil</a></li>
+                    <li><a href="/auth/logout" class="btn btn--small btn--primary">Sair</a></li>
+                <% } else { %>
+                    <li><a href="/login" class="btn btn--small btn--primary <%= locals.page_name === 'login-page' ? 'active' : '' %>">Login</a></li>
+                <% } %>
+                
+                <li>
+                    <button class="theme-switch" id="theme-toggle" aria-label="Alternar tema">
+                        <i class="fas fa-moon icon-moon"></i>
+                        <i class="fas fa-sun icon-sun"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- Overlay para o menu mobile -->
+<div class="page-overlay" id="page-overlay"></div>

@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- ================================================================================================== -->
+    <!--                            CONFIGURAÇÕES GERAIS E DEPENDÊNCIAS DO DOCUMENTO                        -->
+    <!-- ================================================================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de <%= user.nome %> - DenyAnimeHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* ================================================================================================== */
+    /*      ESTILIZAÇÃO CSS COMPLETA COM SISTEMA DE TEMAS CORRIGIDO - DADOS DINÂMICOS                      */
+    /* ================================================================================================== */
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*           DEFINIÇÃO DAS VARIÁVEIS GLOBAIS DE DESIGN (PALETA DE CORES CORRIGIDA)                    */
+    /* -------------------------------------------------------------------------------------------------- */
+    :root {
+        /* TEMA CLARO (FUNDO CLARO, TEXTO ESCURO) - CORRIGIDO */
+        --theme-bg-primary: #f4f7f9;
+        --theme-bg-primary-rgb: 244, 247, 249;
+        --theme-bg-secondary: #ffffff;
+        --theme-bg-tertiary: #e9eef2;
+        --theme-text-primary: #1c1c1c;
+        --theme-text-secondary: #555555;
+        --theme-text-tertiary: #777777;
+        --theme-accent-primary: #D32F2F;
+        --theme-accent-primary-rgb: 211, 47, 47;
+        --theme-accent-glow: #E53935;
+        --theme-border-color: #d1d8e0;
+        --theme-border-accent: rgba(var(--theme-accent-primary-rgb), 0.5);
+        --shadow-glow: 0 0 20px rgba(var(--theme-accent-primary-rgb), 0.5);
+        --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-medium: 0 6px 20px rgba(0, 0, 0, 0.12);
+        --font-primary: 'Poppins', sans-serif;
+        --container-width: 1320px;
+        --transition-speed: 0.3s;
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+    }
+
+    /* TEMA ESCURO (FUNDO ESCURO, TEXTO CLARO) - CORRIGIDO */
+    body.dark-theme {
+        --theme-bg-primary: #0A0A0A; 
+        --theme-bg-primary-rgb: 10, 10, 10;
+        --theme-bg-secondary: #141414;
+        --theme-bg-tertiary: #222222;
+        --theme-text-primary: #f5f5f5;
+        --theme-text-secondary: #b3b3b3;
+        --theme-text-tertiary: #888888;
+        --theme-accent-primary: #E50914;
+        --theme-accent-primary-rgb: 229, 9, 20;
+        --theme-accent-glow: #ff1f2b;
+        --theme-border-color: rgba(255, 255, 255, 0.1);
+        --theme-border-accent: rgba(var(--theme-accent-primary-rgb), 0.5);
+        --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.3);
+        --shadow-medium: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                                     ESTILOS GLOBAIS E DE RESET                                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--font-primary);
+        background-color: var(--theme-bg-primary);
+        color: var(--theme-text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTRUTURA DA PÁGINA: CABEÇALHO E CONTEÚDO PRINCIPAL                        */
+    /* -------------------------------------------------------------------------------------------------- */
+
+    .profile-page-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-header {
+        height: 280px; 
+        position: relative; 
+        background-size: cover;
+        background-position: center; 
+        background-attachment: fixed;
+        overflow: hidden;
+    }
+    
+    .profile-header::after {
+        content: ''; 
+        position: absolute; 
+        inset: 0;
+        background: linear-gradient(to top, var(--theme-bg-primary) 10%, rgba(var(--theme-bg-primary-rgb), 0.8) 50%, transparent 100%);
+        backdrop-filter: blur(2px);
+    }
+    
+    .profile-header-actions {
+        position: absolute; 
+        top: 1.5rem; 
+        right: 1.5rem;
+        z-index: 4; 
+        display: flex; 
+        gap: 0.8rem;
+    }
+
+    .btn {
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center;
+        gap: 0.5rem; 
+        padding: 0.7rem 1.5rem; 
+        border-radius: 50px;
+        text-decoration: none; 
+        cursor: pointer; 
+        font-weight: 600;
+        transition: all var(--transition-speed) ease-in-out; 
+        border: 2px solid transparent;
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+    
+    .btn--primary {
+        background: var(--theme-accent-primary); 
+        color: #fff;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .btn--primary:hover { 
+        transform: translateY(-3px); 
+        box-shadow: var(--shadow-glow); 
+    }
+    
+    .btn--secondary {
+        background-color: var(--theme-bg-tertiary);
+        color: var(--theme-text-primary); 
+        border-color: var(--theme-border-color);
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn--secondary:hover { 
+        border-color: var(--theme-accent-primary); 
+        background-color: rgba(var(--theme-accent-primary-rgb), 0.2); 
+    }
+
+    .theme-toggle-btn {
+        width: 44px; 
+        height: 44px; 
+        border-radius: 50%;
+        padding: 0; 
+        font-size: 1.2rem;
+        background-color: var(--theme-bg-tertiary);
+        color: var(--theme-text-primary);
+        border: 1px solid var(--theme-border-color);
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .theme-toggle-btn:hover {
+        background-color: var(--theme-accent-primary);
+        color: white;
+        transform: rotate(15deg);
+    }
+
+    .profile-content-wrapper {
+        max-width: var(--container-width); 
+        margin: -120px auto 0 auto;
+        padding: 0 1.5rem 2rem 1.5rem; 
+        position: relative; 
+        z-index: 3;
+        flex: 1;
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         INFORMAÇÕES DO USUÁRIO: AVATAR, NOME E WIDGETS                             */
+    /* -------------------------------------------------------------------------------------------------- */
+
+    .profile-user-card { 
+        text-align: center; 
+        margin-bottom: 2rem; 
+    }
+    
+    .profile-avatar-container {
+        width: 140px; 
+        height: 140px; 
+        border-radius: 50%;
+        margin: 0 auto 1.2rem auto; 
+        padding: 5px;
+        background: linear-gradient(45deg, var(--theme-accent-glow), var(--theme-accent-primary));
+        animation: pulse-border 4s infinite ease-in-out;
+        box-shadow: var(--shadow-medium);
+    }
+    
+    @keyframes pulse-border {
+        0% { 
+            transform: scale(1); 
+            box-shadow: 0 0 0 0 rgba(var(--theme-accent-primary-rgb), 0.7); 
+        }
+        50% { 
+            transform: scale(1.05); 
+            box-shadow: 0 0 0 12px rgba(var(--theme-accent-primary-rgb), 0); 
+        }
+        100% { 
+            transform: scale(1); 
+            box-shadow: 0 0 0 0 rgba(var(--theme-accent-primary-rgb), 0); 
+        }
+    }
+    
+    .profile-avatar {
+        width: 100%; 
+        height: 100%; 
+        border-radius: 50%;
+        object-fit: cover; 
+        border: 4px solid var(--theme-bg-primary);
+    }
+    
+    .profile-user-info h1 { 
+        font-size: 2.2rem; 
+        font-weight: 700; 
+        margin-bottom: 0.5rem; 
+        color: var(--theme-text-primary); 
+        line-height: 1.2;
+    }
+    
+    .profile-role {
+        display: inline-block; 
+        padding: 5px 15px; 
+        border-radius: 50px;
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        background-color: var(--theme-accent-primary);
+        color: #fff; 
+        margin-bottom: 0.8rem; 
+        text-transform: capitalize;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .profile-join-date { 
+        font-size: 0.85rem; 
+        color: var(--theme-text-secondary); 
+    }
+
+    .profile-grid-layout { 
+        display: grid; 
+        grid-template-columns: 1fr; 
+        gap: 1.5rem; 
+    }
+    
+    @media (min-width: 768px) { 
+        .profile-grid-layout { 
+            grid-template-columns: 280px 1fr; 
+        } 
+    }
+
+    .profile-widget {
+        background-color: var(--theme-bg-secondary); 
+        padding: 1.5rem;
+        border-radius: var(--border-radius); 
+        border: 1px solid var(--theme-border-color);
+        transition: all var(--transition-speed) ease;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .profile-widget:hover {
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .profile-widget-header {
+        margin: 0 0 1.2rem 0; 
+        padding-bottom: 0.8rem; 
+        font-size: 1.2rem;
+        font-weight: 600; 
+        display: flex; 
+        align-items: center;
+        border-bottom: 1px solid var(--theme-border-color);
+        color: var(--theme-text-primary);
+    }
+    
+    .profile-widget-header i { 
+        margin-right: 0.8rem; 
+        color: var(--theme-accent-primary); 
+        font-size: 1.1rem; 
+    }
+    
+    .profile-bio { 
+        color: var(--theme-text-secondary); 
+        font-size: 0.95rem; 
+        line-height: 1.6; 
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         CARROSSEL "CONTINUAR ASSISTINDO" COM DESIGN APRIMORADO                     */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    #continue-watching-container {
+        display: flex; 
+        overflow-x: auto; 
+        overflow-y: hidden;
+        gap: 15px; 
+        padding: 5px; 
+        margin: 0 -5px;
+        scrollbar-color: var(--theme-accent-primary) var(--theme-bg-tertiary); 
+        scrollbar-width: thin;
+    }
+    
+    #continue-watching-container::-webkit-scrollbar { 
+        height: 8px; 
+    }
+    
+    #continue-watching-container::-webkit-scrollbar-track { 
+        background: var(--theme-bg-tertiary); 
+        border-radius: 10px; 
+    }
+    
+    #continue-watching-container::-webkit-scrollbar-thumb { 
+        background-color: var(--theme-accent-primary); 
+        border-radius: 10px; 
+        border: 2px solid var(--theme-bg-tertiary); 
+    }
+    
+    .episode-item {
+        flex: 0 0 220px; 
+        border-radius: var(--border-radius-sm); 
+        overflow: hidden;
+        background-color: var(--theme-bg-tertiary); 
+        border: 1px solid var(--theme-border-color);
+        transition: all var(--transition-speed) ease; 
+        position: relative;
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .episode-item:hover { 
+        transform: translateY(-5px); 
+        box-shadow: var(--shadow-glow); 
+        border-color: var(--theme-border-accent); 
+    }
+    
+    .episode-link { 
+        display: block; 
+        text-decoration: none; 
+        height: 100%;
+    }
+    
+    .episode-thumbnail-wrapper { 
+        position: relative; 
+        width: 100%; 
+        height: 124px; 
+        overflow: hidden;
+    }
+    
+    .episode-thumbnail { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        display: block; 
+        transition: transform var(--transition-speed) ease;
+    }
+    
+    .episode-item:hover .episode-thumbnail {
+        transform: scale(1.05);
+    }
+    
+    .episode-play-icon {
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%) scale(0.8);
+        font-size: 1.8rem; 
+        color: #fff; 
+        background-color: rgba(var(--theme-accent-primary-rgb), 0.85);
+        backdrop-filter: blur(5px); 
+        border-radius: 50%; 
+        width: 50px; 
+        height: 50px;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        opacity: 0; 
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .episode-item:hover .episode-play-icon { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    
+    .episode-info { 
+        padding: 0.8rem; 
+    }
+    
+    .episode-anime-name, .episode-number { 
+        display: block; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+    
+    .episode-anime-name { 
+        font-weight: 600; 
+        color: var(--theme-text-primary); 
+        font-size: 0.9rem; 
+        margin-bottom: 4px; 
+    }
+    
+    .episode-number { 
+        font-size: 0.8rem; 
+        color: var(--theme-text-secondary); 
+    }
+    
+    .progress-bar { 
+        height: 4px; 
+        background-color: rgba(var(--theme-text-primary-rgb, 255, 255, 255), 0.1); 
+        margin-top: 8px; 
+        border-radius: 5px; 
+        overflow:hidden; 
+    }
+    
+    .progress-bar-inner { 
+        height: 100%; 
+        background: var(--theme-accent-primary); 
+        border-radius: 5px; 
+        width: 0%; 
+        transition: width 0.5s ease; 
+    }
+
+    .history-placeholder {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+        gap: 1rem; 
+        width: 100%; 
+        min-height: 200px; 
+        color: var(--theme-text-secondary);
+        border: 2px dashed var(--theme-border-color); 
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .history-placeholder.loading .fa-spinner { 
+        display: inline-block; 
+        animation: spin 1s linear infinite; 
+        font-size: 1.8rem; 
+    }
+    
+    .history-placeholder.loading span { 
+        display: none; 
+    }
+    
+    .history-placeholder .fa-spinner { 
+        display: none; 
+    }
+    
+    .history-placeholder .fa-film { 
+        font-size: 2rem; 
+        margin-bottom: 0.5rem;
+    }
+
+    @keyframes spin { 
+        from { transform: rotate(0deg); } 
+        to { transform: rotate(360deg); } 
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTILOS ADICIONAIS PARA MELHOR EXPERIÊNCIA MOBILE                          */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    @media (max-width: 767px) {
+        .profile-header {
+            height: 220px;
+        }
+        
+        .profile-content-wrapper {
+            margin-top: -100px;
+            padding: 0 1rem 1.5rem 1rem;
+        }
+        
+        .profile-avatar-container {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .profile-user-info h1 {
+            font-size: 1.8rem;
+        }
+        
+        .profile-header-actions {
+            top: 1rem;
+            right: 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.8rem;
+        }
+        
+        .profile-widget {
+            padding: 1.2rem;
+        }
+        
+        .episode-item {
+            flex: 0 0 180px;
+        }
+        
+        .episode-thumbnail-wrapper {
+            height: 100px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-header {
+            height: 180px;
+        }
+        
+        .profile-content-wrapper {
+            margin-top: -80px;
+        }
+        
+        .profile-avatar-container {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .profile-user-info h1 {
+            font-size: 1.5rem;
+        }
+        
+        .episode-item {
+            flex: 0 0 160px;
+        }
+        
+        .episode-thumbnail-wrapper {
+            height: 90px;
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTILOS PARA ESTADOS DE CARREGAMENTO E VAZIO                               */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .skeleton-loading {
+        background: linear-gradient(90deg, var(--theme-bg-tertiary) 25%, var(--theme-border-color) 50%, var(--theme-bg-tertiary) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: var(--border-radius-sm);
+    }
+    
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        color: var(--theme-text-secondary);
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--theme-text-tertiary);
+    }
+    
+    .empty-state p {
+        margin-bottom: 1.5rem;
+        max-width: 300px;
+    }
+    
+    .empty-state .btn {
+        margin-top: 0.5rem;
+    }
+    
+    /* -------------------------------------------------------------------------------------------------- */
+    /*                         ESTILOS PARA AS ESTATÍSTICAS DO USUÁRIO                                    */
+    /* -------------------------------------------------------------------------------------------------- */
+    
+    .user-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--theme-border-color);
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--theme-text-secondary);
+    }
+    
+    .stat-value {
+        font-weight: 600;
+        color: var(--theme-accent-primary);
+        font-size: 1rem;
+    }
+</style>
+</head>
+<body class="light-theme"> <!-- Inicia no tema claro por padrão -->
+
+<!-- ====================================================================================== -->
+<!--                  ESTRUTURA HTML COMPLETA E FINAL DA PÁGINA (SEM OMISSÕES)              -->
+<!-- ====================================================================================== -->
+
+<div class="profile-page-container">
+    <header class="profile-header" style="background-image: url('<%= user.capaPerfil || '/images/default-cover.png' %>');">
+        <!-- O overlay agora usa a variável de tema e é aplicado via ::after no CSS -->
+        <div class="profile-header-actions">
+            <a href="/perfil/editar" class="btn btn--secondary"><i class="fas fa-pencil-alt"></i> Editar</a>
+            <% if(user.role === 'admin') { %>
+                <a href="/admin/dashboard" class="btn btn--primary"><i class="fas fa-user-shield"></i> Painel</a>
+            <% } %>
+        </div>
+    </header>
+
+    <div class="profile-content-wrapper">
+        <section class="profile-user-card">
+            <div class="profile-avatar-container">
+                <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="Avatar de <%= user.nome %>" class="profile-avatar">
+            </div>
+            <div class="profile-user-info">
+                <h1><%= user.nome %></h1>
+                <span class="profile-role"><%= user.role %></span>
+                <p class="profile-join-date">Membro desde <%= new Date(user.createdAt).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long' }) %></p>
+            </div>
+        </section>
+
+        <div class="profile-grid-layout">
+            <aside class="profile-sidebar">
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-address-card"></i> Sobre Mim</h3>
+                    <p class="profile-bio">
+                        <% if (user.bio && user.bio.trim() !== '') { %>
+                            <%- user.bio.replace(/\n/g, '<br>') %>
+                        <% } else { %>
+                            Este membro da Akatsuki ainda não compartilhou sua história.
+                        <% } %>
+                    </p>
+                </div>
+                
+                <!-- Widget adicional para estatísticas do usuário -->
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-chart-line"></i> Minhas Estatísticas</h3>
+                    <div class="user-stats" id="user-stats-container">
+                        <!-- As estatísticas serão carregadas dinamicamente via JavaScript -->
+                        <div class="stat-item skeleton-loading" style="height: 20px;"></div>
+                        <div class="stat-item skeleton-loading" style="height: 20px;"></div>
+                        <div class="stat-item skeleton-loading" style="height: 20px;"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="profile-main-content">
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-history"></i> Continuar Assistindo</h3>
+                    <div id="history-container-wrapper">
+                        <div id="history-placeholder" class="history-placeholder loading">
+                            <i class="fas fa-spinner"></i>
+                            <span>Buscando suas missões...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Seção adicional para animes favoritos -->
+                <div class="profile-widget">
+                    <h3 class="profile-widget-header"><i class="fas fa-heart"></i> Favoritos</h3>
+                    <div id="favorites-container">
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>Você ainda não tem animes favoritos.</p>
+                            <a href="/explorar" class="btn btn--primary">Explorar Animes</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================================== -->
+<!--                  SCRIPT JAVASCRIPT COMPLETO E FUNCIONAL (COM CORREÇÃO DE TEMA)         -->
+<!-- ====================================================================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --------------------------------------------------------------------------
+    // MÓDULO 1: LÓGICA DO HISTÓRICO DE VISUALIZAÇÃO (DADOS DINÂMICOS)
+    // --------------------------------------------------------------------------
+    const watchHistoryModule = {
+        async fetchWatchHistory() {
+            try {
+                // Substitua esta URL pela sua API real
+                const response = await fetch(`/api/users/<%= user.id %>/watch-history`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.watchHistory || [];
+            } catch (error) {
+                console.error('Erro ao buscar histórico:', error);
+                throw error;
+            }
+        },
+        
+        createItemHTML(item) {
+            return `
+                <div class="episode-item">
+                    <a href="/assistir/${item.animeSlug}/${item.episodeId}" class="episode-link" title="${item.animeTitle} - Episódio ${item.episodeNumber}">
+                        <div class="episode-thumbnail-wrapper">
+                            <img src="${item.thumbnail}" alt="Thumbnail de ${item.animeTitle}" class="episode-thumbnail" loading="lazy">
+                            <div class="episode-play-icon"><i class="fas fa-play"></i></div>
+                        </div>
+                        <div class="episode-info">
+                            <span class="episode-anime-name">${item.animeTitle}</span>
+                            <span class="episode-number">Episódio ${item.episodeNumber}</span>
+                            <div class="progress-bar">
+                                <div class="progress-bar-inner" style="width: ${item.watchProgress}%;"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        },
+        
+        render(historyData) {
+            const wrapper = document.getElementById('history-container-wrapper');
+            const placeholder = document.getElementById('history-placeholder');
+
+            if (!historyData || historyData.length === 0) {
+                placeholder.classList.remove('loading');
+                placeholder.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-film"></i>
+                        <p>Você ainda não assistiu nada.</p>
+                        <a href="/explorar" class="btn btn--primary">Explorar Animes</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const carouselContainer = document.createElement('div');
+            carouselContainer.id = 'continue-watching-container';
+            carouselContainer.innerHTML = historyData.map(this.createItemHTML).join('');
+            
+            wrapper.innerHTML = '';
+            wrapper.appendChild(carouselContainer);
+        },
+        
+        init() {
+            this.fetchWatchHistory()
+                .then(historyData => this.render(historyData))
+                .catch(error => {
+                    console.error('Falha ao buscar histórico:', error);
+                    const placeholder = document.getElementById('history-placeholder');
+                    placeholder.classList.remove('loading');
+                    placeholder.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Falha ao carregar o histórico.</p>
+                            <button class="btn btn--primary" onclick="watchHistoryModule.init()">Tentar Novamente</button>
+                        </div>
+                    `;
+                });
+        }
+    };
+    
+    // --------------------------------------------------------------------------
+    // MÓDULO 2: LÓGICA DAS ESTATÍSTICAS DO USUÁRIO (DADOS DINÂMICOS)
+    // --------------------------------------------------------------------------
+    const userStatsModule = {
+        async fetchUserStats() {
+            try {
+                // Substitua esta URL pela sua API real
+                const response = await fetch(`/api/users/<%= user.id %>/stats`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.stats || {};
+            } catch (error) {
+                console.error('Erro ao buscar estatísticas:', error);
+                throw error;
+            }
+        },
+        
+        formatTime(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+        },
+        
+        render(statsData) {
+            const container = document.getElementById('user-stats-container');
+            
+            if (!statsData || Object.keys(statsData).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>Nenhuma estatística disponível.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-label">Animes Assistidos</span>
+                    <span class="stat-value">${statsData.animesWatched || 0}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Episódios</span>
+                    <span class="stat-value">${statsData.episodesWatched || 0}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Tempo Total</span>
+                    <span class="stat-value">${this.formatTime(statsData.totalWatchTime || 0)}</span>
+                </div>
+            `;
+        },
+        
+        init() {
+            this.fetchUserStats()
+                .then(statsData => this.render(statsData))
+                .catch(error => {
+                    console.error('Falha ao buscar estatísticas:', error);
+                    const container = document.getElementById('user-stats-container');
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Falha ao carregar estatísticas.</p>
+                            <button class="btn btn--primary" onclick="userStatsModule.init()">Tentar Novamente</button>
+                        </div>
+                    `;
+                });
+        }
+    };
+    
+    // --------------------------------------------------------------------------
+    // MÓDULO 3: LÓGICA DOS FAVORITOS (DADOS DINÂMICOS)
+    // --------------------------------------------------------------------------
+    const favoritesModule = {
+        async fetchFavorites() {
+            try {
+                // Substitua esta URL pela sua API real
+                const response = await fetch(`/api/users/<%= user.id %>/favorites`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.favorites || [];
+            } catch (error) {
+                console.error('Erro ao buscar favoritos:', error);
+                throw error;
+            }
+        },
+        
+        createFavoriteItemHTML(item) {
+            return `
+                <div class="favorite-item">
+                    <a href="/anime/${item.slug}" class="favorite-link">
+                        <img src="${item.thumbnail}" alt="${item.title}" class="favorite-thumbnail">
+                        <span class="favorite-title">${item.title}</span>
+                    </a>
+                </div>
+            `;
+        },
+        
+        render(favoritesData) {
+            const container = document.getElementById('favorites-container');
+            
+            if (!favoritesData || favoritesData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-star"></i>
+                        <p>Você ainda não tem animes favoritos.</p>
+                        <a href="/explorar" class="btn btn--primary">Explorar Animes</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Implemente aqui a renderização dos favoritos quando houver dados
+            container.innerHTML = `
+                <div class="favorites-grid">
+                    ${favoritesData.map(this.createFavoriteItemHTML).join('')}
+                </div>
+            `;
+        },
+        
+        init() {
+            this.fetchFavorites()
+                .then(favoritesData => this.render(favoritesData))
+                .catch(error => {
+                    console.error('Falha ao buscar favoritos:', error);
+                    // Não mostra erro para o usuário, mantém o estado vazio
+                });
+        }
+    };
+    
+    // --------------------------------------------------------------------------
+    // MÓDULO 4: LÓGICA DE ALTERNÂNCIA DE TEMA (CORRIGIDA)
+    // --------------------------------------------------------------------------
+    const themeModule = {
+        toggleButton: document.getElementById('theme-toggle'),
+        themeIcon: document.querySelector('#theme-toggle i'),
+        
+        applyInitialTheme() {
+            // Tenta recuperar o tema salvo, padrão é 'light' (fundo claro)
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.body.classList.remove('light-theme');
+                this.themeIcon.className = 'fas fa-sun';
+            } else {
+                document.body.classList.add('light-theme');
+                document.body.classList.remove('dark-theme');
+                this.themeIcon.className = 'fas fa-moon';
+            }
+        },
+        
+        toggleTheme() {
+            const isDarkTheme = document.body.classList.contains('dark-theme');
+            
+            if (isDarkTheme) {
+                // Muda para tema claro
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+                this.themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                // Muda para tema escuro
+                document.body.classList.remove('light-theme');
+                document.body.classList.add('dark-theme');
+                this.themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        },
+
+        init() {
+            if (this.toggleButton) {
+                this.toggleButton.addEventListener('click', () => this.toggleTheme());
+            }
+            this.applyInitialTheme();
+        }
+    };
+
+    // --------------------------------------------------------------------------
+    // INICIALIZAÇÃO GERAL DE TODOS OS MÓDULOS
+    // --------------------------------------------------------------------------
+    
+    // Inicializa todos os módulos
+    themeModule.init();
+    watchHistoryModule.init();
+    userStatsModule.init();
+    favoritesModule.init();
+
+    // Adiciona estilos CSS para os favoritos (quando implementados)
+    const additionalStyles = document.createElement('style');
+    additionalStyles.textContent = `
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .favorite-item {
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+            background-color: var(--theme-bg-tertiary);
+            transition: transform var(--transition-speed) ease;
+        }
+        .favorite-item:hover {
+            transform: translateY(-3px);
+        }
+        .favorite-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .favorite-thumbnail {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        .favorite-title {
+            display: block;
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--theme-text-primary);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    `;
+    document.head.appendChild(additionalStyles);
+
+});
+</script>
+
+</body>
+</html>

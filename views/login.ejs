@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.titulo || 'Login' %> | DenyAnimeHub</title>
+    
+    <!-- FONTE POPPINS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="icon" href="/images/1.ico" type="image/ico">
+    
+    <style>
+        /* ================================================================================================== */
+        /*      DESIGN PREMIUM AKATSUKI - LAYOUT MODERNO COM FUNDO DE NUVENS                                 */
+        /* ================================================================================================== */
+        :root {
+            /* TEMA ESCURO AKATSUKI */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-secondary-rgb: 21, 21, 21;
+            --bg-input: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-primary: #ff2e4d;
+            --accent-primary-rgb: 255, 46, 77;
+            --accent-primary-hover: #ff4d68;
+            --accent-gradient: linear-gradient(135deg, #ff2e4d, #ff6b6b);
+            --google-gradient: linear-gradient(135deg, #4285F4, #34A853, #FBBC05, #EA4335);
+            --success: #00d26a;
+            --error: #ff4757;
+            --warning: #ff9f43;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+            --font-family: 'Poppins', sans-serif;
+            --backdrop-blur: blur(20px);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --glass-bg: rgba(21, 21, 21, 0.7);
+            --neon-glow: 0 0 20px rgba(255, 46, 77, 0.4);
+        }
+
+        body.light-theme {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-secondary-rgb: 255, 255, 255;
+            --bg-input: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --accent-primary: #ff2e4d;
+            --accent-primary-hover: #e62e4a;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --neon-glow: 0 0 20px rgba(255, 46, 77, 0.2);
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        /* ANIMAÇÕES PREMIUM */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px) scale(0.95); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { box-shadow: 0 0 5px var(--accent-primary), 0 0 10px var(--accent-primary), 0 0 15px var(--accent-primary); }
+            50% { box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 5px currentColor; }
+            50% { text-shadow: 0 0 15px currentColor, 0 0 20px currentColor; }
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(0) translateY(-10px); }
+            100% { transform: translateX(100px) translateY(0); }
+        }
+
+        /* ESTILOS GERAIS */
+        body.login-page {
+            font-family: var(--font-family);
+            min-height: 100vh;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 46, 77, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(66, 133, 244, 0.1) 0%, transparent 30%),
+                linear-gradient(135deg, var(--bg-primary) 0%, #1a1a1a 100%);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Efeitos de Fundo Premium - Nuvens Akatsuki */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .akatsuki-cloud {
+            position: absolute;
+            opacity: 0.1;
+            color: #ff2e4d;
+            font-size: 8rem;
+            animation: float 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .cloud-1 { top: 10%; left: 5%; animation-delay: 0s; animation-duration: 12s; }
+        .cloud-2 { top: 60%; left: 8%; animation-delay: 2s; animation-duration: 10s; }
+        .cloud-3 { top: 30%; right: 5%; animation-delay: 4s; animation-duration: 14s; }
+        .cloud-4 { top: 80%; right: 8%; animation-delay: 1s; animation-duration: 11s; }
+        .cloud-5 { top: 20%; left: 50%; animation-delay: 3s; animation-duration: 13s; }
+        .cloud-6 { top: 70%; left: 30%; animation-delay: 5s; animation-duration: 9s; }
+
+        .floating-ninja {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.05;
+            animation: float 6s ease-in-out infinite;
+            color: var(--accent-primary);
+            z-index: 1;
+        }
+
+        .ninja-1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .ninja-2 { top: 65%; left: 12%; animation-delay: 2s; }
+        .ninja-3 { top: 35%; right: 7%; animation-delay: 4s; }
+        .ninja-4 { top: 85%; right: 10%; animation-delay: 1s; }
+
+        /* CONTAINER PRINCIPAL */
+        .main-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 20;
+            margin: 2rem auto;
+        }
+
+        .theme-toggle-container {
+            position: absolute;
+            top: -70px;
+            right: 0;
+            z-index: 100;
+        }
+
+        .theme-toggle-btn {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: var(--transition-smooth);
+            box-shadow: var(--neon-glow);
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 46, 77, 0.6);
+        }
+
+        .theme-toggle-btn .fa-sun { display: none; }
+        .light-theme .theme-toggle-btn .fa-sun { display: block; }
+        .light-theme .theme-toggle-btn .fa-moon { display: none; }
+
+        .auth-alert {
+            display: none;
+            padding: 1.2rem;
+            margin-bottom: 1.8rem;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.95rem;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid transparent;
+            backdrop-filter: var(--backdrop-blur);
+            background: var(--glass-bg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-alert.error {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--error);
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        .auth-alert.success {
+            background: rgba(0, 210, 106, 0.15);
+            color: var(--success);
+            border-color: rgba(0, 210, 106, 0.3);
+        }
+
+        .auth-alert.warning {
+            background: rgba(255, 159, 67, 0.15);
+            color: var(--warning);
+            border-color: rgba(255, 159, 67, 0.3);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                var(--neon-glow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.98);
+            transition: var(--transition-smooth);
+        }
+
+        .auth-form.active-form {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            position: relative;
+        }
+
+        .auth-form__header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .auth-form__header h2 {
+            color: var(--text-primary);
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 3s ease-in-out infinite;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-form__header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .auth-form__group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .auth-form__group .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 1.2rem;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 1.1rem 1.2rem 1.1rem 3.5rem;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-form input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: var(--bg-input);
+            box-shadow: 
+                0 0 0 4px rgba(var(--accent-primary-rgb), 0.15),
+                inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auth-form input:focus + .input-icon {
+            color: var(--accent-primary);
+            transform: translateY(-50%) scale(1.2);
+            animation: textGlow 1s ease-in-out infinite;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1.2rem;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+            z-index: 10;
+            background: rgba(var(--bg-secondary-rgb), 0.8);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-primary);
+            background: rgba(var(--accent-primary-rgb), 0.1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-family);
+            transition: var(--transition-smooth);
+            border: none;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn--primary {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            background: var(--accent-gradient);
+            color: #fff;
+            box-shadow: 
+                0 8px 32px rgba(255, 46, 77, 0.3),
+                0 4px 16px rgba(255, 46, 77, 0.2);
+        }
+
+        .btn--primary:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 40px rgba(255, 46, 77, 0.4),
+                0 6px 20px rgba(255, 46, 77, 0.3);
+        }
+
+        .btn--primary:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        /* BOTÃO GOOGLE PREMIUM */
+        .btn--google-premium {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: var(--google-gradient);
+            background-size: 300% 300%;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3);
+            animation: shimmer 3s infinite linear;
+        }
+
+        .btn--google-premium:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 40px rgba(66, 133, 244, 0.4),
+                0 6px 20px rgba(66, 133, 244, 0.3);
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        .btn--google-premium:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        .btn--google-premium i {
+            font-size: 1.3rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            color: #4285F4;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 2.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .divider:not(:empty)::before {
+            margin-right: 1rem;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: 1rem;
+        }
+
+        .auth-form__footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-form__footer p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .auth-form__footer a {
+            font-weight: 600;
+            color: var(--accent-primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .auth-form__footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .auth-form__footer a:hover::after {
+            width: 100%;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            opacity: 0.8;
+        }
+
+        .home-link:hover {
+            opacity: 1;
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Loading spinner personalizado */
+        .btn--loading .btn-spinner {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* LOGO AKATSUKI PERSONALIZADA */
+        .akatsuki-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .logo-text::after {
+            content: '雲';
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+            opacity: 0.7;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            body.login-page {
+                padding: 1rem;
+            }
+            
+            .auth-form {
+                padding: 2rem 1.5rem;
+            }
+            
+            .auth-form__header h2 {
+                font-size: 2rem;
+            }
+            
+            .theme-toggle-container {
+                top: -60px;
+            }
+            
+            .theme-toggle-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .akatsuki-cloud {
+                font-size: 5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-form {
+                padding: 1.5rem 1rem;
+            }
+            
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .akatsuki-cloud {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <!-- Efeitos de Fundo - Nuvens Akatsuki -->
+    <div class="background-effects">
+        <div class="akatsuki-cloud cloud-1">☁️</div>
+        <div class="akatsuki-cloud cloud-2">☁️</div>
+        <div class="akatsuki-cloud cloud-3">☁️</div>
+        <div class="akatsuki-cloud cloud-4">☁️</div>
+        <div class="akatsuki-cloud cloud-5">☁️</div>
+        <div class="akatsuki-cloud cloud-6">☁️</div>
+        
+        <div class="floating-ninja ninja-1">🗡️</div>
+        <div class="floating-ninja ninja-2">⚔️</div>
+        <div class="floating-ninja ninja-3">🌀</div>
+        <div class="floating-ninja ninja-4">👁️</div>
+    </div>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="main-container">
+        <div class="akatsuki-logo">
+            <div class="logo-text">DENYANIMEHUB</div>
+        </div>
+
+        <div class="theme-toggle-container">
+            <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Tema">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+
+        <div id="auth-alert" class="auth-alert"></div>
+
+        <!-- Formulário Principal de Login -->
+        <form class="auth-form active-form" id="login-form">
+            <div class="auth-form__header">
+                <h2>Bem-vindo de Volta</h2>
+                <p>Acesse sua conta para continuar sua jornada anime</p>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="login-password" name="senha" required placeholder="Sua senha">
+                <span class="password-toggle" data-target="login-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Entrar na Akatsuki</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="divider">ou entre com</div>
+
+            <!-- Botão Google Premium -->
+            <button type="button" class="btn--google-premium" id="google-login-btn">
+                <i class="fab fa-google"></i>
+                Continuar com Google
+            </button>
+            
+            <div class="auth-form__footer">
+                <p>Não tem uma conta? <a class="form-switch-link" data-target="register-form">Junte-se a nós</a></p>
+                <p><a class="form-switch-link" data-target="forgot-password-form">Esqueceu a senha?</a></p>
+            </div>
+
+            <a href="/" class="home-link">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Início
+            </a>
+        </form>
+
+        <!-- Formulário de Registro -->
+        <form class="auth-form" id="register-form">
+            <div class="auth-form__header">
+                <h2>Junte-se a Nós</h2>
+                <p>Crie sua conta na comunidade DenyAnimeHub</p>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="register-username" name="nome" required placeholder="Seu nome completo">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="register-email" name="email" required placeholder="Seu melhor email">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-password" name="senha" minlength="6" required 
+                       placeholder="Crie uma senha segura (mín. 6 caracteres)">
+                <span class="password-toggle" data-target="register-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-confirm-password" name="confirmarSenha" minlength="6" required 
+                       placeholder="Confirme sua senha">
+                <span class="password-toggle" data-target="register-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Criar Conta Akatsuki</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </div>
+
+            <div class="divider">ou cadastre-se com</div>
+
+            <!-- Botão Google Premium -->
+            <button type="button" class="btn--google-premium" id="google-register-btn">
+                <i class="fab fa-google"></i>
+                Cadastrar com Google
+            </button>
+            
+            <div class="auth-form__footer">
+                <p>Já tem uma conta? <a class="form-switch-link" data-target="login-form">Faça login aqui</a></p>
+            </div>
+        </form>
+
+        <!-- Formulário de Recuperação de Senha -->
+        <form class="auth-form" id="forgot-password-form">
+            <div class="auth-form__header">
+                <h2>Recuperar Senha</h2>
+                <p>Enviaremos um código para seu email</p>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="forgot-email" name="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Enviar Código de Recuperação</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Lembrou sua senha? <a class="form-switch-link" data-target="login-form">Fazer login</a></p>
+            </div>
+        </form>
+
+        <!-- Formulário de Redefinição de Senha -->
+        <form class="auth-form" id="reset-password-form">
+            <div class="auth-form__header">
+                <h2>Nova Senha</h2>
+                <p>Digite o código recebido e sua nova senha</p>
+            </div>
+            
+            <input type="hidden" id="reset-email" name="email">
+            
+            <div class="auth-form__group">
+                <i class="fas fa-key input-icon"></i>
+                <input type="text" id="reset-code" name="token" required placeholder="Código de verificação">
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-password" name="novaSenha" minlength="6" required 
+                       placeholder="Nova senha">
+                <span class="password-toggle" data-target="reset-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="reset-confirm-password" name="confirmarNovaSenha" minlength="6" required 
+                       placeholder="Confirmar nova senha">
+                <span class="password-toggle" data-target="reset-confirm-password">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <div class="auth-form__actions">
+                <button type="submit" class="btn btn--primary">
+                    <span class="btn-text">Redefinir Senha</span>
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+            
+            <div class="auth-form__footer">
+                <p>Não recebeu o código? <a class="form-switch-link" data-target="forgot-password-form">Reenviar</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Inicializando DenyAnimeHub Premium Auth System...');
+        
+        // Elementos da DOM
+        const elements = {
+            forms: {
+                login: document.getElementById('login-form'),
+                register: document.getElementById('register-form'),
+                forgotPassword: document.getElementById('forgot-password-form'),
+                resetPassword: document.getElementById('reset-password-form')
+            },
+            authAlert: document.getElementById('auth-alert'),
+            formSwitchLinks: document.querySelectorAll('.form-switch-link'),
+            themeToggle: document.getElementById('theme-toggle'),
+            googleLoginBtn: document.getElementById('google-login-btn'),
+            googleRegisterBtn: document.getElementById('google-register-btn')
+        };
+
+        // Funções utilitárias
+        const showAlert = (message, type = 'error', duration = 5000) => {
+            if (!elements.authAlert) return;
+            
+            elements.authAlert.textContent = message;
+            elements.authAlert.className = `auth-alert ${type}`;
+            elements.authAlert.style.display = 'block';
+            
+            if (duration > 0) {
+                setTimeout(() => {
+                    elements.authAlert.style.display = 'none';
+                }, duration);
+            }
+        };
+
+        const switchForm = (targetId) => {
+            // Esconder todos os formulários
+            Object.values(elements.forms).forEach(form => {
+                if (form) form.classList.remove('active-form');
+            });
+            
+            // Mostrar formulário alvo
+            const targetForm = elements.forms[targetId.replace('-form', '')] || 
+                              document.getElementById(targetId);
+            if (targetForm) {
+                targetForm.classList.add('active-form');
+            }
+            
+            // Esconder alertas
+            if (elements.authAlert) {
+                elements.authAlert.style.display = 'none';
+            }
+        };
+
+        const setButtonLoading = (button, isLoading) => {
+            if (!button) return;
+            
+            const btnText = button.querySelector('.btn-text');
+            if (isLoading) {
+                button.disabled = true;
+                if (btnText) {
+                    btnText.innerHTML = '<span class="btn-spinner"></span> Processando...';
+                }
+            } else {
+                button.disabled = false;
+                // Restaurar texto original baseado no tipo de botão
+                if (btnText) {
+                    const originalText = button.classList.contains('btn--primary') ? 
+                        button.querySelector('.fa-arrow-right') ? 'Entrar na Akatsuki' :
+                        button.querySelector('.fa-user-plus') ? 'Criar Conta Akatsuki' :
+                        button.querySelector('.fa-paper-plane') ? 'Enviar Código de Recuperação' :
+                        button.querySelector('.fa-save') ? 'Redefinir Senha' : 'Continuar' : 'Continuar';
+                    btnText.textContent = originalText;
+                }
+            }
+        };
+
+        // Manipuladores de formulários
+        const handleFormSubmit = async (form, endpoint, options = {}) => {
+            const submitButton = form.querySelector('button[type="submit"]');
+            setButtonLoading(submitButton, true);
+            
+            try {
+                const formData = new FormData(form);
+                const body = Object.fromEntries(formData.entries());
+                
+                // Validações específicas
+                if (form.id === 'register-form' || form.id === 'reset-password-form') {
+                    const passwordField = form.id === 'register-form' ? 'senha' : 'novaSenha';
+                    const confirmField = form.id === 'register-form' ? 'confirmarSenha' : 'confirmarNovaSenha';
+                    
+                    if (body[passwordField] !== body[confirmField]) {
+                        throw new Error('As senhas não coincidem');
+                    }
+                    
+                    if (body[passwordField].length < 6) {
+                        throw new Error('A senha deve ter pelo menos 6 caracteres');
+                    }
+                    
+                    delete body[confirmField];
+                }
+                
+                const response = await fetch(`/auth${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Erro desconhecido');
+                }
+                
+                if (options.onSuccess) {
+                    options.onSuccess(data, body);
+                }
+                
+            } catch (error) {
+                console.error('Erro no formulário:', error);
+                showAlert(error.message, 'error');
+            } finally {
+                setButtonLoading(submitButton, false);
+            }
+        };
+
+        // Configurar event listeners
+        const setupEventListeners = () => {
+            // Alternância de formulários
+            elements.formSwitchLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchForm(link.dataset.target);
+                });
+            });
+            
+            // Toggle de tema
+            if (elements.themeToggle) {
+                elements.themeToggle.addEventListener('click', () => {
+                    const isLight = document.body.classList.contains('light-theme');
+                    document.body.className = `login-page ${isLight ? 'dark' : 'light'}-theme`;
+                    localStorage.setItem('theme', isLight ? 'dark' : 'light');
+                });
+            }
+            
+            // Login com Google
+            const handleGoogleLogin = async () => {
+                showAlert('Conectando com Google...', 'success');
+                try {
+                    // Primeiro, obtenha a URL de autorização do servidor
+                    const response = await fetch('/auth/google');
+                    const data = await response.json();
+                    
+                    if (data.success && data.authorizeUrl) {
+                        // Redireciona para a URL de autorização do Google
+                        window.location.href = data.authorizeUrl;
+                    } else {
+                        throw new Error(data.error || 'Falha ao iniciar login com Google');
+                    }
+                } catch (error) {
+                    console.error('Erro no login com Google:', error);
+                    showAlert(error.message, 'error');
+                }
+            };
+
+            if (elements.googleLoginBtn) {
+                elements.googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
+
+            if (elements.googleRegisterBtn) {
+                elements.googleRegisterBtn.addEventListener('click', handleGoogleLogin);
+            }
+            
+            // Toggle de visibilidade de senha
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const targetId = toggle.dataset.target;
+                    const input = document.getElementById(targetId);
+                    const icon = toggle.querySelector('i');
+                    
+                    if (input && icon) {
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.replace('fa-eye-slash', 'fa-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.replace('fa-eye', 'fa-eye-slash');
+                        }
+                    }
+                });
+            });
+            
+            // Formulários principais
+            const formConfigs = {
+                'login-form': { 
+                    endpoint: '/login', 
+                    onSuccess: (data) => {
+                        showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                        setTimeout(() => {
+                            window.location.href = data.user?.role === 'admin' ? 
+                                '/admin/dashboard' : '/';
+                        }, 1500);
+                    }
+                },
+                'register-form': { 
+                    endpoint: '/registrar', 
+                    onSuccess: (data, body) => {
+                        showAlert('Conta criada com sucesso! Faça login para continuar.', 'success');
+                        setTimeout(() => {
+                            switchForm('login-form');
+                            const emailInput = elements.forms.login?.querySelector('#login-email');
+                            if (emailInput) emailInput.value = body.email;
+                        }, 2000);
+                    }
+                },
+                'forgot-password-form': { 
+                    endpoint: '/forgot-password', 
+                    onSuccess: (data, body) => {
+                        showAlert('Código de recuperação enviado para seu email!', 'success');
+                        document.getElementById('reset-email').value = body.email;
+                        setTimeout(() => switchForm('reset-password-form'), 1500);
+                    }
+                },
+                'reset-password-form': { 
+                    endpoint: '/reset-password', 
+                    onSuccess: (data) => {
+                        showAlert('Senha redefinida com sucesso!', 'success');
+                        setTimeout(() => switchForm('login-form'), 2000);
+                    }
+                }
+            };
+            
+            // Configurar submit handlers
+            Object.entries(formConfigs).forEach(([formId, config]) => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        handleFormSubmit(form, config.endpoint, config);
+                    });
+                }
+            });
+        };
+
+        // Inicialização
+        const init = () => {
+            // Aplicar tema salvo
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.className = `login-page ${savedTheme}-theme`;
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Verificar parâmetros da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('sucesso');
+            const errorParam = urlParams.get('erro');
+            
+            if (successParam) {
+                showAlert(decodeURIComponent(successParam), 'success', 5000);
+            }
+            
+            if (errorParam) {
+                showAlert(decodeURIComponent(errorParam), 'error', 5000);
+            }
+            
+            console.log('✅ Sistema de autenticação premium inicializado');
+        };
+
+        // Iniciar a aplicação
+        init();
+    });
+    </script>
+</body>
+</html>

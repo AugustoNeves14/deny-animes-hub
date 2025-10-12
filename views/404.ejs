@@ -1,0 +1,15 @@
+<%- include('partials/header', { page_name: '404', titulo: 'Erro 404' }) %>
+<!-- Script de proteção chamado com 'defer' para não bloquear o carregamento -->
+    <script src="/js/protect.js" defer></script>
+<div class="container" style="text-align: center; padding: 80px 20px;">
+    <h1 style="font-size: 6rem; color: var(--accent-primary); margin-bottom: 20px;">404</h1>
+    <h2>Página Não Encontrada</h2>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 20px auto;">
+        Parece que você se perdeu no multiverso. A página que você está procurando não existe ou foi movida.
+    </p>
+    <a href="/" class="btn btn--primary" style="margin-top: 20px;">
+        <i class="fas fa-home"></i> Voltar para o Início
+    </a>
+</div>
+
+<%- include('partials/footer') %>

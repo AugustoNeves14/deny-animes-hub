@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.title || 'Painel Admin' %> | DenyAnimeHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/images/1.ico" type="image/ico">
+    <style>
+        :root {
+            --bg-dark: #111827;
+            --bg-light: #1F2937;
+            --border-color: #374151;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --accent: #E50914;
+            --accent-hover: #c20812;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-light);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 0;
+            transition: width 0.3s ease;
+        }
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        .sidebar-nav {
+            flex-grow: 1;
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            border-left-color: var(--accent);
+        }
+        .sidebar-nav a .fa-solid {
+            width: 20px;
+            text-align: center;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .main-header h1 {
+            font-size: 2rem;
+        }
+        .user-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .user-menu a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>DenyAnimeHub</h2>
+            <span>Painel de Controle</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/admin/animes"><i class="fa-solid fa-film"></i> Gerenciar Animes</a></li>
+            <li><a href="/admin/posts"><i class="fa-solid fa-newspaper"></i> Gerenciar Notícias</a></li>
+            <li><a href="/admin/users"><i class="fa-solid fa-users"></i> Gerenciar Usuários</a></li>
+            <li><a href="/admin/comments"><i class="fa-solid fa-comments"></i> Gerenciar Comentários</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="main-header">
+            <h1><%= locals.title || 'Visão Geral' %></h1>
+            <div class="user-menu">
+                <a href="/">Voltar para o Site <i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </header>
+        
+        <%- body %>
+
+    </main>
+</body>
+</html>
