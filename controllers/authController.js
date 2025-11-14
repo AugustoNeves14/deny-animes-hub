@@ -233,13 +233,20 @@ exports.login = async (req, res) => {
     }
 };
 
+/**
 
+ * Logout - VERSÃO CORRIGIDA SEM DUPLICAÇÃO
+=======
+ * Logout - VERSÃO CORRIGIDA E ROBUSTA
+=======
+ * Logout - VERSÃO CORRIGIDA E FUNCIONAL
+>>>>>>> f1addb32ac4b83b59c94cf1ae8a074cf2b838acc
+ */
 exports.logout = (req, res) => {
     try {
         console.log('🔍 Logout acionado - Método:', req.method);
 
-        
-        // Limpar cookie de token
+        // Limpar cookies de token
         const cookieOptions = {
             expires: new Date(Date.now() + 5 * 1000),
             httpOnly: true,
@@ -252,17 +259,11 @@ exports.logout = (req, res) => {
 
         // Determinar tipo de requisição
         const isApiRequest = req.xhr || 
-                           req.headers.accept?.includes('application/json') ||
-                           req.path?.includes('/api/');
+                             req.headers.accept?.includes('application/json') ||
+                             req.path?.includes('/api/');
 
         console.log('🔍 Tipo de requisição:', isApiRequest ? 'API' : 'Browser');
 
-        if (isApiRequest) {
-            // Resposta JSON para APIs
-
-        console.log('🔍 Headers:', req.headers);
-        console.log('🔍 URL:', req.originalUrl);
-        
         // Opções robustas para limpar cookies
         const clearCookieOptions = {
             expires: new Date(0), // Data no passado
@@ -278,16 +279,11 @@ exports.logout = (req, res) => {
         res.clearCookie('auth_token', clearCookieOptions);
         res.clearCookie('user_session', clearCookieOptions);
 
-        // Determinar tipo de resposta baseado na requisição
+        // Determinar tipo de resposta
         const acceptsJSON = req.headers.accept?.includes('application/json');
-        const isAPIRequest = req.originalUrl?.startsWith('/api/') || req.xhr;
 
-        console.log('🔍 Tipo de requisição:', isAPIRequest ? 'API' : 'Browser');
-        console.log('🔍 Accepts JSON:', acceptsJSON);
-
-        if (isAPIRequest || acceptsJSON) {
+        if (isApiRequest || acceptsJSON) {
             // Resposta JSON para APIs/AJAX
-
             return res.status(200).json({
                 success: true,
                 message: 'Logout realizado com sucesso.',
@@ -295,22 +291,21 @@ exports.logout = (req, res) => {
             });
         } else {
             // Redirecionamento para navegadores
-
             return res.redirect('/login?sucesso=Logout realizado com sucesso!');
         }
 
     } catch (error) {
-        console.error('❌ Erro crítico no logout:', error);
-        
-        // Fallback absoluto
-        res.cookie('token', 'invalid', {
-            expires: new Date(Date.now() - 1000),
-            httpOnly: true
+        console.error('❌ Erro no logout:', error);
+
+        // Fallback seguro
+        res.clearCookie('token', { 
+            expires: new Date(0),
+            httpOnly: true,
+            path: '/'
         });
 
-        // Tentar redirecionar de qualquer maneira
         if (res.headersSent) return;
-        
+
         try {
             return res.redirect('/login?erro=Erro durante o logout');
         } catch (redirectError) {
@@ -322,24 +317,9 @@ exports.logout = (req, res) => {
                 </script>
             `);
         }
-
-            return res.redirect('/login?sucesso=Logout+realizado+com+sucesso');
-        }
-
-    } catch (error) {
-        console.error('❌ Erro no logout:', error);
-        
-        // Fallback seguro
-        res.clearCookie('token', { 
-            expires: new Date(0),
-            httpOnly: true,
-            path: '/'
-        });
-
-        return res.redirect('/login?erro=Erro+ao+fazer+logout');
-
     }
 };
+
 
 /**
  * Esqueci a senha - Versão Corrigida
