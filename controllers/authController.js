@@ -234,13 +234,18 @@ exports.login = async (req, res) => {
 };
 
 /**
+<<<<<<< HEAD
  * Logout - VERSÃO CORRIGIDA SEM DUPLICAÇÃO
 =======
  * Logout - VERSÃO CORRIGIDA E ROBUSTA
+=======
+ * Logout - VERSÃO CORRIGIDA E FUNCIONAL
+>>>>>>> f1addb32ac4b83b59c94cf1ae8a074cf2b838acc
  */
 exports.logout = (req, res) => {
     try {
         console.log('🔍 Logout acionado - Método:', req.method);
+<<<<<<< HEAD
         
         // Limpar cookie de token
         const cookieOptions = {
@@ -262,6 +267,35 @@ exports.logout = (req, res) => {
 
         if (isApiRequest) {
             // Resposta JSON para APIs
+=======
+        console.log('🔍 Headers:', req.headers);
+        console.log('🔍 URL:', req.originalUrl);
+        
+        // Opções robustas para limpar cookies
+        const clearCookieOptions = {
+            expires: new Date(0), // Data no passado
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/'
+        };
+
+        // Limpar todos os cookies possíveis de autenticação
+        res.clearCookie('token', clearCookieOptions);
+        res.clearCookie('session', clearCookieOptions);
+        res.clearCookie('auth_token', clearCookieOptions);
+        res.clearCookie('user_session', clearCookieOptions);
+
+        // Determinar tipo de resposta baseado na requisição
+        const acceptsJSON = req.headers.accept?.includes('application/json');
+        const isAPIRequest = req.originalUrl?.startsWith('/api/') || req.xhr;
+
+        console.log('🔍 Tipo de requisição:', isAPIRequest ? 'API' : 'Browser');
+        console.log('🔍 Accepts JSON:', acceptsJSON);
+
+        if (isAPIRequest || acceptsJSON) {
+            // Resposta JSON para APIs/AJAX
+>>>>>>> f1addb32ac4b83b59c94cf1ae8a074cf2b838acc
             return res.status(200).json({
                 success: true,
                 message: 'Logout realizado com sucesso.',
@@ -269,6 +303,7 @@ exports.logout = (req, res) => {
             });
         } else {
             // Redirecionamento para navegadores
+<<<<<<< HEAD
             return res.redirect('/login?sucesso=Logout realizado com sucesso!');
         }
 
@@ -295,6 +330,22 @@ exports.logout = (req, res) => {
                 </script>
             `);
         }
+=======
+            return res.redirect('/login?sucesso=Logout+realizado+com+sucesso');
+        }
+
+    } catch (error) {
+        console.error('❌ Erro no logout:', error);
+        
+        // Fallback seguro
+        res.clearCookie('token', { 
+            expires: new Date(0),
+            httpOnly: true,
+            path: '/'
+        });
+
+        return res.redirect('/login?erro=Erro+ao+fazer+logout');
+>>>>>>> f1addb32ac4b83b59c94cf1ae8a074cf2b838acc
     }
 };
 

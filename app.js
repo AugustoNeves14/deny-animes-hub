@@ -267,7 +267,10 @@ app.get('/admin/dashboard', proteger, admin, async (req, res) => {
 });
 
 // ====================================================================================
+
 // ROTAS DE AUTENTICAÇÃO
+
+// ROTAS DE AUTENTICAÇÃO - VERSÃO CORRIGIDA
 // ====================================================================================
 
 // Rotas de Autenticação (Backend API)
@@ -275,6 +278,12 @@ app.post('/auth/registrar', authController.registrar);
 app.post('/auth/login', authController.login);
 app.post('/auth/forgot-password', authController.forgotPassword);
 app.post('/auth/reset-password', authController.resetPassword);
+
+
+// 🔥 ROTAS DE LOGOUT CORRIGIDAS - MULTIPLOS MÉTODOS
+app.get('/auth/logout', authController.logout);    // Para links normais
+app.post('/auth/logout', authController.logout);   // Para formulários
+app.delete('/auth/logout', authController.logout); // Para APIs REST
 
 // Rotas para Social Login (Google)
 app.get('/auth/google', authController.googleLogin);
@@ -284,11 +293,19 @@ app.get('/auth/google/callback', authController.googleCallback);
 app.post('/auth/send-phone-otp', authController.sendPhoneOtp);
 app.post('/auth/verify-phone-otp', authController.verifyPhoneOtp);
 
+
 // Rota para renderizar a página de login/registro
 app.get('/auth/login-page', (req, res) => {
     if (res.locals.userIsLoggedIn) return res.redirect('/');
     res.render('login', { titulo: 'Login/Registro' });
 });
+
+// Rota para verificar token
+app.get('/auth/verify', authController.verifyToken);
+
+// Rota alternativa de logout (fallback)
+app.get('/logout', authController.logout);
+app.post('/logout', authController.logout);
 
 // ====================================================================================
 // ROTAS DE API (usadas pelo Painel de Admin e outras interações)
